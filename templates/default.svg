@@ -1,0 +1,9 @@
+<svg width="ogis_width" height="ogis_height" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#1a1a2e"/>
+  <style>
+    .title { font: bold 72px sans-serif; fill: #ffffff; }
+    .description { font: 36px sans-serif; fill: #cccccc; }
+  </style>
+  <text x="50%" y="40%" text-anchor="middle" class="title">ogis_title</text>
+  <text x="50%" y="55%" text-anchor="middle" class="description">ogis_description</text>
+</svg>

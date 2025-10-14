@@ -1,31 +1,15 @@
+use quick_xml::escape::escape;
 use std::sync::Arc;
 
-/// Generate an SVG with the given parameters
-pub fn generate_svg(title: &str, description: &str, width: u32, height: u32) -> String {
-    format!(
-        r##"<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" fill="#1a1a2e"/>
-  <style>
-    .title {{ font: bold 72px sans-serif; fill: #ffffff; }}
-    .description {{ font: 36px sans-serif; fill: #cccccc; }}
-  </style>
-  <text x="50%" y="40%" text-anchor="middle" class="title">{}</text>
-  <text x="50%" y="55%" text-anchor="middle" class="description">{}</text>
-</svg>"##,
-        width,
-        height,
-        escape_xml(title),
-        escape_xml(description)
-    )
-}
+const DEFAULT_TEMPLATE: &str = include_str!("../templates/default.svg");
 
-/// Escape XML special characters
-fn escape_xml(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-        .replace('\'', "&apos;")
+/// Generate an SVG with the given parameters by replacing ogis_ prefixed placeholders
+pub fn generate_svg(title: &str, description: &str, width: u32, height: u32) -> String {
+    DEFAULT_TEMPLATE
+        .replace("ogis_title", &escape(title))
+        .replace("ogis_description", &escape(description))
+        .replace("ogis_width", &width.to_string())
+        .replace("ogis_height", &height.to_string())
 }
 
 /// Render SVG to PNG using resvg
