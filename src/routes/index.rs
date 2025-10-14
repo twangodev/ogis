@@ -1,11 +1,11 @@
+use crate::AppState;
 use axum::{
     extract::{Query, State},
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::IntoResponse,
 };
 use serde::Deserialize;
 use std::sync::Arc;
-use crate::AppState;
 
 #[derive(Deserialize)]
 pub struct OgParams {
@@ -47,7 +47,12 @@ pub async fn handler(
     );
 
     // Generate SVG
-    let svg_data = generate_svg(&params.title, &params.description, params.width, params.height);
+    let svg_data = generate_svg(
+        &params.title,
+        &params.description,
+        params.width,
+        params.height,
+    );
 
     // Render SVG to PNG using resvg
     match render_svg_to_png(&svg_data, params.width, params.height, &state.fontdb) {

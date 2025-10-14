@@ -1,8 +1,8 @@
 pub mod health;
 pub mod index;
 
-use axum::{routing::get, Router};
 use crate::AppState;
+use axum::{Router, routing::get};
 
 pub fn create_router(state: AppState) -> Router {
     Router::new()

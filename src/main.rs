@@ -23,11 +23,7 @@ async fn main() {
 
     tracing::info!("Loaded {} font faces", fontdb.faces().count());
     for face in fontdb.faces() {
-        let families: Vec<String> = face
-            .families
-            .iter()
-            .map(|f| f.0.clone())
-            .collect();
+        let families: Vec<String> = face.families.iter().map(|f| f.0.clone()).collect();
         tracing::debug!("Font: {} ({})", families.join(", "), face.post_script_name);
     }
 
