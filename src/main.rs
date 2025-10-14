@@ -1,3 +1,4 @@
+mod generator;
 mod routes;
 
 use std::sync::Arc;
@@ -35,5 +36,6 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     tracing::info!("OGIS server listening on http://0.0.0.0:3000");
+    tracing::info!("Swagger UI available at http://0.0.0.0:3000/docs");
     axum::serve(listener, app).await.unwrap();
 }
