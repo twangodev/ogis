@@ -1,10 +1,11 @@
 use axum::{
-    extract::Query,
+    extract::{Query, State},
     http::{header, StatusCode},
     response::IntoResponse,
 };
 use serde::Deserialize;
 use std::sync::Arc;
+use crate::AppState;
 
 #[derive(Deserialize)]
 pub struct OgParams {
@@ -34,7 +35,10 @@ fn default_height() -> u32 {
     630
 }
 
-pub async fn handler(Query(params): Query<OgParams>) -> impl IntoResponse {
+pub async fn handler(
+    State(state): State<AppState>,
+    Query(params): Query<OgParams>,
+) -> impl IntoResponse {
     tracing::info!(
         "Generating OG image: {}x{}, title: {}",
         params.width,
@@ -46,7 +50,7 @@ pub async fn handler(Query(params): Query<OgParams>) -> impl IntoResponse {
     let svg_data = generate_svg(&params.title, &params.description, params.width, params.height);
 
     // Render SVG to PNG using resvg
-    match render_svg_to_png(&svg_data, params.width, params.height) {
+    match render_svg_to_png(&svg_data, params.width, params.height, &state.fontdb) {
         Ok(png_data) => (
             StatusCode::OK,
             [(header::CONTENT_TYPE, "image/png")],
@@ -90,15 +94,15 @@ fn escape_xml(s: &str) -> String {
         .replace('\'', "&apos;")
 }
 
-fn render_svg_to_png(svg_data: &str, width: u32, height: u32) -> Result<Vec<u8>, String> {
-    // Load system fonts
-    let mut fontdb = usvg::fontdb::Database::new();
-    fontdb.load_system_fonts();
-    fontdb.set_sans_serif_family("Arial");
-
-    // Parse SVG with font database
+fn render_svg_to_png(
+    svg_data: &str,
+    width: u32,
+    height: u32,
+    fontdb: &Arc<usvg::fontdb::Database>,
+) -> Result<Vec<u8>, String> {
+    // Parse SVG with shared font database
     let options = usvg::Options {
-        fontdb: Arc::new(fontdb),
+        fontdb: Arc::clone(fontdb),
         ..Default::default()
     };
     let tree = usvg::Tree::from_str(svg_data, &options)
