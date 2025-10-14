@@ -4,19 +4,15 @@ use std::sync::Arc;
 const DEFAULT_TEMPLATE: &str = include_str!("../templates/default.svg");
 
 /// Generate an SVG with the given parameters by replacing ogis_ prefixed placeholders
-pub fn generate_svg(title: &str, description: &str, width: u32, height: u32) -> String {
+pub fn generate_svg(title: &str, description: &str) -> String {
     DEFAULT_TEMPLATE
         .replace("ogis_title", &escape(title))
         .replace("ogis_description", &escape(description))
-        .replace("ogis_width", &width.to_string())
-        .replace("ogis_height", &height.to_string())
 }
 
-/// Render SVG to PNG using resvg
+/// Render SVG to PNG using resvg, automatically using the SVG's defined dimensions
 pub fn render_to_png(
     svg_data: &str,
-    width: u32,
-    height: u32,
     fontdb: &Arc<usvg::fontdb::Database>,
 ) -> Result<Vec<u8>, String> {
     // Parse SVG with shared font database
@@ -27,7 +23,12 @@ pub fn render_to_png(
     let tree = usvg::Tree::from_str(svg_data, &options)
         .map_err(|e| format!("Failed to parse SVG: {}", e))?;
 
-    // Create pixmap
+    // Get dimensions from the SVG itself
+    let size = tree.size();
+    let width = size.width().round() as u32;
+    let height = size.height().round() as u32;
+
+    // Create pixmap with SVG's dimensions
     let mut pixmap = tiny_skia::Pixmap::new(width, height)
         .ok_or_else(|| "Failed to create pixmap".to_string())?;
 
