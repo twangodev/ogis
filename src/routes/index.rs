@@ -8,6 +8,7 @@ use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 
 #[derive(Deserialize, IntoParams, ToSchema)]
+#[into_params(parameter_in = Query)]
 pub struct OgParams {
     /// Title text for the image
     #[serde(default = "default_title")]
