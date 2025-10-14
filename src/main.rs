@@ -1,3 +1,4 @@
+mod config;
 mod generator;
 mod routes;
 
@@ -15,6 +16,9 @@ async fn main() {
 
     // Initialize tracing
     tracing_subscriber::fmt::init();
+
+    // Parse CLI arguments
+    let config = config::Config::parse();
 
     // Load fonts once at startup
     tracing::info!("Loading system fonts...");
@@ -34,8 +38,8 @@ async fn main() {
 
     let app = routes::create_router(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    tracing::info!("OGIS server listening on http://0.0.0.0:3000");
-    tracing::info!("Swagger UI available at http://0.0.0.0:3000/docs");
+    let listener = tokio::net::TcpListener::bind(&config.addr).await.unwrap();
+    tracing::info!("OGIS server listening on http://{}", config.addr);
+    tracing::info!("Swagger UI available at http://{}/docs", config.addr);
     axum::serve(listener, app).await.unwrap();
 }
