@@ -18,8 +18,7 @@ jobs:
         with:
           components: rustfmt
 
-      - name: Check formatting
-        run: cargo fmt --all -- --check
+      - uses: actions-rust-lang/rustfmt@v1
 
   build:
     name: Build
