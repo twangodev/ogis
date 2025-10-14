@@ -1,13 +1,15 @@
 use quick_xml::escape::escape;
 use std::sync::Arc;
 
-const DEFAULT_TEMPLATE: &str = include_str!("../templates/default.svg");
+const DEFAULT_TEMPLATE: &str = include_str!("../templates/twilight.svg");
 
 /// Generate an SVG with the given parameters by replacing ogis_ prefixed placeholders
-pub fn generate_svg(title: &str, description: &str) -> String {
+pub fn generate_svg(title: &str, description: &str, logo: &str, subtitle: &str) -> String {
     DEFAULT_TEMPLATE
         .replace("ogis_title", &escape(title))
         .replace("ogis_description", &escape(description))
+        .replace("ogis_logo", &escape(logo))
+        .replace("ogis_subtitle", &escape(subtitle))
 }
 
 /// Render SVG to PNG using resvg, automatically using the SVG's defined dimensions

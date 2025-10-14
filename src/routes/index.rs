@@ -15,6 +15,12 @@ pub struct OgParams {
     /// Description text for the image
     #[serde(default = "default_description")]
     pub description: String,
+    /// Logo text (top-left)
+    #[serde(default = "default_logo")]
+    pub logo: String,
+    /// Subtitle text (above title)
+    #[serde(default = "default_subtitle")]
+    pub subtitle: String,
 }
 
 fn default_title() -> String {
@@ -23,6 +29,14 @@ fn default_title() -> String {
 
 fn default_description() -> String {
     "Generated with OGIS".to_string()
+}
+
+fn default_logo() -> String {
+    "OGIS".to_string()
+}
+
+fn default_subtitle() -> String {
+    String::new()
 }
 
 #[utoipa::path(
@@ -41,7 +55,12 @@ pub async fn handler(
     tracing::info!("Generating OG image, title: {}", params.title);
 
     // Generate SVG
-    let svg_data = generator::generate_svg(&params.title, &params.description);
+    let svg_data = generator::generate_svg(
+        &params.title,
+        &params.description,
+        &params.logo,
+        &params.subtitle,
+    );
 
     // Render SVG to PNG using resvg (dimensions from SVG)
     match generator::render_to_png(&svg_data, &state.fontdb) {

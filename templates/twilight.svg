@@ -1,0 +1,31 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGradient" cx="100%" cy="100%" r="50%">
+      <stop offset="0%" style="stop-color:#764ba2;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#0f0f23;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background with gradient weighted to bottom-right -->
+  <rect width="100%" height="100%" fill="#0f0f23"/>
+  <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+
+  <!-- Logo on top -->
+  <text x="80" y="100" font-family="sans-serif" font-size="40" font-weight="bold" fill="#667eea">ogis_logo</text>
+
+  <!-- Content area on bottom (left side) -->
+  <g transform="translate(80, 0)">
+    <!-- Subtitle -->
+    <text x="0" y="410" font-family="sans-serif" font-size="28" fill="#9ca3af" letter-spacing="2" text-transform="uppercase">ogis_subtitle</text>
+
+    <!-- Title -->
+    <text x="0" y="505" font-family="sans-serif" font-size="80" font-weight="bold" fill="#ffffff">
+      <tspan x="0" dy="0">ogis_title</tspan>
+    </text>
+
+    <!-- Description -->
+    <text x="0" y="560" font-family="sans-serif" font-size="28" fill="#d1d5db">
+      <tspan x="0" dy="0">ogis_description</tspan>
+    </text>
+  </g>
+</svg>
