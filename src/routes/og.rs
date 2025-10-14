@@ -4,6 +4,7 @@ use axum::{
     response::IntoResponse,
 };
 use serde::Deserialize;
+use std::sync::Arc;
 
 #[derive(Deserialize)]
 pub struct OgParams {
@@ -90,8 +91,16 @@ fn escape_xml(s: &str) -> String {
 }
 
 fn render_svg_to_png(svg_data: &str, width: u32, height: u32) -> Result<Vec<u8>, String> {
-    // Parse SVG
-    let options = usvg::Options::default();
+    // Load system fonts
+    let mut fontdb = usvg::fontdb::Database::new();
+    fontdb.load_system_fonts();
+    fontdb.set_sans_serif_family("Arial");
+
+    // Parse SVG with font database
+    let options = usvg::Options {
+        fontdb: Arc::new(fontdb),
+        ..Default::default()
+    };
     let tree = usvg::Tree::from_str(svg_data, &options)
         .map_err(|e| format!("Failed to parse SVG: {}", e))?;
 
