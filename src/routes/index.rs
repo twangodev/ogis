@@ -1,7 +1,7 @@
-use crate::{generator, AppState};
+use crate::{AppState, generator};
 use axum::{
     extract::{Query, State},
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::IntoResponse,
 };
 use serde::Deserialize;

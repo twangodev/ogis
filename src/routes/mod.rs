@@ -3,7 +3,7 @@ pub mod health;
 pub mod index;
 
 use crate::AppState;
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
