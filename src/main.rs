@@ -2,6 +2,9 @@ use axum::{routing::get, Router};
 
 #[tokio::main]
 async fn main() {
+    // Load .env file if it exists
+    dotenvy::dotenv().ok();
+
     // Initialize tracing
     tracing_subscriber::fmt::init();
 
