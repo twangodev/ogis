@@ -1,10 +1,9 @@
-use saphyr::{Yaml, LoadableYamlNode};
+use saphyr::{LoadableYamlNode, Yaml};
 
 pub fn load_fonts() -> usvg::fontdb::Database {
     let mut fontdb = usvg::fontdb::Database::new();
 
-    let yaml_content = std::fs::read_to_string("fonts.yaml")
-        .expect("Failed to read fonts.yaml");
+    let yaml_content = std::fs::read_to_string("fonts.yaml").expect("Failed to read fonts.yaml");
 
     let doc = &Yaml::load_from_str(&yaml_content).expect("Failed to parse fonts.yaml")[0];
 
