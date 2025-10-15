@@ -50,7 +50,7 @@ fn default_subtitle() -> String {
     ),
     tag = "image"
 )]
-pub async fn handler(
+pub async fn generate(
     State(state): State<AppState>,
     Query(params): Query<OgParams>,
 ) -> impl IntoResponse {

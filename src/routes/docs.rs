@@ -3,7 +3,7 @@ use utoipa::OpenApi;
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        crate::routes::index::handler,
+        crate::routes::index::generate,
         crate::routes::health::health_check
     ),
     components(schemas(crate::routes::index::OgParams)),
