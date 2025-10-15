@@ -11,7 +11,7 @@ pub struct AppState {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load .env file if it exists
     dotenvy::dotenv().ok();
 
@@ -30,8 +30,9 @@ async fn main() {
 
     let app = routes::create_router(state);
 
-    let listener = tokio::net::TcpListener::bind(&config.addr).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(&config.addr).await?;
     tracing::info!("OGIS server listening on http://{}", config.addr);
     tracing::info!("Swagger UI available at http://{}/docs", config.addr);
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app).await?;
+    Ok(())
 }
