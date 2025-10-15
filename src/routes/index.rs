@@ -47,7 +47,8 @@ fn default_subtitle() -> String {
     responses(
         (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
         (status = 500, description = "Failed to generate image")
-    )
+    ),
+    tag = "image"
 )]
 pub async fn handler(
     State(state): State<AppState>,

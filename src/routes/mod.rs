@@ -10,7 +10,7 @@ use utoipa_swagger_ui::SwaggerUi;
 pub fn create_router(state: AppState) -> Router {
     Router::new()
         .route("/", get(index::handler))
-        .route("/health", get(health::handler))
+        .route("/health", get(health::health_check))
         .with_state(state)
         .merge(SwaggerUi::new("/docs").url("/api-docs/openapi.json", docs::ApiDoc::openapi()))
 }
