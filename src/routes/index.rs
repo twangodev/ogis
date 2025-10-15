@@ -7,7 +7,7 @@ use axum::{
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 
-#[derive(Deserialize, IntoParams, ToSchema)]
+#[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
 pub struct OgParams {
     /// Title text for the image
@@ -84,7 +84,7 @@ pub async fn generate(
             .into_response();
     }
 
-    tracing::info!("Generating OG image, title: {}", params.title);
+    tracing::info!("Generating OG image with params: {:?}", params);
 
     // Generate SVG
     let svg_data = generator::generate_svg(
