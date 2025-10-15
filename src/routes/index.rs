@@ -47,7 +47,10 @@ impl OgParams {
             return Err(format!("Title exceeds maximum length of {}", max_length));
         }
         if self.description.len() > max_length {
-            return Err(format!("Description exceeds maximum length of {}", max_length));
+            return Err(format!(
+                "Description exceeds maximum length of {}",
+                max_length
+            ));
         }
         if self.logo.len() > max_length {
             return Err(format!("Logo exceeds maximum length of {}", max_length));
@@ -77,11 +80,7 @@ pub async fn generate(
     // Validate input lengths
     if let Err(err) = params.validate(state.max_input_length) {
         tracing::warn!("Input validation failed: {}", err);
-        return (
-            StatusCode::BAD_REQUEST,
-            format!("Invalid input: {}", err),
-        )
-            .into_response();
+        return (StatusCode::BAD_REQUEST, format!("Invalid input: {}", err)).into_response();
     }
 
     tracing::info!("Generating OG image with params: {:?}", params);
