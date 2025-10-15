@@ -74,9 +74,8 @@ impl ImageFetcher {
         }
 
         // Parse and validate URL
-        let parsed_url = Url::parse(url).map_err(|e| {
-            ImageFetchError::InvalidUrl(format!("Failed to parse URL: {}", e))
-        })?;
+        let parsed_url = Url::parse(url)
+            .map_err(|e| ImageFetchError::InvalidUrl(format!("Failed to parse URL: {}", e)))?;
 
         // Only allow HTTP/HTTPS
         if !matches!(parsed_url.scheme(), "http" | "https") {
@@ -104,7 +103,9 @@ impl ImageFetcher {
                         let ips: Vec<IpAddr> = addrs.map(|addr| addr.ip()).collect();
 
                         if ips.is_empty() {
-                            return Err(ImageFetchError::Request("No IP addresses resolved".to_string()));
+                            return Err(ImageFetchError::Request(
+                                "No IP addresses resolved".to_string(),
+                            ));
                         }
 
                         // Check ALL resolved IPs - if ANY are private, block
@@ -125,7 +126,10 @@ impl ImageFetcher {
                         tracing::debug!("Hostname {} resolved to public IPs: {:?}", host, ips);
                     }
                     Err(e) => {
-                        return Err(ImageFetchError::Request(format!("DNS lookup failed: {}", e)));
+                        return Err(ImageFetchError::Request(format!(
+                            "DNS lookup failed: {}",
+                            e
+                        )));
                     }
                 }
             }

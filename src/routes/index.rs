@@ -101,7 +101,11 @@ pub async fn generate(
                 Some(base64)
             }
             Err(e) => {
-                tracing::warn!("Failed to fetch logo from {}: {} - falling back to text logo", url, e);
+                tracing::warn!(
+                    "Failed to fetch logo from {}: {} - falling back to text logo",
+                    url,
+                    e
+                );
                 None // Fallback to text logo
             }
         }
