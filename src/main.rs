@@ -1,4 +1,5 @@
 mod config;
+mod fonts;
 mod generator;
 mod routes;
 
@@ -20,17 +21,8 @@ async fn main() {
     // Parse CLI arguments
     let config = config::Config::parse();
 
-    // Load fonts once at startup
-    tracing::info!("Loading system fonts...");
-    let mut fontdb = usvg::fontdb::Database::new();
-    fontdb.load_system_fonts();
-    fontdb.set_sans_serif_family("Arial");
-
-    tracing::info!("Loaded {} font faces", fontdb.faces().count());
-    for face in fontdb.faces() {
-        let families: Vec<String> = face.families.iter().map(|f| f.0.clone()).collect();
-        tracing::debug!("Font: {} ({})", families.join(", "), face.post_script_name);
-    }
+    // Load fonts
+    let fontdb = fonts::load_fonts();
 
     let state = AppState {
         fontdb: Arc::new(fontdb),
