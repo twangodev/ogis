@@ -8,6 +8,7 @@ use std::sync::Arc;
 #[derive(Clone)]
 pub struct AppState {
     pub fontdb: Arc<usvg::fontdb::Database>,
+    pub max_input_length: usize,
 }
 
 #[tokio::main]
@@ -26,6 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let state = AppState {
         fontdb: Arc::new(fontdb),
+        max_input_length: config.max_input_length,
     };
 
     let app = routes::create_router(state);

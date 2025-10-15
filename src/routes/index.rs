@@ -40,12 +40,32 @@ fn default_subtitle() -> String {
     String::new()
 }
 
+impl OgParams {
+    /// Validate input parameters against maximum length
+    fn validate(&self, max_length: usize) -> Result<(), String> {
+        if self.title.len() > max_length {
+            return Err(format!("Title exceeds maximum length of {}", max_length));
+        }
+        if self.description.len() > max_length {
+            return Err(format!("Description exceeds maximum length of {}", max_length));
+        }
+        if self.logo.len() > max_length {
+            return Err(format!("Logo exceeds maximum length of {}", max_length));
+        }
+        if self.subtitle.len() > max_length {
+            return Err(format!("Subtitle exceeds maximum length of {}", max_length));
+        }
+        Ok(())
+    }
+}
+
 #[utoipa::path(
     get,
     path = "/",
     params(OgParams),
     responses(
         (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
+        (status = 400, description = "Invalid input - field exceeds maximum length"),
         (status = 500, description = "Failed to generate image")
     ),
     tag = "image"
@@ -54,6 +74,16 @@ pub async fn generate(
     State(state): State<AppState>,
     Query(params): Query<OgParams>,
 ) -> impl IntoResponse {
+    // Validate input lengths
+    if let Err(err) = params.validate(state.max_input_length) {
+        tracing::warn!("Input validation failed: {}", err);
+        return (
+            StatusCode::BAD_REQUEST,
+            format!("Invalid input: {}", err),
+        )
+            .into_response();
+    }
+
     tracing::info!("Generating OG image, title: {}", params.title);
 
     // Generate SVG
