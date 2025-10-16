@@ -38,18 +38,17 @@ pub async fn generate(
     let (title, description, subtitle) = params.with_defaults(&state);
 
     // Generate SVG
-    let svg_data =
-        match generator::generate_svg(&title, &description, &subtitle, logo_bytes) {
-            Ok(data) => data,
-            Err(err) => {
-                tracing::error!("Failed to generate SVG: {}", err);
-                return (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("Failed to generate SVG: {}", err),
-                )
-                    .into_response();
-            }
-        };
+    let svg_data = match generator::generate_svg(&title, &description, &subtitle, logo_bytes) {
+        Ok(data) => data,
+        Err(err) => {
+            tracing::error!("Failed to generate SVG: {}", err);
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to generate SVG: {}", err),
+            )
+                .into_response();
+        }
+    };
 
     // Render SVG to PNG
     match generator::render_to_png(&svg_data, &state.fontdb) {

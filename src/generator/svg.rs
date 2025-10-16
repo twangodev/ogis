@@ -27,9 +27,7 @@ pub fn generate_svg(
 
     // Create image replacement map: element ID -> Option<image bytes>
     // None means remove the element, Some means replace with image
-    let image_replacements = HashMap::from([(
-        "ogis_logo".to_string(), logo_image_bytes,
-    )]);
+    let image_replacements = HashMap::from([("ogis_logo".to_string(), logo_image_bytes)]);
 
     let mut state = State::new(text_replacements, image_replacements);
     let mut buf = Vec::new();
