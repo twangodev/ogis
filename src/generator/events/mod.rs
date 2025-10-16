@@ -1,11 +1,9 @@
-mod default;
-mod empty;
-mod end;
-mod start;
+mod handlers;
+pub(crate) mod replacements; // Public within crate for handlers to use
 mod state;
 
-pub use default::handle_default;
-pub use empty::handle_empty;
-pub use end::handle_end;
-pub use start::handle_start;
+// Re-export handlers for backward compatibility
+pub use handlers::{handle_default, handle_empty, handle_end, handle_start};
+
+// Re-export state
 pub use state::State;

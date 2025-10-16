@@ -2,7 +2,7 @@ use quick_xml::Writer;
 use quick_xml::events::Event;
 use std::io::Cursor;
 
-use super::state::State;
+use crate::generator::events::State;
 
 pub fn handle_default(
     e: Event,
