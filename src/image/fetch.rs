@@ -34,19 +34,6 @@ pub async fn fetch_http(
         )));
     }
 
-    // Check Content-Type header for early rejection (before downloading)
-    if let Some(content_type) = response.headers().get("content-type") {
-        let content_type_str = content_type.to_str().unwrap_or("");
-        if !content_type_str.starts_with("image/") {
-            tracing::warn!(
-                "Invalid Content-Type header from {}: {}",
-                parsed.original,
-                content_type_str
-            );
-            return Err(ImageFetchError::InvalidContentType);
-        }
-    }
-
     // Check Content-Length if available to avoid downloading large files
     if let Some(content_length) = response.content_length() {
         if content_length as usize > max_size {
