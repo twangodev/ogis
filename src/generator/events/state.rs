@@ -9,13 +9,25 @@ pub struct State {
 
     /// Map of element IDs to their replacement text values
     pub text_replacements: HashMap<String, String>,
+
+    /// Map of element IDs to their replacement image bytes
+    /// None means remove the element entirely, Some means replace with image
+    pub image_replacements: HashMap<String, Option<Vec<u8>>>,
+
+    /// When set, we're waiting for a <rect> child to define image bounds for this ID
+    pub awaiting_rect_for: Option<String>,
 }
 
 impl State {
-    pub fn new(text_replacements: HashMap<String, String>) -> Self {
+    pub fn new(
+        text_replacements: HashMap<String, String>,
+        image_replacements: HashMap<String, Option<Vec<u8>>>,
+    ) -> Self {
         Self {
             skip_depth: 0,
             text_replacements,
+            image_replacements,
+            awaiting_rect_for: None,
         }
     }
 

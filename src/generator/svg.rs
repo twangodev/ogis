@@ -3,7 +3,7 @@ use quick_xml::{Reader, Writer};
 use std::collections::HashMap;
 use std::io::Cursor;
 
-use super::events::{State, handle_default, handle_end, handle_start};
+use super::events::{State, handle_default, handle_empty, handle_end, handle_start};
 
 const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
 
@@ -11,7 +11,7 @@ pub fn generate_svg(
     title: &str,
     description: &str,
     subtitle: &str,
-    _logo_image_base64: Option<&str>,
+    logo_image_bytes: Option<Vec<u8>>,
 ) -> Result<String, String> {
     let mut reader = Reader::from_str(DEFAULT_TEMPLATE);
     reader.config_mut().trim_text(false);
@@ -25,13 +25,20 @@ pub fn generate_svg(
         ("ogis_subtitle".to_string(), subtitle.to_string()),
     ]);
 
-    let mut state = State::new(text_replacements);
+    // Create image replacement map: element ID -> Option<image bytes>
+    // None means remove the element, Some means replace with image
+    let image_replacements = HashMap::from([(
+        "ogis_logo".to_string(), logo_image_bytes,
+    )]);
+
+    let mut state = State::new(text_replacements, image_replacements);
     let mut buf = Vec::new();
 
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Eof) => break,
             Ok(Event::Start(e)) => handle_start(e, &mut writer, &mut state)?,
+            Ok(Event::Empty(e)) => handle_empty(e, &mut writer, &mut state)?,
             Ok(Event::End(e)) => handle_end(e, &mut writer, &mut state)?,
             Ok(e) => handle_default(e, &mut writer, &state)?,
             Err(e) => return Err(format!("Parse error: {:?}", e)),

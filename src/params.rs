@@ -45,12 +45,12 @@ impl OgParams {
     }
 
     /// Fetch logo image if URL provided, respecting fallback behavior
-    pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<String>, Response> {
+    pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<Vec<u8>>, Response> {
         if let Some(ref url) = self.logo {
             match state.image.fetcher.fetch_image(url).await {
-                Ok(base64) => {
+                Ok(bytes) => {
                     tracing::info!("Successfully fetched logo image from: {}", url);
-                    Ok(Some(base64))
+                    Ok(Some(bytes))
                 }
                 Err(e) => match state.image.fallback {
                     ImageFallbackBehavior::Skip => {

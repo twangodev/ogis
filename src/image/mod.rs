@@ -2,7 +2,6 @@ use reqwest::Client;
 use std::time::Duration;
 
 mod cache;
-mod encode;
 mod error;
 mod fetch;
 mod parse;
@@ -58,7 +57,7 @@ impl ImageFetcher {
         })
     }
 
-    /// Fetch image and convert to base64
+    /// Fetch image as raw bytes
     ///
     /// Pipeline stages:
     /// 1. Check cache (raw bytes)
@@ -66,31 +65,21 @@ impl ImageFetcher {
     /// 3. HTTP fetch with streaming size limit (SSRF protection via GlobalResolver)
     /// 4. Validate content-type
     /// 5. Store in cache (raw bytes)
-    /// 6. Encode to base64 (on-demand)
-    pub async fn fetch_image(&self, url: &str) -> Result<String, ImageFetchError> {
+    pub async fn fetch_image(&self, url: &str) -> Result<Vec<u8>, ImageFetchError> {
         // Stage 0: Check cache first
         if let Some(cached_bytes) = self.cache.get(url).await {
             tracing::debug!("Cache hit for URL: {}", url);
-            return Ok(encode::encode_base64_bytes(&cached_bytes));
+            return Ok(cached_bytes);
         }
 
-        // Stage 1: Parse URL + validate direct IPs
         let parsed = parse::parse_url(url, self.allow_http)?;
-
-        // Stage 2: Fetch HTTP with size validation (GlobalResolver validates hostname IPs)
         let fetched = fetch::fetch_http(parsed, &self.client, self.max_size).await?;
-
-        // Stage 3: Validate content-type
         let validated_bytes = validate::validate_content_type(fetched)?;
 
-        // Stage 4: Store raw bytes in cache
         self.cache
             .insert(url.to_string(), validated_bytes.clone())
             .await;
 
-        // Stage 5: Encode to base64 on-demand
-        let base64 = encode::encode_base64_bytes(&validated_bytes);
-
-        Ok(base64)
+        Ok(validated_bytes)
     }
 }

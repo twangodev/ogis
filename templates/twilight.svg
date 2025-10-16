@@ -10,7 +10,22 @@
   <rect width="100%" height="100%" fill="#0f0f23"/>
   <rect width="100%" height="100%" fill="url(#bgGradient)"/>
 
-  <text id="ogis_logo" x="80" y="100" font-family="sans-serif" font-size="40" font-weight="bold" fill="#667eea">Placeholder Logo</text>
+  <g id="ogis_logo">
+    <rect x="80" y="60" width="400" height="120"
+          fill="none"
+          stroke="#667eea"
+          stroke-width="2"
+          stroke-dasharray="5,5"
+          opacity="0.3"/>
+    <text x="280" y="125"
+          font-family="sans-serif"
+          font-weight="bold"
+          font-size="20"
+          fill="#667eea"
+          text-anchor="middle">
+      Placeholder Logo (400×120)
+    </text>
+  </g>
 
   <!-- Content area on bottom (left side) -->
   <g transform="translate(80, 0)">
