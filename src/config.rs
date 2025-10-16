@@ -1,4 +1,12 @@
-use clap::Parser;
+use clap::{Parser, ValueEnum};
+
+#[derive(Clone, Copy, Debug, ValueEnum)]
+pub enum ImageFallbackBehavior {
+    /// Skip image element if fetch fails
+    Skip,
+    /// Return error if fetch fails
+    Error,
+}
 
 #[derive(Parser)]
 #[command(name = "ogis")]
@@ -40,6 +48,10 @@ pub struct Config {
     /// Allow HTTP (insecure) URLs for logo fetching (HTTPS only by default)
     #[arg(long, default_value = "false", env = "OGIS_ALLOW_HTTP")]
     pub allow_http: bool,
+
+    /// Behavior when image URL fetch fails
+    #[arg(long, default_value = "skip", env = "OGIS_IMAGE_FALLBACK")]
+    pub image_fallback: ImageFallbackBehavior,
 }
 
 impl Config {

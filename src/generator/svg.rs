@@ -10,7 +10,6 @@ const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
 pub fn generate_svg(
     title: &str,
     description: &str,
-    logo: &str,
     subtitle: &str,
     _logo_image_base64: Option<&str>,
 ) -> Result<String, String> {
@@ -23,7 +22,6 @@ pub fn generate_svg(
     let text_replacements = HashMap::from([
         ("ogis_title".to_string(), title.to_string()),
         ("ogis_description".to_string(), description.to_string()),
-        ("ogis_logo".to_string(), logo.to_string()),
         ("ogis_subtitle".to_string(), subtitle.to_string()),
     ]);
 

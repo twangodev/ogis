@@ -11,6 +11,7 @@ pub struct AppState {
     pub fontdb: Arc<usvg::fontdb::Database>,
     pub max_input_length: usize,
     pub image_fetcher: Arc<image::ImageFetcher>,
+    pub image_fallback: config::ImageFallbackBehavior,
 }
 
 #[tokio::main]
@@ -42,6 +43,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         fontdb: Arc::new(fontdb),
         max_input_length: config.max_input_length,
         image_fetcher,
+        image_fallback: config.image_fallback,
     };
 
     let app = routes::create_router(state);
