@@ -6,7 +6,7 @@ use utoipa::OpenApi;
         crate::routes::index::generate,
         crate::routes::health::health_check
     ),
-    components(schemas(crate::routes::index::OgParams)),
+    components(schemas(crate::params::OgParams)),
     info(
         title = "OGIS - Open Graph Image as a Service",
         version = "0.1.0",

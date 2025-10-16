@@ -2,6 +2,7 @@ mod config;
 mod fonts;
 mod generator;
 mod image;
+mod params;
 mod routes;
 
 use std::sync::Arc;

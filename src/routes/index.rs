@@ -1,58 +1,9 @@
-use crate::{AppState, generator};
+use crate::{generator, params::OgParams, AppState};
 use axum::{
     extract::{Query, State},
-    http::{StatusCode, header},
+    http::{header, StatusCode},
     response::IntoResponse,
 };
-use serde::Deserialize;
-use utoipa::{IntoParams, ToSchema};
-
-#[derive(Debug, Deserialize, IntoParams, ToSchema)]
-#[into_params(parameter_in = Query)]
-pub struct OgParams {
-    /// Title text for the image
-    #[serde(default)]
-    pub title: Option<String>,
-    /// Description text for the image
-    #[serde(default)]
-    pub description: Option<String>,
-    /// Subtitle text (above title)
-    #[serde(default)]
-    pub subtitle: Option<String>,
-    /// Optional logo image URL
-    #[serde(default)]
-    pub logo: Option<String>,
-}
-
-impl OgParams {
-    /// Validate input parameters against maximum length
-    fn validate(&self, max_length: usize) -> Result<(), String> {
-        if let Some(ref title) = self.title {
-            if title.len() > max_length {
-                return Err(format!("Title exceeds maximum length of {}", max_length));
-            }
-        }
-        if let Some(ref description) = self.description {
-            if description.len() > max_length {
-                return Err(format!(
-                    "Description exceeds maximum length of {}",
-                    max_length
-                ));
-            }
-        }
-        if let Some(ref subtitle) = self.subtitle {
-            if subtitle.len() > max_length {
-                return Err(format!("Subtitle exceeds maximum length of {}", max_length));
-            }
-        }
-        if let Some(ref logo_url) = self.logo {
-            if logo_url.len() > max_length {
-                return Err(format!("Logo URL exceeds maximum length of {}", max_length));
-            }
-        }
-        Ok(())
-    }
-}
 
 #[utoipa::path(
     get,
@@ -78,68 +29,20 @@ pub async fn generate(
     tracing::info!("Generating OG image with params: {:?}", params);
 
     // Fetch logo image if URL provided
-    let logo_image_base64 = if let Some(ref url) = params.logo {
-        match state.image_fetcher.fetch_image(url).await {
-            Ok(base64) => {
-                tracing::info!("Successfully fetched logo image from: {}", url);
-                Some(base64)
-            }
-            Err(e) => {
-                match state.image_fallback {
-                    crate::config::ImageFallbackBehavior::Skip => {
-                        tracing::warn!(
-                            "Failed to fetch logo from {}: {} - skipping logo element",
-                            url,
-                            e
-                        );
-                        None // Skip logo element
-                    }
-                    crate::config::ImageFallbackBehavior::Error => {
-                        tracing::error!("Failed to fetch logo from {}: {}", url, e);
-                        return (
-                            StatusCode::INTERNAL_SERVER_ERROR,
-                            format!("Failed to fetch logo: {}", e),
-                        )
-                            .into_response();
-                    }
-                }
-            }
-        }
-    } else {
-        None
+    let logo_base64 = match params.fetch_logo(&state).await {
+        Ok(base64) => base64,
+        Err(response) => return response,
     };
 
-    // Check if NO params were provided at all
-    let no_params_provided = params.title.is_none()
-        && params.description.is_none()
-        && params.subtitle.is_none()
-        && params.logo.is_none();
-
-    // Apply defaults only when NO params provided, otherwise use blank
-    let title = if no_params_provided {
-        &state.default_title
-    } else {
-        params.title.as_deref().unwrap_or("")
-    };
-
-    let description = if no_params_provided {
-        &state.default_description
-    } else {
-        params.description.as_deref().unwrap_or("")
-    };
-
-    let subtitle = if no_params_provided {
-        &state.default_subtitle
-    } else {
-        params.subtitle.as_deref().unwrap_or("")
-    };
+    // Apply defaults for missing params
+    let (title, description, subtitle) = params.with_defaults(&state);
 
     // Generate SVG
     let svg_data = match generator::generate_svg(
-        title,
-        description,
-        subtitle,
-        logo_image_base64.as_deref(),
+        &title,
+        &description,
+        &subtitle,
+        logo_base64.as_deref(),
     ) {
         Ok(data) => data,
         Err(err) => {
@@ -152,7 +55,7 @@ pub async fn generate(
         }
     };
 
-    // Render SVG to PNG using resvg (dimensions from SVG)
+    // Render SVG to PNG
     match generator::render_to_png(&svg_data, &state.fontdb) {
         Ok(png_data) => (
             StatusCode::OK,
@@ -161,10 +64,10 @@ pub async fn generate(
         )
             .into_response(),
         Err(err) => {
-            tracing::error!("Failed to generate image: {}", err);
+            tracing::error!("Failed to render PNG: {}", err);
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to generate image: {}", err),
+                format!("Failed to render PNG: {}", err),
             )
                 .into_response()
         }
