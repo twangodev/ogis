@@ -15,8 +15,8 @@ pub fn handle_empty(
         return Ok(());
     }
 
-    // If we're awaiting a rect for image replacement, handle elements inside the group
-    if state.awaiting_rect_for.is_some() {
+    // If we're currently processing an image replacement, handle elements inside the group
+    if state.replacement_id.is_some() {
         return replacements::image::handle_element_inside_image_group(&e, writer, state);
     }
 

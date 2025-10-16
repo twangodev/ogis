@@ -7,15 +7,16 @@ pub struct State {
     /// >0 means we're inside a skipped element (and possibly nested children)
     pub skip_depth: usize,
 
+    /// The ID of the image group currently being replaced
+    /// When set, we're waiting for a <rect> child to define image bounds
+    pub replacement_id: Option<String>,
+
     /// Map of element IDs to their replacement text values
     pub text_replacements: HashMap<String, String>,
 
     /// Map of element IDs to their replacement image bytes
     /// None means remove the element entirely, Some means replace with image
     pub image_replacements: HashMap<String, Option<Vec<u8>>>,
-
-    /// When set, we're waiting for a <rect> child to define image bounds for this ID
-    pub awaiting_rect_for: Option<String>,
 }
 
 impl State {
@@ -27,7 +28,7 @@ impl State {
             skip_depth: 0,
             text_replacements,
             image_replacements,
-            awaiting_rect_for: None,
+            replacement_id: None,
         }
     }
 

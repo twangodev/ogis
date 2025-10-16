@@ -14,7 +14,7 @@ pub fn handle_rect_for_image_replacement(
     writer: &mut Writer<Cursor<Vec<u8>>>,
     state: &mut State,
 ) -> Result<(), String> {
-    let id = state.awaiting_rect_for.as_ref().unwrap();
+    let id = state.replacement_id.as_ref().unwrap();
 
     // Check if we have image bytes for this ID
     if let Some(Some(image_bytes)) = state.image_replacements.get(id) {
@@ -23,8 +23,8 @@ pub fn handle_rect_for_image_replacement(
     }
     // If None or no entry, we remove the entire group (skip remaining children)
 
-    // Clear the awaiting state and start skipping remaining group children
-    state.awaiting_rect_for = None;
+    // Clear the replacement state and start skipping remaining group children
+    state.replacement_id = None;
     state.start_skip();
 
     Ok(())
@@ -55,7 +55,7 @@ pub fn handle_element_inside_image_group(
 pub fn try_start_image_replacement(id_str: &str, state: &mut State) -> bool {
     if state.image_replacements.contains_key(id_str) {
         // Start waiting for the rect child to define image bounds
-        state.awaiting_rect_for = Some(id_str.to_string());
+        state.replacement_id = Some(id_str.to_string());
         true // Don't write the <g> element
     } else {
         false
