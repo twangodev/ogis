@@ -3,7 +3,7 @@ use quick_xml::{Reader, Writer};
 use std::collections::HashMap;
 use std::io::Cursor;
 
-use super::events::{handle_empty, handle_end, handle_start, State};
+use super::events::{State, handle_default, handle_end, handle_start};
 
 const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
 
@@ -34,17 +34,8 @@ pub fn generate_svg(
         match reader.read_event_into(&mut buf) {
             Ok(Event::Eof) => break,
             Ok(Event::Start(e)) => handle_start(e, &mut writer, &mut state)?,
-            Ok(Event::Empty(e)) => handle_empty(e, &mut writer, &mut state)?,
             Ok(Event::End(e)) => handle_end(e, &mut writer, &mut state)?,
-            Ok(e) => {
-                // Handle all other events (Text, Comment, CData, etc.)
-                // Only write if we're not inside a skipped element
-                if !state.is_skipping() {
-                    writer
-                        .write_event(e)
-                        .map_err(|e| format!("Write error: {}", e))?;
-                }
-            }
+            Ok(e) => handle_default(e, &mut writer, &state)?,
             Err(e) => return Err(format!("Parse error: {:?}", e)),
         }
         buf.clear();

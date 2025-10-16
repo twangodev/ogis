@@ -1,5 +1,5 @@
-use quick_xml::events::BytesStart;
 use quick_xml::Writer;
+use quick_xml::events::BytesStart;
 use std::collections::HashMap;
 use std::io::Cursor;
 
