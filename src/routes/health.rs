@@ -10,6 +10,6 @@
     tag = "monitoring"
 )]
 pub async fn health_check() -> &'static str {
-    tracing::debug!("health check endpoint called");
+    tracing::debug!("healthy");
     "ok"
 }

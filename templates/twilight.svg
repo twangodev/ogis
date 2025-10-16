@@ -10,21 +10,21 @@
   <rect width="100%" height="100%" fill="#0f0f23"/>
   <rect width="100%" height="100%" fill="url(#bgGradient)"/>
 
-  <text id="logo-text" x="80" y="100" font-family="sans-serif" font-size="40" font-weight="bold" fill="#667eea">ogis_logo</text>
+  <text id="ogis_logo" x="80" y="100" font-family="sans-serif" font-size="40" font-weight="bold" fill="#667eea">Placeholder Logo</text>
 
   <!-- Content area on bottom (left side) -->
   <g transform="translate(80, 0)">
     <!-- Subtitle -->
-    <text x="0" y="410" font-family="sans-serif" font-size="28" fill="#9ca3af" letter-spacing="2">ogis_subtitle</text>
+    <text id="ogis_subtitle" x="0" y="410" font-family="sans-serif" font-size="28" fill="#9ca3af" letter-spacing="2">Placeholder Subtitle</text>
 
     <!-- Title -->
     <text x="0" y="505" font-family="sans-serif" font-size="80" font-weight="bold" fill="#ffffff">
-      <tspan x="0" dy="0">ogis_title</tspan>
+      <tspan id="ogis_title" x="0" dy="0">Placeholder Title</tspan>
     </text>
 
     <!-- Description -->
     <text x="0" y="560" font-family="sans-serif" font-size="28" fill="#d1d5db">
-      <tspan x="0" dy="0">ogis_description</tspan>
+      <tspan id="ogis_description" x="0" dy="0">Placeholder Description</tspan>
     </text>
   </g>
 </svg>

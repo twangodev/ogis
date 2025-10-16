@@ -114,13 +114,23 @@ pub async fn generate(
     };
 
     // Generate SVG
-    let svg_data = generator::generate_svg(
+    let svg_data = match generator::generate_svg(
         &params.title,
         &params.description,
         &params.logo,
         &params.subtitle,
         logo_image_base64.as_deref(),
-    );
+    ) {
+        Ok(data) => data,
+        Err(err) => {
+            tracing::error!("Failed to generate SVG: {}", err);
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to generate SVG: {}", err),
+            )
+                .into_response();
+        }
+    };
 
     // Render SVG to PNG using resvg (dimensions from SVG)
     match generator::render_to_png(&svg_data, &state.fontdb) {
