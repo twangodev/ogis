@@ -21,12 +21,12 @@ pub fn handle_start(
     // Check if this element has an id we want to replace
     if let Some(id) = get_id_from_element(&e) {
         // Try to apply replacement strategy
-        if apply_replacement(&e, &id, &state.context, writer).is_ok() {
-            // Start skipping all nested content
+        if apply_replacement(&e, &id, &state.text_replacements, writer)? {
+            // Replacement applied, skip all nested content
             state.start_skip();
             return Ok(());
         }
-        // If no replacement found, fall through to write as-is
+        // No replacement found, fall through to write as-is
     }
 
     // Write element as-is

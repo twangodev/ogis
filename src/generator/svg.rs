@@ -1,8 +1,9 @@
 use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
+use std::collections::HashMap;
 use std::io::Cursor;
 
-use super::events::{ReplacementContext, State, handle_empty, handle_end, handle_start};
+use super::events::{handle_empty, handle_end, handle_start, State};
 
 const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
 
@@ -11,16 +12,22 @@ pub fn generate_svg(
     description: &str,
     logo: &str,
     subtitle: &str,
-    logo_image_base64: Option<&str>,
+    _logo_image_base64: Option<&str>,
 ) -> Result<String, String> {
     let mut reader = Reader::from_str(DEFAULT_TEMPLATE);
     reader.config_mut().trim_text(false);
 
     let mut writer = Writer::new(Cursor::new(Vec::new()));
 
-    // Create replacement context with all the data needed for replacements
-    let context = ReplacementContext::new(title, description, logo, subtitle, logo_image_base64);
-    let mut state = State::new(context);
+    // Create text replacement map: element ID -> replacement text
+    let text_replacements = HashMap::from([
+        ("ogis_title".to_string(), title.to_string()),
+        ("ogis_description".to_string(), description.to_string()),
+        ("ogis_logo".to_string(), logo.to_string()),
+        ("ogis_subtitle".to_string(), subtitle.to_string()),
+    ]);
+
+    let mut state = State::new(text_replacements);
     let mut buf = Vec::new();
 
     loop {

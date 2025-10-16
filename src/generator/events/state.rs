@@ -1,47 +1,21 @@
-/// Context data available for replacements
-#[derive(Clone)]
-pub struct ReplacementContext<'a> {
-    pub title: &'a str,
-    pub description: &'a str,
-    pub logo: &'a str,
-    pub subtitle: &'a str,
-    pub logo_image_base64: Option<&'a str>,
-}
-
-impl<'a> ReplacementContext<'a> {
-    pub fn new(
-        title: &'a str,
-        description: &'a str,
-        logo: &'a str,
-        subtitle: &'a str,
-        logo_image_base64: Option<&'a str>,
-    ) -> Self {
-        Self {
-            title,
-            description,
-            logo,
-            subtitle,
-            logo_image_base64,
-        }
-    }
-}
+use std::collections::HashMap;
 
 /// State for tracking SVG processing
-pub struct State<'a> {
+pub struct State {
     /// Tracks how deep we are inside a skipped/replaced element
     /// 0 means we're not inside any skipped element
     /// >0 means we're inside a skipped element (and possibly nested children)
     pub skip_depth: usize,
 
-    /// Context data for replacements (title, description, etc.)
-    pub context: ReplacementContext<'a>,
+    /// Map of element IDs to their replacement text values
+    pub text_replacements: HashMap<String, String>,
 }
 
-impl<'a> State<'a> {
-    pub fn new(context: ReplacementContext<'a>) -> Self {
+impl State {
+    pub fn new(text_replacements: HashMap<String, String>) -> Self {
         Self {
             skip_depth: 0,
-            context,
+            text_replacements,
         }
     }
 
