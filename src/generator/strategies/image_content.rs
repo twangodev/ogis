@@ -2,7 +2,7 @@ use quick_xml::Writer;
 use quick_xml::events::{BytesStart, Event};
 use std::io::Cursor;
 
-use crate::generator::utils::get_attr;
+use crate::generator::utils::{get_attr, write_event};
 
 /// Strategy for replacing a group element with an SVG <image> element
 ///
@@ -48,9 +48,5 @@ pub fn replace(
     image_elem.push_attribute(("href", data_uri.as_str()));
 
     // Write self-closing <image/> element
-    writer
-        .write_event(Event::Empty(image_elem))
-        .map_err(|e| format!("Write error: {}", e))?;
-
-    Ok(())
+    write_event(writer, Event::Empty(image_elem))
 }

@@ -3,6 +3,7 @@ use quick_xml::events::{BytesEnd, Event};
 use std::io::Cursor;
 
 use crate::generator::events::State;
+use crate::generator::utils::write_event;
 
 /// Handles Event::End (closing tags like `</g>`)
 pub fn handle_end(
@@ -17,9 +18,5 @@ pub fn handle_end(
     }
 
     // Write closing tag as-is
-    writer
-        .write_event(Event::End(e))
-        .map_err(|e| format!("Write error: {}", e))?;
-
-    Ok(())
+    write_event(writer, Event::End(e))
 }

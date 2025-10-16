@@ -4,7 +4,7 @@ use std::io::Cursor;
 
 use crate::generator::events::{State, replacements};
 use crate::generator::strategies::apply_text_replacement;
-use crate::generator::utils::get_id_from_element;
+use crate::generator::utils::{get_id_from_element, write_event};
 
 /// Handles Event::Start (opening tags like `<g id="logo">`)
 pub fn handle_start(
@@ -38,7 +38,5 @@ pub fn handle_start(
     }
 
     // Write element as-is
-    writer
-        .write_event(Event::Start(e))
-        .map_err(|e| format!("Write error: {}", e))
+    write_event(writer, Event::Start(e))
 }

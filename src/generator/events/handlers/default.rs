@@ -3,6 +3,7 @@ use quick_xml::events::Event;
 use std::io::Cursor;
 
 use crate::generator::events::State;
+use crate::generator::utils::write_event;
 
 pub fn handle_default(
     e: Event,
@@ -11,9 +12,7 @@ pub fn handle_default(
 ) -> Result<(), String> {
     // Only write if we're not inside a skipped element
     if !state.is_skipping() {
-        writer
-            .write_event(e)
-            .map_err(|e| format!("Write error: {}", e))?;
+        write_event(writer, e)?;
     }
 
     Ok(())

@@ -3,6 +3,7 @@ use quick_xml::events::{BytesStart, Event};
 use std::io::Cursor;
 
 use crate::generator::events::{State, replacements};
+use crate::generator::utils::write_event;
 
 /// Handles Event::Empty (self-closing tags like `<rect ... />`)
 pub fn handle_empty(
@@ -21,7 +22,5 @@ pub fn handle_empty(
     }
 
     // Write element as-is
-    writer
-        .write_event(Event::Empty(e))
-        .map_err(|e| format!("Write error: {}", e))
+    write_event(writer, Event::Empty(e))
 }

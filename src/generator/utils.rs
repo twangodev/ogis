@@ -1,4 +1,6 @@
-use quick_xml::events::BytesStart;
+use quick_xml::Writer;
+use quick_xml::events::{BytesStart, Event};
+use std::io::Cursor;
 
 /// Get an attribute value from an element as a String
 ///
@@ -18,4 +20,13 @@ pub fn get_attr(elem: &BytesStart, attr_name: &str) -> Result<String, String> {
 /// Returns None if the element has no id attribute or if it contains invalid UTF-8
 pub fn get_id_from_element(element: &BytesStart) -> Option<String> {
     get_attr(element, "id").ok()
+}
+
+/// Write an XML event to the writer with proper error handling
+///
+/// Converts quick-xml write errors into descriptive error messages
+pub fn write_event(writer: &mut Writer<Cursor<Vec<u8>>>, event: Event) -> Result<(), String> {
+    writer
+        .write_event(event)
+        .map_err(|e| format!("Write error: {}", e))
 }
