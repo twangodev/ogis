@@ -25,15 +25,13 @@ pub fn handle_start(
 
     // Check if this element has an id we want to replace
     if let Some(id) = get_id_from_element(&e) {
-        let id_str = String::from_utf8_lossy(&id);
-
         // Try image replacement first (for group elements)
-        if replacements::image::try_start_image_replacement(&id_str, state) {
+        if replacements::image::try_start_image_replacement(&id, state) {
             return Ok(());
         }
 
-        // Try text replacement
-        if apply_text_replacement(&e, &id, &state.text_replacements, writer)? {
+        // Try text replacement (needs bytes for now)
+        if apply_text_replacement(&e, id.as_bytes(), &state.text_replacements, writer)? {
             state.start_skip();
             return Ok(());
         }
