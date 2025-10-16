@@ -8,11 +8,13 @@ axum = "0.8.6"
 base64 = "0.22"
 clap = { version = "4.5.49", features = ["derive", "env"] }
 dotenvy = "0.15.7"
+futures-util = "0.3.31"
+hickory-resolver = "0.25.2"
 infer = "0.16"
 ip_rfc = "0.1.0"
 moka = { version = "0.12", features = ["future"] }
 quick-xml = "0.38.3"
-reqwest = { version = "0.12", features = ["default-tls"] }
+reqwest = { version = "0.12", features = ["default-tls", "stream"] }
 resvg = "0.45.1"
 saphyr = "0.0.6"
 serde = { version = "1.0.228", features = ["derive"] }

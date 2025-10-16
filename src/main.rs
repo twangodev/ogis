@@ -1,7 +1,7 @@
 mod config;
 mod fonts;
 mod generator;
-mod image_fetcher;
+mod image;
 mod routes;
 
 use std::sync::Arc;
@@ -10,7 +10,7 @@ use std::sync::Arc;
 pub struct AppState {
     pub fontdb: Arc<usvg::fontdb::Database>,
     pub max_input_length: usize,
-    pub image_fetcher: Arc<image_fetcher::ImageFetcher>,
+    pub image_fetcher: Arc<image::ImageFetcher>,
 }
 
 #[tokio::main]
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let fontdb = fonts::load_fonts();
 
     // Initialize image fetcher with SSRF protection
-    let image_fetcher = Arc::new(image_fetcher::ImageFetcher::new(
+    let image_fetcher = Arc::new(image::ImageFetcher::new(
         config.logo_connect_timeout_secs,
         config.logo_total_timeout_secs,
         config.logo_max_size_bytes,
