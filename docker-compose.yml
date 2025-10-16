@@ -1,0 +1,11 @@
+services:
+  ogis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ogis
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
