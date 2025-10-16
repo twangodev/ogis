@@ -1,3 +1,4 @@
+mod handlers;
 mod png;
 mod svg;
 
