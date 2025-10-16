@@ -78,31 +78,23 @@ impl OgParams {
 
     /// Apply defaults for missing parameters
     pub fn with_defaults(&self, state: &AppState) -> (String, String, String) {
-        // Check if NO params were provided at all
-        let no_params_provided = self.title.is_none()
+        let no_params = self.title.is_none()
             && self.description.is_none()
             && self.subtitle.is_none()
             && self.logo.is_none();
 
-        // Apply defaults only when NO params provided, otherwise use blank
-        let title = if no_params_provided {
-            state.default_title.clone()
-        } else {
-            self.title.clone().unwrap_or_default()
+        let get = |param: &Option<String>, default: &str| {
+            if no_params {
+                default.to_string()
+            } else {
+                param.clone().unwrap_or_default()
+            }
         };
 
-        let description = if no_params_provided {
-            state.default_description.clone()
-        } else {
-            self.description.clone().unwrap_or_default()
-        };
-
-        let subtitle = if no_params_provided {
-            state.default_subtitle.clone()
-        } else {
-            self.subtitle.clone().unwrap_or_default()
-        };
-
-        (title, description, subtitle)
+        (
+            get(&self.title, &state.default_title),
+            get(&self.description, &state.default_description),
+            get(&self.subtitle, &state.default_subtitle),
+        )
     }
 }
