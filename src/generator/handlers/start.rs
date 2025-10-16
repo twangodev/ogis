@@ -1,5 +1,5 @@
-use quick_xml::events::{BytesStart, Event};
 use quick_xml::Writer;
+use quick_xml::events::{BytesStart, Event};
 use std::io::Cursor;
 
 use super::state::State;
@@ -37,9 +37,7 @@ pub fn handle_start(
 fn should_replace_element(e: &BytesStart) -> bool {
     e.attributes()
         .filter_map(|a| a.ok())
-        .any(|attr| {
-            attr.key.as_ref() == b"id" && is_target_id(&attr.value)
-        })
+        .any(|attr| attr.key.as_ref() == b"id" && is_target_id(&attr.value))
 }
 
 /// Check if an id value is one we want to replace
@@ -57,8 +55,7 @@ fn write_replacement(
 ) -> Result<(), String> {
     // For now, just write an empty placeholder
     // You can customize this to write your actual replacement content
-    let replacement = BytesStart::new("g")
-        .with_attributes(vec![("id", "replaced")]);
+    let replacement = BytesStart::new("g").with_attributes(vec![("id", "replaced")]);
 
     writer
         .write_event(Event::Empty(replacement))

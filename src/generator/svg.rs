@@ -2,7 +2,7 @@ use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
 use std::io::Cursor;
 
-use super::handlers::{State, handle_start, handle_empty, handle_end};
+use super::handlers::{State, handle_empty, handle_end, handle_start};
 
 const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
 

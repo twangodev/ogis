@@ -1,5 +1,5 @@
-use quick_xml::events::{BytesEnd, Event};
 use quick_xml::Writer;
+use quick_xml::events::{BytesEnd, Event};
 use std::io::Cursor;
 
 use super::state::State;
