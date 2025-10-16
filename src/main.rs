@@ -35,6 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         config.logo_cache_size,
         config.logo_cache_ttl_secs,
         config.logo_max_redirects,
+        config.allow_http,
     )?);
 
     let state = AppState {

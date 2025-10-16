@@ -18,6 +18,7 @@ pub struct ImageFetcher {
     client: Client,
     cache: ImageCache,
     max_size: usize,
+    allow_http: bool,
 }
 
 impl ImageFetcher {
@@ -28,6 +29,7 @@ impl ImageFetcher {
         cache_size: u64,
         cache_ttl_secs: u64,
         max_redirects: usize,
+        allow_http: bool,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         // Create global-only DNS resolver (SSRF protection)
         let resolver = GlobalResolver::new()?;
@@ -43,12 +45,16 @@ impl ImageFetcher {
         // Initialize cache
         let cache = ImageCache::new(cache_size, cache_ttl_secs);
 
-        tracing::info!("ImageFetcher initialized with GlobalResolver (SSRF protection)");
+        tracing::info!(
+            "ImageFetcher initialized with GlobalResolver (SSRF protection), HTTP allowed: {}",
+            allow_http
+        );
 
         Ok(Self {
             client,
             cache,
             max_size,
+            allow_http,
         })
     }
 
@@ -69,7 +75,7 @@ impl ImageFetcher {
         }
 
         // Stage 1: Parse URL + validate direct IPs
-        let parsed = parse::parse_url(url)?;
+        let parsed = parse::parse_url(url, self.allow_http)?;
 
         // Stage 2: Fetch HTTP with size validation (GlobalResolver validates hostname IPs)
         let fetched = fetch::fetch_http(parsed, &self.client, self.max_size).await?;

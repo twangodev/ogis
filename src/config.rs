@@ -36,6 +36,10 @@ pub struct Config {
     /// Maximum redirects to follow for logo URLs
     #[arg(long, default_value = "3", env = "OGIS_LOGO_MAX_REDIRECTS")]
     pub logo_max_redirects: usize,
+
+    /// Allow HTTP (insecure) URLs for logo fetching (HTTPS only by default)
+    #[arg(long, default_value = "false", env = "OGIS_ALLOW_HTTP")]
+    pub allow_http: bool,
 }
 
 impl Config {

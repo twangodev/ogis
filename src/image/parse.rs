@@ -11,17 +11,30 @@ pub struct ParsedUrl {
 }
 
 /// Stage 1: Parse and validate URL scheme + check for direct IPs
-pub fn parse_url(url: &str) -> Result<ParsedUrl, ImageFetchError> {
+pub fn parse_url(url: &str, allow_http: bool) -> Result<ParsedUrl, ImageFetchError> {
     // Parse URL
     let parsed = Url::parse(url)
         .map_err(|e| ImageFetchError::InvalidUrl(format!("Failed to parse URL: {}", e)))?;
 
-    // Only allow HTTP/HTTPS
-    if !matches!(parsed.scheme(), "http" | "https") {
-        return Err(ImageFetchError::InvalidUrl(format!(
-            "Only http/https schemes allowed, got: {}",
-            parsed.scheme()
-        )));
+    // Validate scheme
+    match parsed.scheme() {
+        "https" => {
+            // HTTPS always allowed
+        }
+        "http" => {
+            if !allow_http {
+                return Err(ImageFetchError::InvalidUrl(
+                    "HTTP URLs not allowed. Use HTTPS or enable --allow-http flag".to_string(),
+                ));
+            }
+            tracing::warn!("Fetching image over insecure HTTP: {}", url);
+        }
+        scheme => {
+            return Err(ImageFetchError::InvalidUrl(format!(
+                "Only http/https schemes allowed, got: {}",
+                scheme
+            )));
+        }
     }
 
     // SSRF Protection: Check if URL contains a direct IP address
