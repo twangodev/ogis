@@ -12,6 +12,9 @@ pub struct AppState {
     pub max_input_length: usize,
     pub image_fetcher: Arc<image::ImageFetcher>,
     pub image_fallback: config::ImageFallbackBehavior,
+    pub default_title: String,
+    pub default_description: String,
+    pub default_subtitle: String,
 }
 
 #[tokio::main]
@@ -44,6 +47,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         max_input_length: config.max_input_length,
         image_fetcher,
         image_fallback: config.image_fallback,
+        default_title: config.default_title,
+        default_description: config.default_description,
+        default_subtitle: config.default_subtitle,
     };
 
     let app = routes::create_router(state);

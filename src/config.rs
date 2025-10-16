@@ -52,6 +52,18 @@ pub struct Config {
     /// Behavior when image URL fetch fails
     #[arg(long, default_value = "skip", env = "OGIS_IMAGE_FALLBACK")]
     pub image_fallback: ImageFallbackBehavior,
+
+    /// Default title when not provided
+    #[arg(long, default_value = "Open Graph Images", env = "OGIS_DEFAULT_TITLE")]
+    pub default_title: String,
+
+    /// Default description when not provided
+    #[arg(long, default_value = "A fast, free, and beautiful platform for open graph image generation", env = "OGIS_DEFAULT_DESCRIPTION")]
+    pub default_description: String,
+
+    /// Default subtitle when not provided
+    #[arg(long, default_value = "img.ogis.dev", env = "OGIS_DEFAULT_SUBTITLE")]
+    pub default_subtitle: String,
 }
 
 impl Config {

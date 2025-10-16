@@ -11,45 +11,39 @@ use utoipa::{IntoParams, ToSchema};
 #[into_params(parameter_in = Query)]
 pub struct OgParams {
     /// Title text for the image
-    #[serde(default = "default_title")]
-    pub title: String,
+    #[serde(default)]
+    pub title: Option<String>,
     /// Description text for the image
-    #[serde(default = "default_description")]
-    pub description: String,
+    #[serde(default)]
+    pub description: Option<String>,
     /// Subtitle text (above title)
-    #[serde(default = "default_subtitle")]
-    pub subtitle: String,
+    #[serde(default)]
+    pub subtitle: Option<String>,
     /// Optional logo image URL
     #[serde(default)]
     pub logo: Option<String>,
 }
 
-fn default_title() -> String {
-    "Open Graph Image".to_string()
-}
-
-fn default_description() -> String {
-    "Generated with OGIS".to_string()
-}
-
-fn default_subtitle() -> String {
-    String::new()
-}
-
 impl OgParams {
     /// Validate input parameters against maximum length
     fn validate(&self, max_length: usize) -> Result<(), String> {
-        if self.title.len() > max_length {
-            return Err(format!("Title exceeds maximum length of {}", max_length));
+        if let Some(ref title) = self.title {
+            if title.len() > max_length {
+                return Err(format!("Title exceeds maximum length of {}", max_length));
+            }
         }
-        if self.description.len() > max_length {
-            return Err(format!(
-                "Description exceeds maximum length of {}",
-                max_length
-            ));
+        if let Some(ref description) = self.description {
+            if description.len() > max_length {
+                return Err(format!(
+                    "Description exceeds maximum length of {}",
+                    max_length
+                ));
+            }
         }
-        if self.subtitle.len() > max_length {
-            return Err(format!("Subtitle exceeds maximum length of {}", max_length));
+        if let Some(ref subtitle) = self.subtitle {
+            if subtitle.len() > max_length {
+                return Err(format!("Subtitle exceeds maximum length of {}", max_length));
+            }
         }
         if let Some(ref logo_url) = self.logo {
             if logo_url.len() > max_length {
@@ -115,11 +109,36 @@ pub async fn generate(
         None
     };
 
+    // Check if NO params were provided at all
+    let no_params_provided = params.title.is_none()
+        && params.description.is_none()
+        && params.subtitle.is_none()
+        && params.logo.is_none();
+
+    // Apply defaults only when NO params provided, otherwise use blank
+    let title = if no_params_provided {
+        &state.default_title
+    } else {
+        params.title.as_deref().unwrap_or("")
+    };
+
+    let description = if no_params_provided {
+        &state.default_description
+    } else {
+        params.description.as_deref().unwrap_or("")
+    };
+
+    let subtitle = if no_params_provided {
+        &state.default_subtitle
+    } else {
+        params.subtitle.as_deref().unwrap_or("")
+    };
+
     // Generate SVG
     let svg_data = match generator::generate_svg(
-        &params.title,
-        &params.description,
-        &params.subtitle,
+        title,
+        description,
+        subtitle,
         logo_image_base64.as_deref(),
     ) {
         Ok(data) => data,
