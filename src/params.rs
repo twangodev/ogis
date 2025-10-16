@@ -47,12 +47,12 @@ impl OgParams {
     /// Fetch logo image if URL provided, respecting fallback behavior
     pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<String>, Response> {
         if let Some(ref url) = self.logo {
-            match state.image_fetcher.fetch_image(url).await {
+            match state.image.fetcher.fetch_image(url).await {
                 Ok(base64) => {
                     tracing::info!("Successfully fetched logo image from: {}", url);
                     Ok(Some(base64))
                 }
-                Err(e) => match state.image_fallback {
+                Err(e) => match state.image.fallback {
                     ImageFallbackBehavior::Skip => {
                         tracing::warn!(
                             "Failed to fetch logo from {}: {} - skipping logo element",
@@ -92,9 +92,9 @@ impl OgParams {
         };
 
         (
-            get(&self.title, &state.default_title),
-            get(&self.description, &state.default_description),
-            get(&self.subtitle, &state.default_subtitle),
+            get(&self.title, &state.defaults.title),
+            get(&self.description, &state.defaults.description),
+            get(&self.subtitle, &state.defaults.subtitle),
         )
     }
 }
