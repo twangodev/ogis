@@ -58,7 +58,11 @@ pub struct Config {
     pub default_title: String,
 
     /// Default description when not provided
-    #[arg(long, default_value = "A fast, free, and beautiful platform for open graph image generation", env = "OGIS_DEFAULT_DESCRIPTION")]
+    #[arg(
+        long,
+        default_value = "A fast, free, and beautiful platform for open graph image generation",
+        env = "OGIS_DEFAULT_DESCRIPTION"
+    )]
     pub default_description: String,
 
     /// Default subtitle when not provided

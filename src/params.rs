@@ -3,8 +3,8 @@ use axum::response::{IntoResponse, Response};
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 
-use crate::config::ImageFallbackBehavior;
 use crate::AppState;
+use crate::config::ImageFallbackBehavior;
 
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
@@ -45,10 +45,7 @@ impl OgParams {
     }
 
     /// Fetch logo image if URL provided, respecting fallback behavior
-    pub async fn fetch_logo(
-        &self,
-        state: &AppState,
-    ) -> Result<Option<String>, Response> {
+    pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<String>, Response> {
         if let Some(ref url) = self.logo {
             match state.image_fetcher.fetch_image(url).await {
                 Ok(base64) => {

@@ -81,15 +81,15 @@ impl ImageFetcher {
         let fetched = fetch::fetch_http(parsed, &self.client, self.max_size).await?;
 
         // Stage 3: Validate content-type
-        let validated = validate::validate_content_type(fetched)?;
+        let validated_bytes = validate::validate_content_type(fetched)?;
 
         // Stage 4: Store raw bytes in cache
         self.cache
-            .insert(url.to_string(), validated.bytes.clone())
+            .insert(url.to_string(), validated_bytes.clone())
             .await;
 
         // Stage 5: Encode to base64 on-demand
-        let base64 = encode::encode_base64_bytes(&validated.bytes);
+        let base64 = encode::encode_base64_bytes(&validated_bytes);
 
         Ok(base64)
     }
