@@ -1,3 +1,9 @@
-sans-serif: "fonts/Roboto.ttf"
-serif: "fonts/NotoSerif.ttf"
-monospace: "fonts/JetBrainsMono.ttf"
+sans-serif:
+  - "fonts/Roboto.ttf"
+  - "fonts/NotoSans-Regular.ttf"
+  - "fonts/NotoSansCJK-Medium.ttc"
+  - "fonts/NotoSansArabic-Regular.ttf"
+serif:
+  - "fonts/NotoSerif.ttf"
+monospace:
+  - "fonts/JetBrainsMono.ttf"
