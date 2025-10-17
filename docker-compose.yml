@@ -7,6 +7,10 @@ services:
     container_name: ogis
     ports:
       - "3000:3000"
+    volumes:
+      - ./fonts:/app/fonts:ro
+      - ./fonts.yaml:/app/fonts.yaml:ro
+      - ./templates:/app/templates:ro
     env_file:
       - .env
     restart: unless-stopped

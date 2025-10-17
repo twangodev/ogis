@@ -13,8 +13,6 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY --from=builder /app/target/release/ogis .
-COPY fonts ./fonts
-COPY fonts.yaml .
 
 EXPOSE 3000
 
