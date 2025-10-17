@@ -1,4 +1,5 @@
 # Replace http://, https:// with your domain for automatic Let's Encrypt
+# Usage: docker compose -f docker-compose.yml -f docker-compose.caddy.yml up
 
 http://, https:// {
     # Uncomment if using self-signed certificates
