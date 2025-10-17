@@ -1,0 +1,32 @@
+# Optional Caddy reverse proxy configuration
+# Usage: docker compose -f docker-compose.yml -f docker-compose.caddy.yml up
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: ogis-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    networks:
+      - ogis-network
+    depends_on:
+      - ogis
+
+  ogis:
+    ports: []
+    expose:
+      - "3000"
+    networks:
+      - ogis-network
+
+networks:
+  ogis-network:
+    driver: bridge
+
+volumes:
+  caddy_data:

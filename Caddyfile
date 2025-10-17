@@ -1,0 +1,11 @@
+# Caddy reverse proxy configuration for ogis
+#
+# Replace :80, :443 with your domain (e.g., example.com) for automatic Let's Encrypt
+
+:80, :443 {
+    # Uncomment for self-signed certificates
+    # tls internal
+
+    reverse_proxy ogis:3000
+    encode gzip
+}
