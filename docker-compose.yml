@@ -1,5 +1,6 @@
 services:
   ogis:
+    image: twango/ogis:latest
     build:
       context: .
       dockerfile: Dockerfile
