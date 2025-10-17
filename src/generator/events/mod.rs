@@ -6,4 +6,4 @@ mod state;
 pub use handlers::{handle_default, handle_empty, handle_end, handle_start};
 
 // Re-export state types
-pub use state::{State, ImageReplacement};
+pub use state::{ImageReplacement, State};

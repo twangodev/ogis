@@ -19,7 +19,12 @@ pub fn handle_rect_for_image_replacement(
     // Check if we have image data for this ID
     if let Some(Some(image_replacement)) = state.image_replacements.get(id) {
         // Replace with image element using rect's positioning attributes
-        image_content::replace(rect, &image_replacement.bytes, &image_replacement.mime_type, writer)?;
+        image_content::replace(
+            rect,
+            &image_replacement.bytes,
+            &image_replacement.mime_type,
+            writer,
+        )?;
     }
     // If None or no entry, we remove the entire group (skip remaining children)
 

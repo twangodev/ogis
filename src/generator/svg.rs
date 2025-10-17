@@ -3,7 +3,9 @@ use quick_xml::{Reader, Writer};
 use std::collections::HashMap;
 use std::io::Cursor;
 
-use super::events::{State, ImageReplacement, handle_default, handle_empty, handle_end, handle_start};
+use super::events::{
+    ImageReplacement, State, handle_default, handle_empty, handle_end, handle_start,
+};
 use crate::image::ValidatedImage;
 
 const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
