@@ -3,7 +3,8 @@ use quick_xml::{Reader, Writer};
 use std::collections::HashMap;
 use std::io::Cursor;
 
-use super::events::{State, handle_default, handle_empty, handle_end, handle_start};
+use super::events::{State, ImageReplacement, handle_default, handle_empty, handle_end, handle_start};
+use crate::image::ValidatedImage;
 
 const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
 
@@ -11,7 +12,8 @@ pub fn generate_svg(
     title: &str,
     description: &str,
     subtitle: &str,
-    logo_image_bytes: Option<Vec<u8>>,
+    logo: Option<ValidatedImage>,
+    image: Option<ValidatedImage>,
 ) -> Result<String, String> {
     let mut reader = Reader::from_str(DEFAULT_TEMPLATE);
     reader.config_mut().trim_text(false);
@@ -25,9 +27,22 @@ pub fn generate_svg(
         ("ogis_subtitle".to_string(), subtitle.to_string()),
     ]);
 
-    // Create image replacement map: element ID -> Option<image bytes>
+    // Convert ValidatedImage to ImageReplacement
+    let logo_replacement = logo.map(|v| ImageReplacement {
+        bytes: v.bytes,
+        mime_type: v.mime_type,
+    });
+    let image_replacement = image.map(|v| ImageReplacement {
+        bytes: v.bytes,
+        mime_type: v.mime_type,
+    });
+
+    // Create image replacement map: element ID -> Option<ImageReplacement>
     // None means remove the element, Some means replace with image
-    let image_replacements = HashMap::from([("ogis_logo".to_string(), logo_image_bytes)]);
+    let image_replacements = HashMap::from([
+        ("ogis_logo".to_string(), logo_replacement),
+        ("ogis_image".to_string(), image_replacement),
+    ]);
 
     let mut state = State::new(text_replacements, image_replacements);
     let mut buf = Vec::new();

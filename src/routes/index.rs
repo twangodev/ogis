@@ -29,8 +29,14 @@ pub async fn generate(
     tracing::info!("Generating OG image with params: {:?}", params);
 
     // Fetch logo image if URL provided
-    let logo_bytes = match params.fetch_logo(&state).await {
-        Ok(bytes) => bytes,
+    let logo = match params.fetch_logo(&state).await {
+        Ok(img) => img,
+        Err(response) => return response,
+    };
+
+    // Fetch custom image if URL provided
+    let image = match params.fetch_image(&state).await {
+        Ok(img) => img,
         Err(response) => return response,
     };
 
@@ -38,7 +44,7 @@ pub async fn generate(
     let (title, description, subtitle) = params.with_defaults(&state);
 
     // Generate SVG
-    let svg_data = match generator::generate_svg(&title, &description, &subtitle, logo_bytes) {
+    let svg_data = match generator::generate_svg(&title, &description, &subtitle, logo, image) {
         Ok(data) => data,
         Err(err) => {
             tracing::error!("Failed to generate SVG: {}", err);

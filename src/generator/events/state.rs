@@ -1,5 +1,10 @@
 use std::collections::HashMap;
 
+pub struct ImageReplacement {
+    pub bytes: Vec<u8>,
+    pub mime_type: String,
+}
+
 /// State for tracking SVG processing
 pub struct State {
     /// Tracks how deep we are inside a skipped/replaced element
@@ -14,15 +19,15 @@ pub struct State {
     /// Map of element IDs to their replacement text values
     pub text_replacements: HashMap<String, String>,
 
-    /// Map of element IDs to their replacement image bytes
+    /// Map of element IDs to their replacement images
     /// None means remove the element entirely, Some means replace with image
-    pub image_replacements: HashMap<String, Option<Vec<u8>>>,
+    pub image_replacements: HashMap<String, Option<ImageReplacement>>,
 }
 
 impl State {
     pub fn new(
         text_replacements: HashMap<String, String>,
-        image_replacements: HashMap<String, Option<Vec<u8>>>,
+        image_replacements: HashMap<String, Option<ImageReplacement>>,
     ) -> Self {
         Self {
             skip_depth: 0,

@@ -5,6 +5,7 @@ use utoipa::{IntoParams, ToSchema};
 
 use crate::AppState;
 use crate::config::ImageFallbackBehavior;
+use crate::image::ValidatedImage;
 
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
@@ -21,6 +22,9 @@ pub struct OgParams {
     /// Optional logo image URL
     #[serde(default)]
     pub logo: Option<String>,
+    /// Optional custom image URL
+    #[serde(default)]
+    pub image: Option<String>,
 }
 
 impl OgParams {
@@ -31,6 +35,7 @@ impl OgParams {
             ("Description", &self.description),
             ("Subtitle", &self.subtitle),
             ("Logo URL", &self.logo),
+            ("Image URL", &self.image),
         ];
 
         for (name, field) in fields {
@@ -45,27 +50,44 @@ impl OgParams {
     }
 
     /// Fetch logo image if URL provided, respecting fallback behavior
-    pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<Vec<u8>>, Response> {
-        if let Some(ref url) = self.logo {
+    pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<ValidatedImage>, Response> {
+        self.fetch_image_from_url(&self.logo, "logo", state).await
+    }
+
+    /// Fetch custom image if URL provided, respecting fallback behavior
+    pub async fn fetch_image(&self, state: &AppState) -> Result<Option<ValidatedImage>, Response> {
+        self.fetch_image_from_url(&self.image, "image", state).await
+    }
+
+    /// Helper to fetch an image from a URL with error handling
+    async fn fetch_image_from_url(
+        &self,
+        url_option: &Option<String>,
+        name: &str,
+        state: &AppState,
+    ) -> Result<Option<ValidatedImage>, Response> {
+        if let Some(url) = url_option {
             match state.image.fetcher.fetch_image(url).await {
-                Ok(bytes) => {
-                    tracing::info!("Successfully fetched logo image from: {}", url);
-                    Ok(Some(bytes))
+                Ok(validated) => {
+                    tracing::info!("Successfully fetched {} from: {}", name, url);
+                    Ok(Some(validated))
                 }
                 Err(e) => match state.image.fallback {
                     ImageFallbackBehavior::Skip => {
                         tracing::warn!(
-                            "Failed to fetch logo from {}: {} - skipping logo element",
+                            "Failed to fetch {} from {}: {} - skipping {} element",
+                            name,
                             url,
-                            e
+                            e,
+                            name
                         );
                         Ok(None)
                     }
                     ImageFallbackBehavior::Error => {
-                        tracing::error!("Failed to fetch logo from {}: {}", url, e);
+                        tracing::error!("Failed to fetch {} from {}: {}", name, url, e);
                         Err((
                             StatusCode::INTERNAL_SERVER_ERROR,
-                            format!("Failed to fetch logo: {}", e),
+                            format!("Failed to fetch {}: {}", name, e),
                         )
                             .into_response())
                     }
@@ -81,7 +103,8 @@ impl OgParams {
         let no_params = self.title.is_none()
             && self.description.is_none()
             && self.subtitle.is_none()
-            && self.logo.is_none();
+            && self.logo.is_none()
+            && self.image.is_none();
 
         let get = |param: &Option<String>, default: &str| {
             if no_params {

@@ -1,8 +1,13 @@
 use super::error::ImageFetchError;
 use super::fetch::FetchedImage;
 
+pub struct ValidatedImage {
+    pub bytes: Vec<u8>,
+    pub mime_type: String,
+}
+
 /// Stage 3: Validate content type using magic numbers
-pub fn validate_content_type(fetched: FetchedImage) -> Result<Vec<u8>, ImageFetchError> {
+pub fn validate_content_type(fetched: FetchedImage) -> Result<ValidatedImage, ImageFetchError> {
     // Validate content-type using magic numbers (not headers!)
     let kind = infer::get(&fetched.bytes).ok_or_else(|| {
         tracing::warn!(
@@ -29,5 +34,8 @@ pub fn validate_content_type(fetched: FetchedImage) -> Result<Vec<u8>, ImageFetc
         fetched.url
     );
 
-    Ok(fetched.bytes)
+    Ok(ValidatedImage {
+        bytes: fetched.bytes,
+        mime_type: mime_type.to_string(),
+    })
 }

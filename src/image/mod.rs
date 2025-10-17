@@ -9,6 +9,7 @@ mod resolver;
 mod validate;
 
 pub use error::ImageFetchError;
+pub use validate::ValidatedImage;
 
 use cache::ImageCache;
 use resolver::GlobalResolver;
@@ -57,29 +58,36 @@ impl ImageFetcher {
         })
     }
 
-    /// Fetch image as raw bytes
+    /// Fetch image with MIME type detection
     ///
     /// Pipeline stages:
-    /// 1. Check cache (raw bytes)
+    /// 1. Check cache (raw bytes, re-detect MIME type)
     /// 2. Parse URL + validate direct IPs
     /// 3. HTTP fetch with streaming size limit (SSRF protection via GlobalResolver)
-    /// 4. Validate content-type
-    /// 5. Store in cache (raw bytes)
-    pub async fn fetch_image(&self, url: &str) -> Result<Vec<u8>, ImageFetchError> {
+    /// 4. Validate content-type and detect MIME type
+    /// 5. Store in cache (raw bytes only)
+    pub async fn fetch_image(&self, url: &str) -> Result<ValidatedImage, ImageFetchError> {
         // Stage 0: Check cache first
         if let Some(cached_bytes) = self.cache.get(url).await {
             tracing::debug!("Cache hit for URL: {}", url);
-            return Ok(cached_bytes);
+            // Re-detect MIME type from cached bytes
+            let mime_type = infer::get(&cached_bytes)
+                .map(|k| k.mime_type().to_string())
+                .unwrap_or_else(|| "image/png".to_string());
+            return Ok(ValidatedImage {
+                bytes: cached_bytes,
+                mime_type,
+            });
         }
 
         let parsed = parse::parse_url(url, self.allow_http)?;
         let fetched = fetch::fetch_http(parsed, &self.client, self.max_size).await?;
-        let validated_bytes = validate::validate_content_type(fetched)?;
+        let validated = validate::validate_content_type(fetched)?;
 
         self.cache
-            .insert(url.to_string(), validated_bytes.clone())
+            .insert(url.to_string(), validated.bytes.clone())
             .await;
 
-        Ok(validated_bytes)
+        Ok(validated)
     }
 }

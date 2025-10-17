@@ -12,6 +12,7 @@
 
   <g id="ogis_logo">
     <rect x="80" y="60" width="400" height="120"
+          rx="12"
           fill="none"
           stroke="#667eea"
           stroke-width="2"
@@ -24,6 +25,24 @@
           fill="#667eea"
           text-anchor="middle">
       Placeholder Logo (400×120)
+    </text>
+  </g>
+
+  <g id="ogis_image">
+    <rect x="900" y="60" width="200" height="200"
+          rx="12"
+          fill="none"
+          stroke="#764ba2"
+          stroke-width="2"
+          stroke-dasharray="5,5"
+          opacity="0.3"/>
+    <text x="1000" y="165"
+          font-family="sans-serif"
+          font-weight="bold"
+          font-size="16"
+          fill="#764ba2"
+          text-anchor="middle">
+      Image (200×200)
     </text>
   </g>
 
