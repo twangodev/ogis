@@ -1,10 +1,6 @@
-# Replace http://, https:// with your domain for automatic Let's Encrypt
-# Usage: docker compose -f docker-compose.yml -f docker-compose.caddy.yml up
+# Replace ogis.example.com with your domain for automatic Let's Encrypt
 
-http://, https:// {
-    # Uncomment if using self-signed certificates
-    # tls internal
-
+ogis.example.com {
     reverse_proxy ogis:3000
     encode gzip
 }
