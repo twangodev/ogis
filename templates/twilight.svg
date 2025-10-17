@@ -49,7 +49,7 @@
   <!-- Content area on bottom (left side) -->
   <g transform="translate(80, 0)">
     <!-- Subtitle -->
-    <text id="ogis_subtitle" x="0" y="410" font-family="sans-serif" font-size="28" fill="#9ca3af" letter-spacing="2">Placeholder Subtitle</text>
+    <text id="ogis_subtitle" x="0" y="410" font-family="sans-serif" font-size="28" fill="#9ca3af">Placeholder Subtitle</text>
 
     <!-- Title -->
     <text x="0" y="505" font-family="sans-serif" font-size="80" font-weight="bold" fill="#ffffff">
