@@ -29,14 +29,14 @@
 					{ name: 'Playground', href: '/playground' },
 					{ name: 'Templates', href: '/templates' },
 					{ name: 'Showcase', href: '/showcase' },
-					{ name: 'API Reference', href: '/docs/api' }
+					{ name: 'API Reference', href: 'https://img.ogis.dev/docs' }
 				]
 			},
 			{
 				title: 'Resources',
 				links: [
 					{ name: 'Documentation', href: '/docs' },
-					{ name: 'Self-Hosting Guide', href: '/docs/self-hosting' },
+					{ name: 'Self-Hosting Guide', href: '/docs/' },
 					{ name: 'Status Page', href: 'https://kener.twango.dev/?group=ogis' },
 					{ name: 'Changelog', href: `${site.github}/releases` }
 				]
