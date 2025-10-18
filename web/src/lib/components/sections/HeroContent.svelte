@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import CardStack3D from '$lib/components/hero/CardStack3D.svelte';
+	import CardStack from '$lib/components/hero/CardStack.svelte';
 
 	type CTA = {
 		text: string;
@@ -51,7 +51,7 @@
 
 				<!-- Right side: 3D Card Stack -->
 				<div class="flex justify-center items-center">
-					<CardStack3D />
+					<CardStack />
 				</div>
 			</div>
 		</div>

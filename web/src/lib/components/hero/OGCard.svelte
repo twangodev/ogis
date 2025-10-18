@@ -71,7 +71,9 @@
 </script>
 
 <div
-	class="absolute w-full aspect-[1.91] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ease-out top-1/2 left-1/2"
+	class="absolute w-full aspect-[1.91] rounded-xl overflow-hidden cursor-pointer transition-all ease-out top-1/2 left-1/2"
+	class:duration-200={isHovered || isDimmed}
+	class:duration-700={!isHovered && !isDimmed}
 	class:shadow-lg={!isHovered}
 	class:shadow-2xl={isHovered}
 	class:opacity-40={shouldDim()}
