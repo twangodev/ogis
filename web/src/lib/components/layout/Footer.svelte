@@ -36,7 +36,7 @@
 				title: 'Resources',
 				links: [
 					{ name: 'Documentation', href: '/docs' },
-					{ name: 'Self-Hosting Guide', href: '/docs/self-hosting' },
+					{ name: 'Self-Hosting Guide', href: '/docs/' },
 					{ name: 'Status Page', href: 'https://kener.twango.dev/?group=ogis' },
 					{ name: 'Changelog', href: `${site.github}/releases` }
 				]
