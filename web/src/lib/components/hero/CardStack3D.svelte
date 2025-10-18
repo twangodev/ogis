@@ -1,5 +1,6 @@
 <script lang="ts">
 	import OGCard from './OGCard.svelte';
+	import { onMount } from 'svelte';
 
 	type Card = {
 		id: number;
@@ -55,28 +56,61 @@
 		}
 	];
 
-	// Randomly select 3 cards from the pool
-	function getRandomCards(count: number = 3): Card[] {
-		const shuffled = [...cards].sort(() => Math.random() - 0.5);
-		return shuffled.slice(0, count);
-	}
-
-	const displayedCards = getRandomCards(3);
+	// Cycling state
+	let currentStartIndex = $state(Math.floor(Math.random() * cards.length));
 	let hoveredCard = $state<number | null>(null);
+	let isPaused = $state(false);
+	let cycleInterval: ReturnType<typeof setInterval> | null = null;
+
+	// Get 3 cards starting from current index with wrapping
+	const displayedCards = $derived([
+		cards[currentStartIndex % cards.length],
+		cards[(currentStartIndex + 1) % cards.length],
+		cards[(currentStartIndex + 2) % cards.length]
+	]);
 
 	// Calculate vertical offset to center the whole stack
-	// With 3 cards at 80px spacing, the spread is (2 * 80) = 160px
-	// Offset by half to center: 80px
-	const verticalOffset = ((displayedCards.length - 1) * 80) / 2;
+	const verticalOffset = 80; // (3 - 1) * 80 / 2
+
+	function startCycle() {
+		if (cycleInterval) return;
+		cycleInterval = setInterval(() => {
+			if (!isPaused) {
+				currentStartIndex = (currentStartIndex + 1) % cards.length;
+			}
+		}, 3000); // Cycle every 3 seconds
+	}
+
+	function stopCycle() {
+		if (cycleInterval) {
+			clearInterval(cycleInterval);
+			cycleInterval = null;
+		}
+	}
+
+	onMount(() => {
+		startCycle();
+		return () => stopCycle();
+	});
 </script>
 
-<div class="relative w-full max-w-[500px] h-[350px] flex items-center justify-center" style="perspective: 1000px;">
+<div
+	class="relative w-full max-w-[500px] h-[350px] flex items-center justify-center"
+	style="perspective: 1000px;"
+	role="region"
+	aria-label="Open Graph image examples"
+	onmouseenter={() => isPaused = true}
+	onmouseleave={() => {
+		isPaused = false;
+		hoveredCard = null;
+	}}
+>
 	{#each displayedCards as card, i (card.id)}
 		<OGCard
 			title={card.title}
 			description={card.description}
 			index={i}
-			totalCards={displayedCards.length}
+			totalCards={3}
 			isHovered={hoveredCard === i}
 			isDimmed={hoveredCard !== null && hoveredCard !== i}
 			verticalOffset={verticalOffset}
