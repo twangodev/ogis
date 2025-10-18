@@ -17,10 +17,10 @@
 
 	let {
 		menuItems = [
-			// { name: 'Features', href: '#features' },
-			// { name: 'Solution', href: '#solution' },
-			// { name: 'Pricing', href: '#pricing' },
-			// { name: 'About', href: '#about' }
+			{ name: 'Playground', href: '/playground' },
+			{ name: 'Templates', href: '/templates' },
+			{ name: 'Showcase', href: '/showcase' },
+			{ name: 'Docs', href: '/docs' }
 		],
 		logoHref = '/'
 	}: Props = $props();
