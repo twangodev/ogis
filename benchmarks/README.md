@@ -20,7 +20,7 @@ benchmarks/
 ## Prerequisites
 
 - Docker & Docker Compose
-- Python 3.11+ with uv
+- Python 3.13+ with uv
 - Both services built and running
 
 ## Setup
