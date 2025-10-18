@@ -26,33 +26,32 @@
 			{
 				title: 'Product',
 				links: [
-					// { name: 'Features', href: '#features' },
-					// { name: 'Pricing', href: '#pricing' },
-					// { name: 'Updates', href: '#updates' }
-				]
-			},
-			{
-				title: 'Company',
-				links: [
-					// { name: 'About', href: '#about' },
-					// { name: 'Blog', href: '#blog' },
-					// { name: 'Careers', href: '#careers' }
+					{ name: 'Playground', href: '/playground' },
+					{ name: 'Templates', href: '/templates' },
+					{ name: 'Showcase', href: '/showcase' },
+					{ name: 'API Reference', href: '/docs/api' }
 				]
 			},
 			{
 				title: 'Resources',
 				links: [
-					// { name: 'Documentation', href: '#docs' },
-					// { name: 'Support', href: '#support' },
-					// { name: 'Contact', href: '#contact' }
+					{ name: 'Documentation', href: '/docs' },
+					{ name: 'Self-Hosting Guide', href: '/docs/self-hosting' },
+					{ name: 'Status Page', href: 'https://kener.twango.dev/?group=ogis' },
+					{ name: 'Changelog', href: `${site.github}/releases` }
+				]
+			},
+			{
+				title: 'Community',
+				links: [
+					{ name: 'GitHub', href: site.github },
+					{ name: 'Report an Issue', href: `${site.github}/issues` },
+					{ name: 'Contribute', href: `${site.github}/blob/main/CONTRIBUTING.md` },
+					{ name: 'Discussions', href: `${site.github}/discussions` }
 				]
 			}
 		],
-		socialLinks = [
-			// { name: 'Twitter', href: '#', icon: 'twitter' },
-			// { name: 'GitHub', href: '#', icon: 'github' },
-			// { name: 'LinkedIn', href: '#', icon: 'linkedin' }
-		]
+		socialLinks = []
 	}: Props = $props();
 
 </script>
