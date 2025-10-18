@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_site:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -37,7 +37,7 @@ jobs:
           path: 'web/build/'
 
   deploy:
-    needs: build_site
+    needs: build
     runs-on: ubuntu-latest
 
     permissions:
