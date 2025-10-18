@@ -9,6 +9,12 @@
 
 <svelte:head>
 	<link rel="icon" href="/favicon.ico" />
+    <script
+        src="https://rybbit.twango.dev/api/script.js"
+        data-site-id="6"
+        data-track-errors="true"
+        defer
+    ></script>
 </svelte:head>
 
 <ModeWatcher defaultMode="dark" />
