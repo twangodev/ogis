@@ -1,0 +1,51 @@
+services:
+  ogis:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: ogis-benchmark
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../fonts:/app/fonts:ro
+      - ../fonts.yaml:/app/fonts.yaml:ro
+      - ../templates:/app/templates:ro
+    environment:
+      - RUST_LOG=info
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
+    restart: unless-stopped
+    networks:
+      - benchmark
+
+  vercel-og:
+    build:
+      context: ./vercel-og
+      dockerfile: Dockerfile
+    container_name: vercel-og-benchmark
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
+    restart: unless-stopped
+    networks:
+      - benchmark
+
+networks:
+  benchmark:
+    driver: bridge

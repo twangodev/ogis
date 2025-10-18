@@ -1,0 +1,21 @@
+{
+  "scenarios": [
+    {
+      "name": "simple_text",
+      "description": "Simple text with title and description",
+      "params": {
+        "title": "Hello World",
+        "description": "A fast, free, and beautiful platform for open graph image generation"
+      }
+    },
+    {
+      "name": "with_external_image",
+      "description": "Text with external image",
+      "params": {
+        "title": "OGIS Benchmark",
+        "description": "Performance testing against Vercel OG",
+        "image": "https://picsum.photos/200"
+      }
+    }
+  ]
+}
