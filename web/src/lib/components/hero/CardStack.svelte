@@ -8,6 +8,12 @@
 		description: string;
 	};
 
+	type Props = {
+		activeCard?: Card;
+	};
+
+	let { activeCard = $bindable() }: Props = $props();
+
 	const cards: Card[] = [
 		{
 			id: 1,
@@ -68,6 +74,11 @@
 		cards[(currentStartIndex + 1) % cards.length],
 		cards[(currentStartIndex + 2) % cards.length]
 	]);
+
+	// Update activeCard whenever displayedCards changes (middle card is index 1)
+	$effect(() => {
+		activeCard = displayedCards[1];
+	});
 
 	// Calculate vertical offset to center the whole stack
 	const verticalOffset = 80; // (3 - 1) * 80 / 2

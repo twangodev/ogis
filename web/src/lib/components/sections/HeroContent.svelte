@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import CardStack from '$lib/components/hero/CardStack.svelte';
+	import URLBar from '$lib/components/hero/URLBar.svelte';
 
 	type CTA = {
 		text: string;
 		href: string;
+	};
+
+	type Card = {
+		id: number;
+		title: string;
+		description: string;
 	};
 
 	type Props = {
@@ -20,10 +27,19 @@
 		primaryCta = { text: 'Quick Start', href: '#' },
 		secondaryCta = { text: 'Deploy Your Own', href: '#' }
 	}: Props = $props();
+
+	let activeCard = $state<Card | undefined>();
+
+	// Build URL from active card
+	const url = $derived(
+		activeCard
+			? `https://img.ogis.dev?title=${encodeURIComponent(activeCard.title)}&description=${encodeURIComponent(activeCard.description)}`
+			: ''
+	);
 </script>
 
 <section>
-	<div class="pt-12 pb-24 md:pb-32 lg:pt-44 lg:pb-56">
+	<div class="pt-12 pb-24 md:pb-24 lg:pt-44">
 		<div class="relative mx-auto max-w-7xl px-6">
 			<div class="lg:grid lg:grid-cols-2 lg:items-center">
 				<!-- Left side: Hero content -->
@@ -51,8 +67,13 @@
 
 				<!-- Right side: 3D Card Stack -->
 				<div class="flex justify-center items-center">
-					<CardStack />
+					<CardStack bind:activeCard />
 				</div>
+			</div>
+
+			<!-- URL Bar -->
+			<div class="pt-12">
+				<URLBar {url} showLabel={true} />
 			</div>
 		</div>
 	</div>
