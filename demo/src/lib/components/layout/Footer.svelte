@@ -99,7 +99,7 @@
 				>.
 			</p>
 
-			<div class="flex gap-4">
+			<div class="flex items-center gap-4">
 				{#each socialLinks as social (social.name)}
 					<a
 						href={social.href}
@@ -109,6 +109,19 @@
 						<span class="text-sm">{social.name}</span>
 					</a>
 				{/each}
+				<a
+					href="https://kener.twango.dev/?group=ogis"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="flex items-center gap-2 text-sm text-muted-foreground duration-150 hover:text-accent-foreground"
+				>
+					<img
+						src="https://kener.twango.dev/badge/ogis/dot?animate=ping"
+						alt="Status Badge"
+						class="h-4 w-4"
+					/>
+					<span>View service status</span>
+				</a>
 			</div>
 		</div>
 	</div>
