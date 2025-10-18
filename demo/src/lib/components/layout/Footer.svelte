@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Logo from './Logo.svelte';
+	import { site } from '$lib/config/site';
 
 	type LinkColumn = {
 		title: string;
@@ -20,8 +21,8 @@
 	};
 
 	let {
-		companyName = 'Your Company',
-		description = 'Building amazing products for the modern web.',
+		companyName = site.name,
+		description = site.description,
 		linkColumns = [
 			{
 				title: 'Product',

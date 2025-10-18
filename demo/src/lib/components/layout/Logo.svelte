@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CircleSlash2 } from '@lucide/svelte';
+	import { site } from '$lib/config/site';
 
 	type Props = {
 		href?: string;
@@ -29,6 +30,6 @@
 >
 	<CircleSlash2 class={iconSizes[size]} />
 	{#if showText}
-		<span class="{textSizes[size]} font-semibold -translate-y-px">ogis</span>
+		<span class="{textSizes[size]} font-semibold -translate-y-px">{site.name}</span>
 	{/if}
 </a>
