@@ -255,7 +255,7 @@ class BenchmarkRunner:
 
 def main():
     parser = argparse.ArgumentParser(description='Benchmark OGIS vs Vercel OG')
-    parser.add_argument('--runs', type=int, default=1000, help='Number of latency test runs')
+    parser.add_argument('--runs', type=int, default=100, help='Number of latency test runs')
     parser.add_argument('--throughput-duration', type=int, default=10, help='Throughput test duration in seconds')
     parser.add_argument('--ogis-url', default='http://localhost:3000', help='OGIS service URL')
     parser.add_argument('--vercel-url', default='http://localhost:3001', help='Vercel OG service URL')
