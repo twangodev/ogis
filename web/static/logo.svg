@@ -1,7 +1,7 @@
 <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="49 17.84942813775458 95 39.15057186224542" width="512" height="216">
 	<style>
-		.s0 { fill: none;stroke: #000000;stroke-linecap: round;stroke-linejoin: round;stroke-width: 2 } 
-		.s1 { fill: #000000 } 
+		.s0 { fill: none;stroke: #fff;stroke-linecap: round;stroke-linejoin: round;stroke-width: 2 }
+		.s1 { fill: #fff }
 	</style>
 	<g id="Layer 1">
 		<path class="s0" d="m79 28l-20 20"/>
