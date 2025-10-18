@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Logo from './Logo.svelte';
+	import { Link } from '$lib/components/ui/link';
 	import { site } from '$lib/config/site';
 
 	type LinkColumn = {
@@ -56,7 +57,6 @@
 		]
 	}: Props = $props();
 
-	const currentYear = new Date().getFullYear();
 </script>
 
 <footer class="border-t bg-background">
@@ -95,7 +95,10 @@
 			class="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row"
 		>
 			<p class="text-sm text-muted-foreground">
-				&copy; {currentYear} {companyName}. All rights reserved.
+				Made by <Link href="https://twango.dev" external>James Ding</Link>. Licensed under{' '}
+				<Link href="https://www.gnu.org/licenses/agpl-3.0.en.html" external variant="muted"
+					>AGPL-v3</Link
+				>.
 			</p>
 
 			<div class="flex gap-4">

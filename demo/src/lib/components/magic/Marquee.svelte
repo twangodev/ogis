@@ -13,7 +13,7 @@
 	let {
 		pauseOnHover = false,
 		vertical = false,
-		repeat = 4,
+		repeat = 6,
 		reverse = false,
 		class: _class = '',
 		children
