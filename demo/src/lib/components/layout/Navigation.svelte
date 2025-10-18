@@ -2,6 +2,7 @@
 	import Menu from '@lucide/svelte/icons/menu';
 	import X from '@lucide/svelte/icons/x';
 	import { Button } from '$lib/components/ui/button';
+	import ThemeToggle from './ThemeToggle.svelte';
 
 	type MenuItem = {
 		name: string;
@@ -105,7 +106,8 @@
 						</ul>
 					</div>
 
-					<div class="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+					<div class="flex w-full flex-col space-y-3 sm:flex-row sm:items-center sm:gap-3 sm:space-y-0 md:w-fit">
+						<ThemeToggle />
 						<Button variant="outline" size="sm">Login</Button>
 						<Button size="sm">Sign Up</Button>
 					</div>
