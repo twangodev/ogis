@@ -1,33 +1,34 @@
 <script lang="ts">
-	import { cn } from '../../utils';
+	import { cn } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 
-	type MarqueeProps = {
+	interface Props {
 		pauseOnHover?: boolean;
 		vertical?: boolean;
 		repeat?: number;
 		reverse?: boolean;
-		class?: string;
+		class?: string | undefined | null;
 		children?: Snippet;
-	};
+	}
+
 	let {
 		pauseOnHover = false,
 		vertical = false,
-		repeat = 6,
+		repeat = 4,
 		reverse = false,
-		class: _class = '',
+		class: className = undefined,
 		children
-	}: MarqueeProps = $props();
+	}: Props = $props();
 </script>
 
 <div
 	class={cn(
-		'group flex [gap:var(--gap)] overflow-hidden p-2 [--duration:16s] [--gap:3rem]',
+		'group flex [gap:var(--gap)] overflow-hidden p-2 [--duration:40s] [--gap:3rem]',
 		{
 			'flex-row': !vertical,
 			'flex-col': vertical
 		},
-		_class
+		className
 	)}
 >
 	{#each { length: repeat } as _, i (i)}
@@ -35,10 +36,9 @@
 			class={cn('flex shrink-0 justify-around [gap:var(--gap)]', {
 				'animate-marquee flex-row': !vertical,
 				'animate-marquee-vertical flex-col': vertical,
-				'group-hover:[animation-play-state:paused]': pauseOnHover
+				'group-hover:[animation-play-state:paused]': pauseOnHover,
+				'[animation-direction:reverse]': reverse
 			})}
-			style="animation-direction:{reverse ? 'reverse' : 'normal'};
-      "
 		>
 			{@render children?.()}
 		</div>

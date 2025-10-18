@@ -1,11 +1,14 @@
 <script lang="ts">
 	import Marquee from '$lib/components/magic/Marquee.svelte';
 	import ProgressiveBlur from '$lib/components/magic/ProgressiveBlur.svelte';
+	import { Link } from '$lib/components/ui/link';
+	import DEFAULT_LOGOS from '$lib/config/logos.json';
 
 	type Logo = {
 		src: string;
 		alt: string;
 		height: number;
+		href: string;
 	};
 
 	type Props = {
@@ -14,41 +17,8 @@
 	};
 
 	let {
-		logos = [
-			{
-				src: 'https://html.tailus.io/blocks/customers/nvidia.svg',
-				alt: 'Nvidia Logo',
-				height: 20
-			},
-			{
-				src: 'https://html.tailus.io/blocks/customers/column.svg',
-				alt: 'Column Logo',
-				height: 16
-			},
-			{
-				src: 'https://html.tailus.io/blocks/customers/github.svg',
-				alt: 'GitHub Logo',
-				height: 16
-			},
-			{ src: 'https://html.tailus.io/blocks/customers/nike.svg', alt: 'Nike Logo', height: 20 },
-			{
-				src: 'https://html.tailus.io/blocks/customers/lemonsqueezy.svg',
-				alt: 'Lemon Squeezy Logo',
-				height: 20
-			},
-			{
-				src: 'https://html.tailus.io/blocks/customers/laravel.svg',
-				alt: 'Laravel Logo',
-				height: 16
-			},
-			{ src: 'https://html.tailus.io/blocks/customers/lilly.svg', alt: 'Lilly Logo', height: 28 },
-			{
-				src: 'https://html.tailus.io/blocks/customers/openai.svg',
-				alt: 'OpenAI Logo',
-				height: 24
-			}
-		],
-		label = 'Powering the best teams'
+		logos = DEFAULT_LOGOS,
+		label = 'Powering open source, enterprise, and more.',
 	}: Props = $props();
 </script>
 
@@ -59,9 +29,9 @@
 				<p class="text-end text-sm">{label}</p>
 			</div>
 			<div class="relative py-6 md:w-[calc(100%-11rem)]">
-				<Marquee>
+				<Marquee repeat={8}>
 					{#each logos as logo (logo.src)}
-						<div class="flex">
+						<Link class="flex" href={logo.href} external>
 							<img
 								class="mx-auto w-fit dark:invert"
 								style="height: {logo.height}px"
@@ -70,7 +40,7 @@
 								height={logo.height}
 								width="auto"
 							/>
-						</div>
+						</Link>
 					{/each}
 				</Marquee>
 

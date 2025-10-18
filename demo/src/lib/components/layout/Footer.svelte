@@ -15,45 +15,43 @@
 	};
 
 	type Props = {
-		companyName?: string;
 		description?: string;
 		linkColumns?: LinkColumn[];
 		socialLinks?: SocialLink[];
 	};
 
 	let {
-		companyName = site.name,
 		description = site.description,
 		linkColumns = [
 			{
 				title: 'Product',
 				links: [
-					{ name: 'Features', href: '#features' },
-					{ name: 'Pricing', href: '#pricing' },
-					{ name: 'Updates', href: '#updates' }
+					// { name: 'Features', href: '#features' },
+					// { name: 'Pricing', href: '#pricing' },
+					// { name: 'Updates', href: '#updates' }
 				]
 			},
 			{
 				title: 'Company',
 				links: [
-					{ name: 'About', href: '#about' },
-					{ name: 'Blog', href: '#blog' },
-					{ name: 'Careers', href: '#careers' }
+					// { name: 'About', href: '#about' },
+					// { name: 'Blog', href: '#blog' },
+					// { name: 'Careers', href: '#careers' }
 				]
 			},
 			{
 				title: 'Resources',
 				links: [
-					{ name: 'Documentation', href: '#docs' },
-					{ name: 'Support', href: '#support' },
-					{ name: 'Contact', href: '#contact' }
+					// { name: 'Documentation', href: '#docs' },
+					// { name: 'Support', href: '#support' },
+					// { name: 'Contact', href: '#contact' }
 				]
 			}
 		],
 		socialLinks = [
-			{ name: 'Twitter', href: '#', icon: 'twitter' },
-			{ name: 'GitHub', href: '#', icon: 'github' },
-			{ name: 'LinkedIn', href: '#', icon: 'linkedin' }
+			// { name: 'Twitter', href: '#', icon: 'twitter' },
+			// { name: 'GitHub', href: '#', icon: 'github' },
+			// { name: 'LinkedIn', href: '#', icon: 'linkedin' }
 		]
 	}: Props = $props();
 
