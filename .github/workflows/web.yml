@@ -2,10 +2,6 @@ name: Deploy Web to GitHub Pages
 
 on:
   push:
-    branches:
-      - 'main'
-    paths:
-      - 'web/**'
   workflow_dispatch:
 
 jobs:
@@ -39,6 +35,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
     permissions:
       pages: write
