@@ -2,11 +2,7 @@ name: Rust
 
 on:
   push:
-    paths-ignore:
-      - 'web/**'
   pull_request:
-    paths-ignore:
-      - 'web/**'
 
 env:
   CARGO_TERM_COLOR: always
