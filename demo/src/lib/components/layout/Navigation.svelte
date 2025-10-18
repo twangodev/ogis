@@ -2,7 +2,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import Logo from './Logo.svelte';
-	import { Menu, X } from '@lucide/svelte';
+	import { Menu, X, Github } from '@lucide/svelte';
+	import { site } from '$lib/config/site';
 
 	type MenuItem = {
 		name: string;
@@ -55,9 +56,10 @@
 				<!-- Actions - Right (desktop) / Mobile menu button -->
 				<div class="flex items-center justify-end gap-3">
 					<div class="hidden items-center gap-3 lg:flex">
+						<Button href={site.github} variant="ghost" size="icon" aria-label="GitHub">
+							<Github class="size-5" />
+						</Button>
 						<ThemeToggle />
-						<Button variant="outline" size="sm">Login</Button>
-						<Button size="sm">Sign Up</Button>
 					</div>
 
 					<!-- Mobile menu toggle -->
@@ -100,9 +102,11 @@
 				</ul>
 
 				<div class="flex flex-col gap-3">
+					<Button href={site.github} variant="outline" class="justify-start">
+						<Github class="mr-2 size-5" />
+						GitHub
+					</Button>
 					<ThemeToggle />
-					<Button variant="outline" size="sm" class="w-full">Login</Button>
-					<Button size="sm" class="w-full">Sign Up</Button>
 				</div>
 			</div>
 		</div>
