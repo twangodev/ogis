@@ -19,6 +19,15 @@ pub fn load_fonts() -> usvg::fontdb::Database {
         }
     }
 
+    // Load global fallback fonts (after family-specific fonts for correct priority)
+    if let Some(paths) = doc["global-fallback"].as_vec() {
+        for path_node in paths {
+            if let Some(path) = path_node.as_str() {
+                load_global_fallback(&mut fontdb, path);
+            }
+        }
+    }
+
     tracing::info!("Loaded {} font faces", fontdb.faces().count());
     fontdb
 }
@@ -50,4 +59,23 @@ fn load_font(fontdb: &mut usvg::fontdb::Database, family: &str, path: &str, is_p
     } else {
         tracing::info!("Loaded {} fallback: {} (from {})", family, name, path);
     }
+}
+
+fn load_global_fallback(fontdb: &mut usvg::fontdb::Database, path: &str) {
+    let Ok(data) = std::fs::read(path) else {
+        tracing::warn!("Global fallback font file not found: {}", path);
+        return;
+    };
+
+    fontdb.load_font_data(data);
+
+    let Some(face) = fontdb.faces().last() else {
+        return;
+    };
+
+    let name = face.families[0].0.clone();
+
+    // Global fallbacks are not assigned to any specific family
+    // They are available to all families when characters are missing
+    tracing::info!("Loaded global fallback: {} (from {})", name, path);
 }
