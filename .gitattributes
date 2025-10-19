@@ -1,1 +1,2 @@
-Caddyfile linguist-detectable
+web/** linguist-documentation
+benchmarks/** linguist-documentation
