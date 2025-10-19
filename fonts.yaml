@@ -7,3 +7,5 @@ serif:
   - "fonts/NotoSerif.ttf"
 monospace:
   - "fonts/JetBrainsMono.ttf"
+global-fallback:
+  - "fonts/NotoColorEmoji.ttf"
