@@ -2,6 +2,8 @@
 	type Props = {
 		title: string;
 		description: string;
+		subtitle?: string;
+		image?: string;
 		index: number;
 		totalCards: number;
 		isHovered: boolean;
@@ -14,6 +16,8 @@
 	let {
 		title,
 		description,
+		subtitle,
+		image,
 		index,
 		totalCards,
 		isHovered,
@@ -23,8 +27,15 @@
 		onLeave
 	}: Props = $props();
 
-	// Build imageUrl from title and description
-	const imageUrl = `https://img.ogis.dev?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
+	// Build imageUrl from all available parameters
+	const imageUrl = $derived.by(() => {
+		const params = new URLSearchParams();
+		params.set('title', title);
+		params.set('description', description);
+		if (subtitle) params.set('subtitle', subtitle);
+		if (image) params.set('image', image);
+		return `https://img.ogis.dev?${params.toString()}`;
+	});
 
 	function getTransform() {
 		// Calculate tilt from center (middle card is 0, sides tilt opposite directions)
@@ -71,7 +82,9 @@
 </script>
 
 <div
-	class="absolute w-full aspect-[1.91] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ease-out top-1/2 left-1/2"
+	class="absolute w-full aspect-[1.91] rounded-xl overflow-hidden cursor-pointer transition-all ease-out top-1/2 left-1/2"
+	class:duration-200={isHovered || isDimmed}
+	class:duration-700={!isHovered && !isDimmed}
 	class:shadow-lg={!isHovered}
 	class:shadow-2xl={isHovered}
 	class:opacity-40={shouldDim()}

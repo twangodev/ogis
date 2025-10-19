@@ -1,10 +1,19 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import CardStack3D from '$lib/components/hero/CardStack3D.svelte';
+	import CardStack from '$lib/components/hero/CardStack.svelte';
+	import URLBar from '$lib/components/hero/URLBar.svelte';
 
 	type CTA = {
 		text: string;
 		href: string;
+	};
+
+	type Card = {
+		id: number;
+		title: string;
+		description: string;
+		subtitle?: string;
+		image?: string;
 	};
 
 	type Props = {
@@ -20,10 +29,25 @@
 		primaryCta = { text: 'Quick Start', href: '#' },
 		secondaryCta = { text: 'Deploy Your Own', href: '#' }
 	}: Props = $props();
+
+	let activeCard = $state<Card | undefined>();
+
+	// Build URL from active card with all available parameters
+	const url = $derived.by(() => {
+		if (!activeCard) return '';
+
+		const params = new URLSearchParams();
+		params.set('title', activeCard.title);
+		params.set('description', activeCard.description);
+		if (activeCard.subtitle) params.set('subtitle', activeCard.subtitle);
+		if (activeCard.image) params.set('image', activeCard.image);
+
+		return `https://img.ogis.dev?${params.toString()}`;
+	});
 </script>
 
 <section>
-	<div class="pt-12 pb-24 md:pb-32 lg:pt-44 lg:pb-56">
+	<div class="pt-12 pb-24 md:pb-24 lg:pt-44">
 		<div class="relative mx-auto max-w-7xl px-6">
 			<div class="lg:grid lg:grid-cols-2 lg:items-center">
 				<!-- Left side: Hero content -->
@@ -51,8 +75,13 @@
 
 				<!-- Right side: 3D Card Stack -->
 				<div class="flex justify-center items-center">
-					<CardStack3D />
+					<CardStack bind:activeCard />
 				</div>
+			</div>
+
+			<!-- URL Bar -->
+			<div class="pt-12">
+				<URLBar {url} showLabel={true} />
 			</div>
 		</div>
 	</div>

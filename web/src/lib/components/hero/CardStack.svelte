@@ -6,53 +6,52 @@
 		id: number;
 		title: string;
 		description: string;
+		subtitle?: string;
+		image?: string;
 	};
+
+	type Props = {
+		activeCard?: Card;
+	};
+
+	let { activeCard = $bindable() }: Props = $props();
 
 	const cards: Card[] = [
 		{
 			id: 1,
-			title: 'Dynamic Blog Post',
-			description: 'Generate beautiful OG images for your blog posts'
+			title: 'Open Graph Images',
+			description: 'ogis is a fast, free, and beautiful platform for open graph image generation.',
+			subtitle: 'Open Source • Always Free'
 		},
 		{
 			id: 2,
-			title: 'Product Launch',
-			description: 'Showcase your products with custom OG images'
+			title: 'Blog Post',
+			description: 'How to build scalable web applications with modern frameworks',
+			subtitle: 'Engineering • 12 min read'
 		},
 		{
 			id: 3,
-			title: 'Event Announcement',
-			description: 'Create engaging event cards automatically'
+			title: 'Documentation',
+			description: 'Complete API reference and integration guides for developers',
+			subtitle: 'Developer Docs • v2.0'
 		},
 		{
 			id: 4,
-			title: 'Documentation Page',
-			description: 'Professional docs with branded images'
+			title: 'Product Launch',
+			description: 'Introducing our newest feature with enhanced performance',
+			subtitle: 'Product Updates'
 		},
 		{
 			id: 5,
-			title: 'Portfolio Project',
-			description: 'Showcase your work with stunning previews'
+			title: 'Tech Conference',
+			description: 'Join developers worldwide for talks, workshops, and networking',
+			subtitle: 'March 15-16 • Virtual'
 		},
 		{
 			id: 6,
-			title: 'Online Course',
-			description: 'Eye-catching course thumbnails'
-		},
-		{
-			id: 7,
-			title: 'Newsletter Issue',
-			description: 'Share-worthy newsletter graphics'
-		},
-		{
-			id: 8,
-			title: 'Podcast Episode',
-			description: 'Dynamic episode artwork'
-		},
-		{
-			id: 9,
-			title: 'Case Study',
-			description: 'Professional case study previews'
+			title: 'Weekly Newsletter',
+			description: 'The latest in web development, frameworks, and best practices',
+			subtitle: 'Issue #47 • Feb 2025'
 		}
 	];
 
@@ -68,6 +67,11 @@
 		cards[(currentStartIndex + 1) % cards.length],
 		cards[(currentStartIndex + 2) % cards.length]
 	]);
+
+	// Update activeCard whenever displayedCards changes (middle card is index 1)
+	$effect(() => {
+		activeCard = displayedCards[1];
+	});
 
 	// Calculate vertical offset to center the whole stack
 	const verticalOffset = 80; // (3 - 1) * 80 / 2
@@ -109,6 +113,8 @@
 		<OGCard
 			title={card.title}
 			description={card.description}
+			subtitle={card.subtitle}
+			image={card.image}
 			index={i}
 			totalCards={3}
 			isHovered={hoveredCard === i}
