@@ -12,6 +12,8 @@
 		id: number;
 		title: string;
 		description: string;
+		subtitle?: string;
+		image?: string;
 	};
 
 	type Props = {
@@ -30,12 +32,18 @@
 
 	let activeCard = $state<Card | undefined>();
 
-	// Build URL from active card
-	const url = $derived(
-		activeCard
-			? `https://img.ogis.dev?title=${encodeURIComponent(activeCard.title)}&description=${encodeURIComponent(activeCard.description)}`
-			: ''
-	);
+	// Build URL from active card with all available parameters
+	const url = $derived.by(() => {
+		if (!activeCard) return '';
+
+		const params = new URLSearchParams();
+		params.set('title', activeCard.title);
+		params.set('description', activeCard.description);
+		if (activeCard.subtitle) params.set('subtitle', activeCard.subtitle);
+		if (activeCard.image) params.set('image', activeCard.image);
+
+		return `https://img.ogis.dev?${params.toString()}`;
+	});
 </script>
 
 <section>

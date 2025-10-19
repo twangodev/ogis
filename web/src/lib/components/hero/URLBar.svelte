@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Copy, Check } from '@lucide/svelte';
-	import { typewriter } from '$lib/transitions';
+	import { fly } from 'svelte/transition';
 	import Simple from '$lib/assets/simple.png';
 
 	type Props = {
@@ -97,21 +97,21 @@
 							<span class="text-blue-600 dark:text-blue-400 select-text">{key}</span>
 							<span class="text-muted-foreground">=</span>
 
-							<!-- Editable Parameter Value with Typewriter -->
+							<!-- Editable Parameter Value with Fly -->
 							{#key value}
-								<span class="relative inline-block">
+								<span class="relative inline-block" style="min-width: {value.length}ch;">
 									<span
-										in:typewriter={{ speed: 3 }}
-										class="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 inline-block"
+										in:fly={{ x: -10, duration: 300 }}
+										class="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 inline-block whitespace-nowrap"
 									>
 										{value}
 									</span>
 									<input
 										type="text"
 										value={editableParams[key] || value}
-										size={Math.max(10, (editableParams[key] || value).length || 10)}
+										size={value.length}
 										oninput={(e) => handleInput(key, e)}
-										class="absolute inset-0 bg-transparent text-emerald-700 dark:text-emerald-300 focus:outline-none focus:bg-emerald-500/20 transition-colors p-0 m-0 border-0 opacity-0 focus:opacity-100"
+										class="absolute inset-0 bg-transparent text-emerald-700 dark:text-emerald-300 focus:outline-none focus:bg-emerald-500/20 transition-colors p-0 m-0 border-0 opacity-0 focus:opacity-100 whitespace-nowrap"
 										placeholder="Enter value..."
 									/>
 								</span>
