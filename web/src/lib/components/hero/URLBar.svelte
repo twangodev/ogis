@@ -22,7 +22,7 @@
 			const params: Record<string, string> = {};
 
 			urlObj.searchParams.forEach((value, key) => {
-				params[key] = decodeURIComponent(value);
+				params[key] = value;
 			});
 
 			return {
@@ -99,7 +99,7 @@
 
 							<!-- Editable Parameter Value with Fly -->
 							{#key value}
-								<span class="relative inline-block" style="min-width: {value.length}ch;">
+								<span class="relative inline-block" style="min-width: {(editableParams[key] || value).length}ch;">
 									<span
 										in:fly={{ x: -10, duration: 300 }}
 										class="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 inline-block whitespace-nowrap"
@@ -109,7 +109,7 @@
 									<input
 										type="text"
 										value={editableParams[key] || value}
-										size={value.length}
+										size={(editableParams[key] || value).length}
 										oninput={(e) => handleInput(key, e)}
 										class="absolute inset-0 bg-transparent text-emerald-700 dark:text-emerald-300 focus:outline-none focus:bg-emerald-500/20 transition-colors p-0 m-0 border-0 opacity-0 focus:opacity-100 whitespace-nowrap"
 										placeholder="Enter value..."
