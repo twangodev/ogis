@@ -6,6 +6,17 @@ pub struct TemplateMap {
     pub default: String,
 }
 
+impl TemplateMap {
+    /// Returns a comma-separated list of available template names
+    pub fn available_templates(&self) -> String {
+        self.templates
+            .keys()
+            .map(|k| k.as_str())
+            .collect::<Vec<_>>()
+            .join(", ")
+    }
+}
+
 pub fn load_templates() -> TemplateMap {
     let mut templates = HashMap::new();
 
@@ -38,24 +49,23 @@ pub fn load_templates() -> TemplateMap {
         .expect("Missing 'default' field in templates.yaml")
         .to_string();
 
+    // Construct the TemplateMap
+    let template_map = TemplateMap { templates, default };
+
     // Validate that the default template exists
-    if !templates.contains_key(&default) {
+    if !template_map.templates.contains_key(&template_map.default) {
         panic!(
             "Default template '{}' not found. Available templates: {}",
-            default,
-            templates
-                .keys()
-                .map(|k| k.as_str())
-                .collect::<Vec<_>>()
-                .join(", ")
+            template_map.default,
+            template_map.available_templates()
         );
     }
 
     tracing::info!(
         "Loaded {} template(s), default: {}",
-        templates.len(),
-        default
+        template_map.templates.len(),
+        template_map.default
     );
 
-    TemplateMap { templates, default }
+    template_map
 }

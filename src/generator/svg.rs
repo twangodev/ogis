@@ -23,12 +23,7 @@ fn get_template<'a>(
             format!(
                 "Template '{}' not found. Available templates: {}",
                 name,
-                template_map
-                    .templates
-                    .keys()
-                    .map(|k| k.as_str())
-                    .collect::<Vec<_>>()
-                    .join(", ")
+                template_map.available_templates()
             )
         })
 }
