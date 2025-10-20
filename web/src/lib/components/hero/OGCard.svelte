@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
+
 	type Props = {
 		title: string;
 		description: string;
 		subtitle?: string;
-		image?: string;
+		logo?: string;
 		index: number;
 		totalCards: number;
 		isHovered: boolean;
@@ -17,7 +19,7 @@
 		title,
 		description,
 		subtitle,
-		image,
+		logo,
 		index,
 		totalCards,
 		isHovered,
@@ -29,11 +31,11 @@
 
 	// Build imageUrl from all available parameters
 	const imageUrl = $derived.by(() => {
-		const params = new URLSearchParams();
+		const params = new SvelteURLSearchParams();
 		params.set('title', title);
 		params.set('description', description);
 		if (subtitle) params.set('subtitle', subtitle);
-		if (image) params.set('image', image);
+		if (logo) params.set('logo', logo);
 		return `https://img.ogis.dev?${params.toString()}`;
 	});
 
