@@ -5,8 +5,8 @@ use saphyr::{LoadableYamlNode, Yaml};
 /// # Panics
 /// Panics if the file cannot be read or parsed
 pub fn load_yaml(path: &str) -> Yaml<'static> {
-    let yaml_content = std::fs::read_to_string(path)
-        .unwrap_or_else(|_| panic!("Failed to read {}", path));
+    let yaml_content =
+        std::fs::read_to_string(path).unwrap_or_else(|_| panic!("Failed to read {}", path));
 
     Yaml::load_from_str(&yaml_content)
         .unwrap_or_else(|_| panic!("Failed to parse {}", path))

@@ -18,10 +18,9 @@ pub fn load_templates() -> TemplateMap {
             let file_path = template_node["file"].as_str();
 
             if let (Some(template_name), Some(file_path)) = (name, file_path) {
-                if let Ok(content) = yaml_loader::load_text(
-                    file_path,
-                    &format!("template '{}'", template_name),
-                ) {
+                if let Ok(content) =
+                    yaml_loader::load_text(file_path, &format!("template '{}'", template_name))
+                {
                     templates.insert(template_name.to_string(), content);
                     tracing::info!("Loaded template '{}' from {}", template_name, file_path);
                 }
@@ -44,11 +43,19 @@ pub fn load_templates() -> TemplateMap {
         panic!(
             "Default template '{}' not found. Available templates: {}",
             default,
-            templates.keys().map(|k| k.as_str()).collect::<Vec<_>>().join(", ")
+            templates
+                .keys()
+                .map(|k| k.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
         );
     }
 
-    tracing::info!("Loaded {} template(s), default: {}", templates.len(), default);
+    tracing::info!(
+        "Loaded {} template(s), default: {}",
+        templates.len(),
+        default
+    );
 
     TemplateMap { templates, default }
 }
