@@ -7,7 +7,7 @@
 		title: string;
 		description: string;
 		subtitle?: string;
-		image?: string;
+		logo?: string;
 	};
 
 	type Props = {
@@ -21,7 +21,8 @@
 			id: 1,
 			title: 'Open Graph Images',
 			description: 'ogis is a fast, free, and beautiful platform for open graph image generation.',
-			subtitle: 'Open Source • Always Free'
+			subtitle: 'Open Source • Always Free',
+			logo: 'https://ogis.dev/logo-light.png'
 		},
 		{
 			id: 2,
@@ -114,7 +115,7 @@
 			title={card.title}
 			description={card.description}
 			subtitle={card.subtitle}
-			image={card.image}
+			logo={card.logo}
 			index={i}
 			totalCards={3}
 			isHovered={hoveredCard === i}
