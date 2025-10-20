@@ -28,6 +28,15 @@ pub struct OgParams {
 }
 
 impl OgParams {
+    /// Check if all parameters are None (no params provided)
+    fn is_empty(&self) -> bool {
+        self.title.is_none()
+            && self.description.is_none()
+            && self.subtitle.is_none()
+            && self.logo.is_none()
+            && self.image.is_none()
+    }
+
     /// Validate input parameters against maximum length
     pub fn validate(&self, max_length: usize) -> Result<(), String> {
         let fields = [
@@ -51,7 +60,17 @@ impl OgParams {
 
     /// Fetch logo image if URL provided, respecting fallback behavior
     pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<ValidatedImage>, Response> {
-        self.fetch_image_from_url(&self.logo, "logo", state).await
+        let logo_url = self.get_effective_logo(state);
+        self.fetch_image_from_url(&logo_url, "logo", state).await
+    }
+
+    /// Get the effective logo URL (using default if no params provided)
+    fn get_effective_logo(&self, state: &AppState) -> Option<String> {
+        if self.is_empty() {
+            Some(state.defaults.logo.clone())
+        } else {
+            self.logo.clone()
+        }
     }
 
     /// Fetch custom image if URL provided, respecting fallback behavior
@@ -100,11 +119,7 @@ impl OgParams {
 
     /// Apply defaults for missing parameters
     pub fn with_defaults(&self, state: &AppState) -> (String, String, String) {
-        let no_params = self.title.is_none()
-            && self.description.is_none()
-            && self.subtitle.is_none()
-            && self.logo.is_none()
-            && self.image.is_none();
+        let no_params = self.is_empty();
 
         let get = |param: &Option<String>, default: &str| {
             if no_params {
