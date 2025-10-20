@@ -11,6 +11,7 @@ services:
       - ./fonts:/app/fonts:ro
       - ./fonts.yaml:/app/fonts.yaml:ro
       - ./templates:/app/templates:ro
+      - ./templates.yaml:/app/templates.yaml:ro
     env_file:
       - .env
     restart: unless-stopped
