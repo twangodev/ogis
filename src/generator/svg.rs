@@ -7,8 +7,26 @@ use super::events::{
     ImageReplacement, State, handle_default, handle_empty, handle_end, handle_start,
 };
 use crate::image::ValidatedImage;
+use crate::templates::TemplateMap;
 
-const DEFAULT_TEMPLATE: &str = include_str!("../../templates/twilight.svg");
+fn get_template<'a>(
+    template_map: &'a TemplateMap,
+    template_name: Option<&str>,
+) -> Result<&'a str, String> {
+    let name = template_name.unwrap_or(&template_map.default);
+
+    template_map
+        .templates
+        .get(name)
+        .map(|s| s.as_str())
+        .ok_or_else(|| {
+            format!(
+                "Template '{}' not found. Available templates: {}",
+                name,
+                template_map.templates.keys().map(|k| k.as_str()).collect::<Vec<_>>().join(", ")
+            )
+        })
+}
 
 pub fn generate_svg(
     title: &str,
@@ -16,8 +34,11 @@ pub fn generate_svg(
     subtitle: &str,
     logo: Option<ValidatedImage>,
     image: Option<ValidatedImage>,
+    template: Option<&str>,
+    templates: &TemplateMap,
 ) -> Result<String, String> {
-    let mut reader = Reader::from_str(DEFAULT_TEMPLATE);
+    let template_content = get_template(templates, template)?;
+    let mut reader = Reader::from_str(template_content);
     reader.config_mut().trim_text(false);
 
     let mut writer = Writer::new(Cursor::new(Vec::new()));

@@ -25,6 +25,9 @@ pub struct OgParams {
     /// Optional custom image URL
     #[serde(default)]
     pub image: Option<String>,
+    /// Template name (e.g., "twilight", "daybreak")
+    #[serde(default)]
+    pub template: Option<String>,
 }
 
 impl OgParams {

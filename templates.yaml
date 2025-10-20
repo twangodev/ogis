@@ -1,0 +1,7 @@
+default: twilight
+
+templates:
+  - name: twilight
+    file: templates/twilight.svg
+  - name: daybreak
+    file: templates/daybreak.svg
