@@ -4,6 +4,8 @@ mod generator;
 mod image;
 mod params;
 mod routes;
+mod templates;
+mod yaml_loader;
 
 use std::sync::Arc;
 
@@ -17,6 +19,7 @@ pub struct ImageState {
 #[derive(Clone)]
 pub struct AppState {
     pub fontdb: Arc<usvg::fontdb::Database>,
+    pub templates: Arc<templates::TemplateMap>,
     pub max_input_length: usize,
     pub defaults: config::Defaults,
     pub image: ImageState,
@@ -36,6 +39,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load fonts
     let fontdb = fonts::load_fonts();
 
+    // Load templates
+    let templates = templates::load_templates();
+
     // Initialize image fetcher with SSRF protection
     let image_fetcher = Arc::new(image::ImageFetcher::new(
         config.image.connect_timeout_secs,
@@ -49,6 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let state = AppState {
         fontdb: Arc::new(fontdb),
+        templates: Arc::new(templates),
         max_input_length: config.max_input_length,
         defaults: config.defaults,
         image: ImageState {

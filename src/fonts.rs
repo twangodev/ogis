@@ -1,11 +1,9 @@
-use saphyr::{LoadableYamlNode, Yaml};
+use crate::yaml_loader;
 
 pub fn load_fonts() -> usvg::fontdb::Database {
     let mut fontdb = usvg::fontdb::Database::new();
 
-    let yaml_content = std::fs::read_to_string("fonts.yaml").expect("Failed to read fonts.yaml");
-
-    let doc = &Yaml::load_from_str(&yaml_content).expect("Failed to parse fonts.yaml")[0];
+    let doc = yaml_loader::load_yaml("fonts.yaml");
 
     for family in ["sans-serif", "serif", "monospace"] {
         if let Some(paths) = doc[family].as_vec() {
@@ -33,8 +31,7 @@ pub fn load_fonts() -> usvg::fontdb::Database {
 }
 
 fn load_font(fontdb: &mut usvg::fontdb::Database, family: &str, path: &str, is_primary: bool) {
-    let Ok(data) = std::fs::read(path) else {
-        tracing::warn!("Font file not found: {}", path);
+    let Ok(data) = yaml_loader::load_binary(path, "Font") else {
         return;
     };
 
@@ -62,8 +59,7 @@ fn load_font(fontdb: &mut usvg::fontdb::Database, family: &str, path: &str, is_p
 }
 
 fn load_global_fallback(fontdb: &mut usvg::fontdb::Database, path: &str) {
-    let Ok(data) = std::fs::read(path) else {
-        tracing::warn!("Global fallback font file not found: {}", path);
+    let Ok(data) = yaml_loader::load_binary(path, "Global fallback font") else {
         return;
     };
 

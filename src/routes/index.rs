@@ -44,7 +44,15 @@ pub async fn generate(
     let (title, description, subtitle) = params.with_defaults(&state);
 
     // Generate SVG
-    let svg_data = match generator::generate_svg(&title, &description, &subtitle, logo, image) {
+    let svg_data = match generator::generate_svg(
+        &title,
+        &description,
+        &subtitle,
+        logo,
+        image,
+        params.template.as_deref(),
+        &state.templates,
+    ) {
         Ok(data) => data,
         Err(err) => {
             tracing::error!("Failed to generate SVG: {}", err);
