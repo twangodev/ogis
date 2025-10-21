@@ -83,7 +83,7 @@
 
 			<div class="flex items-center justify-between gap-4">
 				<!-- URL Display - Single Line -->
-				<div class="flex-1 min-w-0 font-mono text-sm py-4 flex items-center gap-1 overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
+				<div class="flex-1 min-w-0 font-mono text-sm py-4 flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 					<!-- Base URL -->
 					<span class="text-muted-foreground select-text">{parsedUrl.base}</span>
 					{#if Object.keys(parsedUrl.params).length > 0}
