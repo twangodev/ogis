@@ -5,3 +5,13 @@ templates:
     file: templates/twilight.svg
   - name: daybreak
     file: templates/daybreak.svg
+  - name: minimal
+    file: templates/minimal.svg
+  - name: stripe
+    file: templates/stripe.svg
+  - name: gradient
+    file: templates/gradient.svg
+  - name: hero
+    file: templates/hero.svg
+  - name: modern
+    file: templates/modern.svg
