@@ -90,29 +90,14 @@ impl OgParams {
     ) -> Result<Option<ValidatedImage>, Response> {
         if let Some(url) = url_option {
             match state.image.fetcher.fetch_image(url).await {
-                Ok(validated) => {
-                    tracing::info!("Successfully fetched {} from: {}", name, url);
-                    Ok(Some(validated))
-                }
+                Ok(validated) => Ok(Some(validated)),
                 Err(e) => match state.image.fallback {
-                    ImageFallbackBehavior::Skip => {
-                        tracing::warn!(
-                            "Failed to fetch {} from {}: {} - skipping {} element",
-                            name,
-                            url,
-                            e,
-                            name
-                        );
-                        Ok(None)
-                    }
-                    ImageFallbackBehavior::Error => {
-                        tracing::error!("Failed to fetch {} from {}: {}", name, url, e);
-                        Err((
-                            StatusCode::INTERNAL_SERVER_ERROR,
-                            format!("Failed to fetch {}: {}", name, e),
-                        )
-                            .into_response())
-                    }
+                    ImageFallbackBehavior::Skip => Ok(None),
+                    ImageFallbackBehavior::Error => Err((
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        format!("Failed to fetch {}: {}", name, e),
+                    )
+                        .into_response()),
                 },
             }
         } else {

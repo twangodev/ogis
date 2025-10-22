@@ -69,7 +69,6 @@ impl ImageFetcher {
     pub async fn fetch_image(&self, url: &str) -> Result<ValidatedImage, ImageFetchError> {
         // Stage 0: Check cache first
         if let Some(cached_bytes) = self.cache.get(url).await {
-            tracing::debug!("Cache hit for URL: {}", url);
             // Re-detect MIME type from cached bytes
             let mime_type = infer::get(&cached_bytes)
                 .map(|k| k.mime_type().to_string())
@@ -77,6 +76,7 @@ impl ImageFetcher {
             return Ok(ValidatedImage {
                 bytes: cached_bytes,
                 mime_type,
+                cached: true,
             });
         }
 
