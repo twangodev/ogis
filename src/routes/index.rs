@@ -75,7 +75,9 @@ impl RequestLog {
 
 /// Extract domain from URL (no path or query params)
 fn extract_domain(url: &str) -> Option<String> {
-    url::Url::parse(url).ok().and_then(|u| u.host_str().map(String::from))
+    url::Url::parse(url)
+        .ok()
+        .and_then(|u| u.host_str().map(String::from))
 }
 
 #[utoipa::path(
