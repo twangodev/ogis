@@ -1,3 +1,4 @@
+use bytesize::ByteSize;
 use clap::{Args, Parser, ValueEnum};
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
@@ -55,9 +56,9 @@ pub struct ImageSettings {
     #[arg(long, default_value = "5242880", env = "OGIS_LOGO_MAX_SIZE")]
     pub max_size_bytes: usize,
 
-    /// Logo cache maximum entries
-    #[arg(long, default_value = "100", env = "OGIS_LOGO_CACHE_SIZE")]
-    pub cache_size: u64,
+    /// Cache maximum size (default: 2GB, supports formats like "512MB", "1.5GiB")
+    #[arg(long, default_value = "2GB", env = "OGIS_CACHE_MAX_BYTES")]
+    pub cache_max_bytes: ByteSize,
 
     /// Logo cache TTL in seconds (default: 1 hour)
     #[arg(long, default_value = "3600", env = "OGIS_LOGO_CACHE_TTL")]
@@ -74,6 +75,17 @@ pub struct ImageSettings {
     /// Behavior when image URL fetch fails
     #[arg(long, default_value = "skip", env = "OGIS_IMAGE_FALLBACK")]
     pub fallback: ImageFallbackBehavior,
+}
+
+impl ImageSettings {
+    /// Get effective cache size with safety bounds [256 MB, 8 GB]
+    pub fn effective_cache_size(&self) -> u64 {
+        const MIN_CACHE_BYTES: u64 = 256 * 1024 * 1024; // 256 MB
+        const MAX_CACHE_BYTES: u64 = 8 * 1024 * 1024 * 1024; // 8 GB
+
+        // Apply safety bounds
+        self.cache_max_bytes.as_u64().clamp(MIN_CACHE_BYTES, MAX_CACHE_BYTES)
+    }
 }
 
 #[derive(Parser)]

@@ -47,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         config.image.connect_timeout_secs,
         config.image.total_timeout_secs,
         config.image.max_size_bytes,
-        config.image.cache_size,
+        config.image.effective_cache_size(),
         config.image.cache_ttl_secs,
         config.image.max_redirects,
         config.image.allow_http,

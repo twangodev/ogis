@@ -8,9 +8,18 @@ pub struct ImageCache {
 }
 
 impl ImageCache {
-    pub fn new(cache_size: u64, cache_ttl_secs: u64) -> Self {
+    /// Create a new cache with byte-based memory limit
+    ///
+    /// `cache_max_bytes`: Total bytes the cache can hold (not entry count)
+    /// `cache_ttl_secs`: Time-to-live for cached entries in seconds
+    pub fn new(cache_max_bytes: u64, cache_ttl_secs: u64) -> Self {
         let cache = Cache::builder()
-            .max_capacity(cache_size)
+            // Weigher: count actual bytes of each cached image
+            .weigher(|_key: &String, value: &Arc<Vec<u8>>| -> u32 {
+                value.len().try_into().unwrap_or(u32::MAX)
+            })
+            // max_capacity now represents total bytes (not entry count)
+            .max_capacity(cache_max_bytes)
             .time_to_live(Duration::from_secs(cache_ttl_secs))
             .build();
 
