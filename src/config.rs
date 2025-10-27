@@ -84,7 +84,9 @@ impl ImageSettings {
         const MAX_CACHE_BYTES: u64 = 8 * 1024 * 1024 * 1024; // 8 GB
 
         // Apply safety bounds
-        self.cache_max_bytes.as_u64().clamp(MIN_CACHE_BYTES, MAX_CACHE_BYTES)
+        self.cache_max_bytes
+            .as_u64()
+            .clamp(MIN_CACHE_BYTES, MAX_CACHE_BYTES)
     }
 }
 
