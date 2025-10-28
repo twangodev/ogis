@@ -26,7 +26,7 @@ impl ImageFetcher {
         connect_timeout_secs: u64,
         total_timeout_secs: u64,
         max_size: usize,
-        cache_size: u64,
+        cache_max_bytes: u64,
         cache_ttl_secs: u64,
         max_redirects: usize,
         allow_http: bool,
@@ -43,10 +43,12 @@ impl ImageFetcher {
             .build()?;
 
         // Initialize cache
-        let cache = ImageCache::new(cache_size, cache_ttl_secs);
+        let cache = ImageCache::new(cache_max_bytes, cache_ttl_secs);
 
+        let cache_mb = cache_max_bytes / (1024 * 1024);
         tracing::info!(
-            "ImageFetcher initialized with GlobalResolver (SSRF protection), HTTP allowed: {}",
+            "ImageFetcher initialized with {}MB cache (SSRF protection), HTTP allowed: {}",
+            cache_mb,
             allow_http
         );
 
