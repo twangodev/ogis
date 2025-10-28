@@ -17,8 +17,6 @@ pub async fn fetch_http(
     client: &Client,
     max_size: usize,
 ) -> Result<FetchedImage, ImageFetchError> {
-    tracing::info!("Fetching image from URL: {}", parsed.original);
-
     // Make HTTP request (custom DNS resolver validates IPs)
     let response = client
         .get(parsed.url.as_str())

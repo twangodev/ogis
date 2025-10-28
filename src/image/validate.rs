@@ -4,6 +4,7 @@ use super::fetch::FetchedImage;
 pub struct ValidatedImage {
     pub bytes: Vec<u8>,
     pub mime_type: String,
+    pub cached: bool,
 }
 
 /// Stage 3: Validate content type using magic numbers
@@ -27,15 +28,9 @@ pub fn validate_content_type(fetched: FetchedImage) -> Result<ValidatedImage, Im
         return Err(ImageFetchError::InvalidContentType);
     }
 
-    tracing::info!(
-        "Successfully validated {} image ({} bytes) from {}",
-        mime_type,
-        fetched.bytes.len(),
-        fetched.url
-    );
-
     Ok(ValidatedImage {
         bytes: fetched.bytes,
         mime_type: mime_type.to_string(),
+        cached: false,
     })
 }
