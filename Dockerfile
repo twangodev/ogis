@@ -14,6 +14,12 @@ WORKDIR /app
 
 COPY --from=builder /app/target/release/ogis .
 
+# Include default templates and fonts in the image. They can be overridden by mounting volumes.
+COPY fonts ./fonts
+COPY templates ./templates
+COPY fonts.yaml ./fonts.yaml
+COPY templates.yaml ./templates.yaml
+
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
