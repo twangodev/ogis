@@ -29,6 +29,7 @@ docker compose up -d           # Run with Docker
 - `src/image/` - Image fetching with SSRF protection (blocks private IPs)
 - `src/generator/svg.rs` - SVG template processing (replaces `ogis_title`, `ogis_description`, etc.)
 - `src/generator/png.rs` - SVG to PNG rendering
+
 ## Common Tasks
 
 ### Add new template
