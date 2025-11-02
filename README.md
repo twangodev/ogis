@@ -19,7 +19,7 @@ All generation endpoints support the following features:
 - **Template Choice**: Choose built-in `template` designs, make your own, and customize `colors` as needed
 - **Authentication**: Secure your image generation with HMAC `signature` validation
 
-All of this is available via a simple HTTP API, passed as query parameters.
+All of this is available via a simple HTTP API, which you can configure using query parameters.
 
 ```http
 GET https://img.ogis.dev/?title=OpenGraph&description=MadeEasy
