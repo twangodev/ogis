@@ -14,7 +14,7 @@ ogis abstracts away the complexity into a fast, simple to use platform to genera
 All generation endpoints support the following features:
 
 - **Dynamic Text**: Customize `title`, `subtitle`, and `description` text
-- **Custom Logo**: Add your own `logo`, as well as an `image`
+- **Custom Logo**: Add your own `logo`, as well as an `image`. This should be a publicly accessible URL.
 - **Font Selection**: Choose from a variety of `font` options, with support for international characters
 - **Template Choice**: Choose built-in `template` designs, make your own, and customize `colors` as needed
 - **Authentication**: Secure your image generation with HMAC `signature` validation
