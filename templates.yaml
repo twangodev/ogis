@@ -3,15 +3,68 @@ default: twilight
 templates:
   - name: twilight
     file: templates/twilight.svg
+    colors:
+      background: "#0f0f23"
+      primary: "#764ba2"
+      secondary: "#667eea"
+      title_text: "#ffffff"
+      subtitle_text: "#9ca3af"
+      description_text: "#d1d5db"
   - name: daybreak
     file: templates/daybreak.svg
+    colors:
+      background: "#f9fafb"
+      gradient_accent: "#fbbf24"
+      title_text: "#111827"
+      subtitle_text: "#6b7280"
+      description_text: "#4b5563"
+      logo_accent: "#f59e0b"
+      image_accent: "#ea580c"
   - name: minimal
     file: templates/minimal.svg
+    colors:
+      background: "#ffffff"
+      border: "#d1d5db"
+      title_text: "#111827"
+      subtitle_text: "#6b7280"
+      description_text: "#9ca3af"
   - name: stripe
     file: templates/stripe.svg
+    colors:
+      background: "#fafafa"
+      accent_primary: "#3b82f6"
+      accent_secondary: "#1d4ed8"
+      border: "#e5e7eb"
+      box_background: "#ffffff"
+      title_text: "#111827"
+      subtitle_text: "#6b7280"
+      description_text: "#374151"
   - name: gradient
     file: templates/gradient.svg
+    colors:
+      background: "#1a1a2e"
+      gradient_pink: "#ec4899"
+      gradient_yellow: "#fbbf24"
+      gradient_blue: "#3b82f6"
+      gradient_purple: "#8b5cf6"
+      text: "#ffffff"
   - name: hero
     file: templates/hero.svg
+    colors:
+      background: "#1e293b"
+      placeholder_text: "#475569"
+      title_text: "#ffffff"
+      subtitle_text: "#e2e8f0"
+      description_text: "#f1f5f9"
   - name: modern
     file: templates/modern.svg
+    colors:
+      gradient_start: "#f8fafc"
+      gradient_end: "#e2e8f0"
+      accent_blue: "#6366f1"
+      accent_pink: "#ec4899"
+      box_background: "#ffffff"
+      border: "#cbd5e1"
+      title_text: "#0f172a"
+      subtitle_text: "#64748b"
+      description_text: "#475569"

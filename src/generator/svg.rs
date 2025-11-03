@@ -9,23 +9,38 @@ use super::events::{
 use crate::image::ValidatedImage;
 use crate::templates::TemplateMap;
 
-fn get_template<'a>(
-    template_map: &'a TemplateMap,
-    template_name: Option<&str>,
-) -> Result<&'a str, String> {
-    let name = template_name.unwrap_or(&template_map.default);
-
+fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Result<&'a str, String> {
     template_map
         .templates
-        .get(name)
+        .get(template_name)
         .map(|s| s.as_str())
         .ok_or_else(|| {
             format!(
                 "Template '{}' not found. Available templates: {}",
-                name,
+                template_name,
                 template_map.available_templates()
             )
         })
+}
+
+/// Apply color overrides to template content by replacing default hex values
+fn apply_color_overrides(
+    content: &str,
+    template_name: &str,
+    templates: &TemplateMap,
+    color_overrides: &HashMap<String, String>,
+) -> String {
+    let Some(template_colors) = templates.colors.get(template_name) else {
+        return content.to_string();
+    };
+
+    let mut result = content.to_string();
+    for (color_name, new_hex) in color_overrides {
+        if let Some(default_hex) = template_colors.get(color_name) {
+            result = result.replace(default_hex, new_hex);
+        }
+    }
+    result
 }
 
 pub fn generate_svg(
@@ -34,11 +49,14 @@ pub fn generate_svg(
     subtitle: &str,
     logo: Option<ValidatedImage>,
     image: Option<ValidatedImage>,
-    template: Option<&str>,
+    template_name: &str,
     templates: &TemplateMap,
+    color_overrides: &HashMap<String, String>,
 ) -> Result<String, String> {
-    let template_content = get_template(templates, template)?;
-    let mut reader = Reader::from_str(template_content);
+    let template_content = get_template(templates, template_name)?;
+    let content = apply_color_overrides(template_content, template_name, templates, color_overrides);
+
+    let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
 
     let mut writer = Writer::new(Cursor::new(Vec::new()));
