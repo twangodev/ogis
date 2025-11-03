@@ -68,13 +68,18 @@ impl HmacValidator {
     }
 
     /// Build canonical query string from params (sorted, excluding signature)
+    /// Parameters are properly URL-encoded to prevent injection attacks
     fn build_canonical_query(&self, params: &BTreeMap<String, String>) -> String {
-        params
-            .iter()
-            .filter(|(k, _)| *k != "signature") // Exclude signature param
-            .map(|(k, v)| format!("{}={}", k, v))
-            .collect::<Vec<_>>()
-            .join("&")
+        let mut serializer = url::form_urlencoded::Serializer::new(String::new());
+
+        // BTreeMap already keeps keys sorted alphabetically
+        for (k, v) in params.iter() {
+            if k != "signature" {
+                serializer.append_pair(k, v);
+            }
+        }
+
+        serializer.finish()
     }
 
     /// Generate signature for testing/client examples
@@ -148,5 +153,40 @@ mod tests {
 
         let canonical = validator.build_canonical_query(&params);
         assert_eq!(canonical, "a=first&m=middle&z=last");
+    }
+
+    #[test]
+    fn test_url_encoding_prevents_injection() {
+        let validator = HmacValidator::new(b"secret".to_vec());
+
+        let mut params = BTreeMap::new();
+        params.insert("title".to_string(), "Hello&World".to_string());
+        params.insert("desc".to_string(), "key=value".to_string());
+
+        let canonical = validator.build_canonical_query(&params);
+
+        // Special characters should be URL-encoded
+        assert!(!canonical.contains("Hello&World"));
+        assert!(!canonical.contains("key=value"));
+        assert_eq!(canonical, "desc=key%3Dvalue&title=Hello%26World");
+    }
+
+    #[test]
+    fn test_signature_collision_prevention() {
+        let validator = HmacValidator::new(b"secret".to_vec());
+
+        // Single parameter with injected &
+        let mut params1 = BTreeMap::new();
+        params1.insert("a".to_string(), "1&b=2".to_string());
+        let canonical1 = validator.build_canonical_query(&params1);
+
+        // Two separate parameters
+        let mut params2 = BTreeMap::new();
+        params2.insert("a".to_string(), "1".to_string());
+        params2.insert("b".to_string(), "2".to_string());
+        let canonical2 = validator.build_canonical_query(&params2);
+
+        // Should produce different canonical strings
+        assert_ne!(canonical1, canonical2);
     }
 }
