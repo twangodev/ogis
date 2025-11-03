@@ -15,7 +15,7 @@ pub fn create_router(state: AppState) -> Router {
         .route("/", get(index::generate))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
-            hmac_auth_middleware,
+            hmac_auth_middleware, // Apply HMAC middleware to routes above
         ))
         .route("/health", get(health::health_check))
         .merge(swagger_ui)
