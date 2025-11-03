@@ -96,7 +96,7 @@ impl OgParams {
                         ));
                     }
 
-                    color_overrides.insert(key.clone(), format!("#{}", value.to_lowercase()));
+                    color_overrides.insert(key.to_string(), format!("#{}", value.to_lowercase()));
                 }
             }
         }
