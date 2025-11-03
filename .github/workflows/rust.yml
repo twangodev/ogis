@@ -45,7 +45,7 @@ jobs:
           tool: cargo-tarpaulin
 
       - name: Generate coverage
-        run: cargo tarpaulin --out xml
+        run: cargo tarpaulin --out xml --output-dir ./coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
