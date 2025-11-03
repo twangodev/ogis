@@ -100,14 +100,17 @@ pub struct HmacSettings {
 }
 
 impl HmacSettings {
-    /// Check if HMAC authentication is enabled
+    /// Check if HMAC authentication is enabled (non-empty secret configured)
     pub fn is_enabled(&self) -> bool {
-        self.secret.is_some()
+        self.secret_bytes().is_some()
     }
 
-    /// Get secret as bytes (returns None if not enabled)
+    /// Get secret as bytes (returns None if not enabled or empty)
     pub fn secret_bytes(&self) -> Option<Vec<u8>> {
-        self.secret.as_ref().map(|s| s.as_bytes().to_vec())
+        self.secret
+            .as_ref()
+            .filter(|s| !s.is_empty())
+            .map(|s| s.as_bytes().to_vec())
     }
 }
 
