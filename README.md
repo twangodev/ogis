@@ -14,12 +14,12 @@ ogis abstracts away the complexity into a fast, simple to use platform to genera
 All generation endpoints support the following features:
 
 - **Dynamic Text**: Customize `title`, `subtitle`, and `description` text
-- **Custom Logo**: Add your own `logo`, as well as an `image`
+- **Custom Logo**: Add your own `logo`, as well as an `image`. This should be a publicly accessible URL.
 - **Font Selection**: Choose from a variety of `font` options, with support for international characters
 - **Template Choice**: Choose built-in `template` designs, make your own, and customize `colors` as needed
 - **Authentication**: Secure your image generation with HMAC `signature` validation
 
-All of this is available via a simple HTTP API, passed as query parameters.
+All of this is available via a simple HTTP API, which you can configure using query parameters.
 
 ```http
 GET https://img.ogis.dev/?title=OpenGraph&description=MadeEasy
