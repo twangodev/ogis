@@ -24,7 +24,7 @@ fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Resul
 }
 
 /// Apply color overrides to template content by replacing default hex values
-fn apply_color_overrides(
+fn override_colors(
     content: &str,
     template_name: &str,
     templates: &TemplateMap,
@@ -54,7 +54,7 @@ pub fn generate_svg(
     color_overrides: &HashMap<String, String>,
 ) -> Result<String, String> {
     let template_content = get_template(templates, template_name)?;
-    let content = apply_color_overrides(template_content, template_name, templates, color_overrides);
+    let content = override_colors(template_content, template_name, templates, color_overrides);
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
