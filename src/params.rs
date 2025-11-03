@@ -1,6 +1,5 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use regex::Regex;
 use serde::Deserialize;
 use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
@@ -8,6 +7,12 @@ use utoipa::{IntoParams, ToSchema};
 use crate::AppState;
 use crate::config::ImageFallbackBehavior;
 use crate::image::ValidatedImage;
+
+/// Validate that a string is exactly 6 hexadecimal characters
+#[inline]
+fn is_valid_hex_color(s: &str) -> bool {
+    s.len() == 6 && s.chars().all(|c| c.is_ascii_hexdigit())
+}
 
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
@@ -80,12 +85,11 @@ impl OgParams {
         let mut color_overrides = HashMap::new();
 
         let template_colors = state.templates.colors.get(template_name);
-        let hex_regex = Regex::new(r"^[0-9A-Fa-f]{6}$").unwrap();
 
         for (key, value) in &self.extra {
             if let Some(template_colors_map) = template_colors {
                 if template_colors_map.contains_key(key) {
-                    if !hex_regex.is_match(value) {
+                    if !is_valid_hex_color(value) {
                         return Err(format!(
                             "Invalid hex color '{}' for parameter '{}'. Expected 6 hex characters (e.g., 'FF0000')",
                             value, key

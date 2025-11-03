@@ -1361,7 +1361,6 @@ dependencies = [
  "ip_rfc",
  "moka",
  "quick-xml",
- "regex",
  "reqwest",
  "resvg",
  "saphyr",
