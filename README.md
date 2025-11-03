@@ -3,6 +3,7 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/twangodev/ogis/rust.yml?logo=rust)
 ![Docker Pulls](https://img.shields.io/docker/pulls/twango/ogis?logo=docker)
 ![Docker Image Size](https://img.shields.io/docker/image-size/twango/ogis/latest?logo=docker)
+![Codecov](https://img.shields.io/codecov/c/github/twangodev/ogis)
 ![License](https://img.shields.io/github/license/twangodev/ogis)
 
 
