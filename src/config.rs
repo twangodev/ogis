@@ -90,6 +90,30 @@ impl ImageSettings {
     }
 }
 
+/// HMAC authentication settings
+#[derive(Clone, Debug, Args)]
+pub struct HmacSettings {
+    /// HMAC secret key for request signing (if set, auth is required)
+    /// Generate with: openssl rand -hex 32
+    #[arg(long, env = "OGIS_HMAC_SECRET")]
+    pub secret: Option<String>,
+}
+
+impl HmacSettings {
+    /// Check if HMAC authentication is enabled (non-empty secret configured)
+    pub fn is_enabled(&self) -> bool {
+        self.secret_bytes().is_some()
+    }
+
+    /// Get secret as bytes (returns None if not enabled or empty)
+    pub fn secret_bytes(&self) -> Option<Vec<u8>> {
+        self.secret
+            .as_ref()
+            .filter(|s| !s.is_empty())
+            .map(|s| s.as_bytes().to_vec())
+    }
+}
+
 #[derive(Parser)]
 #[command(name = "ogis")]
 #[command(version)]
@@ -108,6 +132,9 @@ pub struct Config {
 
     #[command(flatten)]
     pub image: ImageSettings,
+
+    #[command(flatten)]
+    pub hmac: HmacSettings,
 }
 
 impl Config {

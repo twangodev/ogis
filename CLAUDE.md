@@ -44,6 +44,14 @@ docker compose up -d           # Run with Docker
 ### Modify defaults
 Edit `src/config.rs` for default title/description/logo values.
 
+## Security
+
+### HMAC Authentication
+- Optional signature-based authentication using HMAC-SHA256
+- Enabled when `OGIS_HMAC_SECRET` is set
+- Signature computed over canonical query string (params sorted alphabetically, excluding signature param)
+- Code in `src/auth/` module
+
 ## Important Notes
 - No unit tests exist
 - Cache is in-memory only (Moka library)
