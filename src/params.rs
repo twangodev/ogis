@@ -1,11 +1,18 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde::Deserialize;
+use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::AppState;
 use crate::config::ImageFallbackBehavior;
 use crate::image::ValidatedImage;
+
+/// Validate that a string is exactly 6 hexadecimal characters
+#[inline]
+fn is_valid_hex_color(s: &str) -> bool {
+    s.len() == 6 && s.chars().all(|c| c.is_ascii_hexdigit())
+}
 
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
@@ -33,6 +40,9 @@ pub struct OgParams {
     #[schema(example = "a1b2c3d4e5f6...")]
     #[allow(dead_code)] // Used by middleware, not by route handler
     pub signature: Option<String>,
+    /// Additional parameters (used for color customization)
+    #[serde(flatten)]
+    pub extra: HashMap<String, String>,
 }
 
 impl OgParams {
@@ -64,6 +74,34 @@ impl OgParams {
         }
 
         Ok(())
+    }
+
+    /// Extract and validate color overrides from extra parameters
+    pub fn extract_colors(
+        &self,
+        template_name: &str,
+        state: &AppState,
+    ) -> Result<HashMap<String, String>, String> {
+        let mut color_overrides = HashMap::new();
+
+        let template_colors = state.templates.colors.get(template_name);
+
+        for (key, value) in &self.extra {
+            if let Some(template_colors_map) = template_colors {
+                if template_colors_map.contains_key(key) {
+                    if !is_valid_hex_color(value) {
+                        return Err(format!(
+                            "Invalid hex color '{}' for parameter '{}'. Expected 6 hex characters (e.g., 'FF0000')",
+                            value, key
+                        ));
+                    }
+
+                    color_overrides.insert(key.to_string(), format!("#{}", value.to_lowercase()));
+                }
+            }
+        }
+
+        Ok(color_overrides)
     }
 
     /// Fetch logo image if URL provided, respecting fallback behavior

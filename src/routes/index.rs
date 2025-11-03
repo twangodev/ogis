@@ -142,6 +142,26 @@ pub async fn generate(
     // Apply defaults for missing params
     let (title, description, subtitle) = params.with_defaults(&state);
 
+    // Determine template name for color validation
+    let template_name = params
+        .template
+        .as_deref()
+        .unwrap_or(&state.templates.default);
+
+    let color_overrides = match params.extract_colors(template_name, &state) {
+        Ok(colors) => colors,
+        Err(err) => {
+            log.status = StatusCode::BAD_REQUEST;
+            log.error = Some(format!("Color validation: {}", err));
+            log.log();
+            return (
+                StatusCode::BAD_REQUEST,
+                format!("Invalid color parameter: {}", err),
+            )
+                .into_response();
+        }
+    };
+
     // Generate SVG
     let svg_data = match generator::generate_svg(
         &title,
@@ -149,8 +169,9 @@ pub async fn generate(
         &subtitle,
         logo,
         image,
-        params.template.as_deref(),
+        template_name,
         &state.templates,
+        &color_overrides,
     ) {
         Ok(data) => data,
         Err(err) => {
