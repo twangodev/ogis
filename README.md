@@ -72,6 +72,9 @@ Check out the full supported templates at [ogis.dev/templates](https://ogis.dev/
 
 ## Deploy
 
+[![Deploy on Railway](https://img.shields.io/badge/Deploy%20on-Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.com/deploy/Ax4OH3?referralCode=rXZ78U&utm_medium=integration&utm_source=template&utm_campaign=generic)
+[![Deploy to Google Cloud](https://img.shields.io/badge/Deploy%20to-Google%20Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white)](https://deploy.cloud.run/?git_repo=https://github.com/twangodev/ogis)
+
 Deploy ogis with a single command:
 
 ```bash
