@@ -86,7 +86,8 @@ fn extract_domain(url: &str) -> Option<String> {
     params(OgParams),
     responses(
         (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
-        (status = 400, description = "Invalid input - field exceeds maximum length"),
+        (status = 400, description = "Invalid input - field exceeds maximum length or invalid signature format"),
+        (status = 401, description = "Authentication required or invalid signature"),
         (status = 500, description = "Failed to generate image")
     ),
     tag = "image"
