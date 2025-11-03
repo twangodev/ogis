@@ -1,3 +1,4 @@
+mod auth;
 mod config;
 mod fonts;
 mod generator;
@@ -23,6 +24,7 @@ pub struct AppState {
     pub max_input_length: usize,
     pub defaults: config::Defaults,
     pub image: ImageState,
+    pub hmac_validator: Option<Arc<auth::HmacValidator>>,
 }
 
 #[tokio::main]
@@ -53,6 +55,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         config.image.allow_http,
     )?);
 
+    // Initialize HMAC validator if configured
+    let hmac_validator = if config.hmac.is_enabled() {
+        let secret = config
+            .hmac
+            .secret_bytes()
+            .expect("Secret should exist when enabled");
+        tracing::info!("HMAC authentication enabled");
+        Some(Arc::new(auth::HmacValidator::new(secret)))
+    } else {
+        tracing::info!("HMAC authentication disabled");
+        None
+    };
+
     let state = AppState {
         fontdb: Arc::new(fontdb),
         templates: Arc::new(templates),
@@ -62,6 +77,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             fetcher: image_fetcher,
             fallback: config.image.fallback,
         },
+        hmac_validator,
     };
 
     let app = routes::create_router(state);
