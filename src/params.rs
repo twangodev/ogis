@@ -28,6 +28,11 @@ pub struct OgParams {
     /// Template name (e.g., "twilight", "daybreak")
     #[serde(default)]
     pub template: Option<String>,
+    /// HMAC signature (required when authentication is enabled)
+    #[serde(default)]
+    #[schema(example = "a1b2c3d4e5f6...")]
+    #[allow(dead_code)] // Used by middleware, not by route handler
+    pub signature: Option<String>,
 }
 
 impl OgParams {
