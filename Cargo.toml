@@ -10,8 +10,10 @@ bytesize = "2.1.0"
 clap = { version = "4.5.49", features = ["derive", "env"] }
 dotenvy = "0.15.7"
 futures-util = "0.3.31"
+hex = "0.4.3"
 hickory-resolver = "0.25.2"
-infer = "0.16"
+hmac = "0.12.1"
+infer = "0.19.0"
 ip_rfc = "0.1.0"
 moka = { version = "0.12", features = ["future"] }
 quick-xml = "0.38.3"
@@ -19,6 +21,8 @@ reqwest = { version = "0.12", features = ["default-tls", "stream"] }
 resvg = "0.45.1"
 saphyr = "0.0.6"
 serde = { version = "1.0.228", features = ["derive"] }
+sha2 = "0.10"
+thiserror = "2.0.17"
 tiny-skia = "0.11.4"
 tokio = { version = "1.48.0", features = ["full"] }
 tracing = "0.1.41"
