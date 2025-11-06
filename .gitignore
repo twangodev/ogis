@@ -23,3 +23,6 @@ target
 # Environment variables
 .env
 !.env.example
+
+# Code Coverage Reports
+coverage/
