@@ -2,12 +2,14 @@ use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
 use std::collections::HashMap;
 use std::io::Cursor;
+use std::sync::Arc;
 
 use super::events::{
     ImageReplacement, State, handle_default, handle_empty, handle_end, handle_start,
 };
+use super::text_measurement::truncate_text_to_width;
 use crate::image::ValidatedImage;
-use crate::templates::TemplateMap;
+use crate::templates::{TemplateFonts, TemplateMap, TextWidthConstraints};
 
 fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Result<&'a str, String> {
     template_map
@@ -21,6 +23,52 @@ fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Resul
                 template_map.available_templates()
             )
         })
+}
+
+/// Get cached font properties for a template
+fn get_template_fonts<'a>(templates: &'a TemplateMap, template_name: &str) -> &'a TemplateFonts {
+    templates
+        .font_properties
+        .get(template_name)
+        .expect("Template fonts should have been parsed during loading")
+}
+
+/// Get width constraints for a template, falling back to defaults
+fn get_width_constraints(templates: &TemplateMap, template_name: &str) -> TextWidthConstraints {
+    templates
+        .width_constraints
+        .get(template_name)
+        .cloned()
+        .unwrap_or_else(TextWidthConstraints::new)
+}
+
+/// Truncate text to fit within width constraints using cached font properties
+fn apply_truncation(
+    title: &str,
+    description: &str,
+    subtitle: &str,
+    constraints: &TextWidthConstraints,
+    fonts: &TemplateFonts,
+    fontdb: &Arc<usvg::fontdb::Database>,
+) -> Result<(String, String, String), String> {
+    let truncated_title =
+        truncate_text_to_width(title, constraints.get_title_width(), &fonts.title, fontdb)?;
+
+    let truncated_description = truncate_text_to_width(
+        description,
+        constraints.get_description_width(),
+        &fonts.description,
+        fontdb,
+    )?;
+
+    let truncated_subtitle = truncate_text_to_width(
+        subtitle,
+        constraints.get_subtitle_width(),
+        &fonts.subtitle,
+        fontdb,
+    )?;
+
+    Ok((truncated_title, truncated_description, truncated_subtitle))
 }
 
 /// Apply color overrides to template content by replacing default hex values
@@ -52,20 +100,27 @@ pub fn generate_svg(
     template_name: &str,
     templates: &TemplateMap,
     color_overrides: &HashMap<String, String>,
+    fontdb: &Arc<usvg::fontdb::Database>,
 ) -> Result<String, String> {
     let template_content = get_template(templates, template_name)?;
     let content = override_colors(template_content, template_name, templates, color_overrides);
+
+    // Get cached font properties and width constraints, then apply truncation
+    let fonts = get_template_fonts(templates, template_name);
+    let constraints = get_width_constraints(templates, template_name);
+    let (truncated_title, truncated_description, truncated_subtitle) =
+        apply_truncation(title, description, subtitle, &constraints, fonts, fontdb)?;
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
 
     let mut writer = Writer::new(Cursor::new(Vec::new()));
 
-    // Create text replacement map: element ID -> replacement text
+    // Create text replacement map with truncated text: element ID -> replacement text
     let text_replacements = HashMap::from([
-        ("ogis_title".to_string(), title.to_string()),
-        ("ogis_description".to_string(), description.to_string()),
-        ("ogis_subtitle".to_string(), subtitle.to_string()),
+        ("ogis_title".to_string(), truncated_title),
+        ("ogis_description".to_string(), truncated_description),
+        ("ogis_subtitle".to_string(), truncated_subtitle),
     ]);
 
     // Convert ValidatedImage to ImageReplacement
