@@ -1,8 +1,8 @@
 sans-serif:
-  - "fonts/Roboto.ttf"
-  - "fonts/NotoSans-Regular.ttf"
-  - "fonts/NotoSansCJK-Medium.ttc"
-  - "fonts/NotoSansArabic-Regular.ttf"
+  - "fonts/Roboto-VariableFont.ttf"
+  - "fonts/NotoSans-VariableFont.ttf"
+  - "fonts/NotoSansCJK-VariableFont.ttc"
+  - "fonts/NotoSansArabic-VariableFont.ttf"
 serif:
   - "fonts/NotoSerif.ttf"
 monospace:
