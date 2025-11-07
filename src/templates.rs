@@ -21,6 +21,12 @@ pub struct TemplateFonts {
     pub subtitle: FontProperties,
 }
 
+impl Default for TextWidthConstraints {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TextWidthConstraints {
     pub fn new() -> Self {
         Self::default()
@@ -105,8 +111,7 @@ fn parse_width_constraints(template_node: &Yaml) -> TextWidthConstraints {
     if let Some((_, widths_value)) = template_mapping
         .iter()
         .find(|(key, _)| key.as_str() == Some("max_widths"))
-    {
-        if let Yaml::Mapping(widths) = widths_value {
+        && let Yaml::Mapping(widths) = widths_value {
             // Parse title width
             if let Some((_, title_value)) = widths.iter().find(|(k, _)| k.as_str() == Some("title"))
             {
@@ -140,7 +145,6 @@ fn parse_width_constraints(template_node: &Yaml) -> TextWidthConstraints {
                 }
             }
         }
-    }
 
     constraints
 }
