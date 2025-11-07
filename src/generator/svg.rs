@@ -31,16 +31,13 @@ fn get_template_fonts<'a>(
     templates: &'a TemplateMap,
     template_name: &str,
 ) -> Result<&'a TemplateFonts, String> {
-    templates
-        .font_properties
-        .get(template_name)
-        .ok_or_else(|| {
-            format!(
-                "Font properties not found for template '{}'. \
+    templates.font_properties.get(template_name).ok_or_else(|| {
+        format!(
+            "Font properties not found for template '{}'. \
                 This may indicate a template loading error.",
-                template_name
-            )
-        })
+            template_name
+        )
+    })
 }
 
 /// Get width constraints for a template, falling back to defaults
@@ -64,7 +61,8 @@ fn apply_truncation(
     // Create FontSystem once and reuse it for all truncation operations
     // This is a major performance optimization: previously we created a new FontSystem
     // for each text measurement (21-63 times per request), now we create it just once
-    let mut font_system = FontSystem::new_with_locale_and_db("en-US".into(), fontdb.as_ref().clone());
+    let mut font_system =
+        FontSystem::new_with_locale_and_db("en-US".into(), fontdb.as_ref().clone());
 
     let truncated_title = truncate_text_to_width(
         title,
@@ -175,4 +173,38 @@ pub fn generate_svg(
     }
 
     String::from_utf8(writer.into_inner().into_inner()).map_err(|e| format!("UTF-8 error: {}", e))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_template_fonts_not_found() {
+        let templates = TemplateMap {
+            templates: HashMap::new(),
+            default: "default".to_string(),
+            colors: HashMap::new(),
+            width_constraints: HashMap::new(),
+            font_properties: HashMap::new(),
+        };
+
+        let result = get_template_fonts(&templates, "test");
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Font properties not found"));
+    }
+
+    #[test]
+    fn test_get_width_constraints_returns_defaults() {
+        let templates = TemplateMap {
+            templates: HashMap::new(),
+            default: "default".to_string(),
+            colors: HashMap::new(),
+            width_constraints: HashMap::new(),
+            font_properties: HashMap::new(),
+        };
+
+        let constraints = get_width_constraints(&templates, "test");
+        assert_eq!(constraints.get_title_width(), 900.0);
+    }
 }

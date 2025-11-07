@@ -106,9 +106,34 @@ pub fn truncate_text_to_width(
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
+    fn create_test_font_system() -> FontSystem {
+        // Load system fonts so cosmic-text has fonts available
+        let mut fontdb = usvg::fontdb::Database::new();
+        fontdb.load_system_fonts();
+        FontSystem::new_with_locale_and_db("en-US".into(), fontdb)
+    }
+
+    fn create_test_font_props() -> FontProperties {
+        FontProperties {
+            family: "sans-serif".to_string(),
+            size: 24.0,
+            weight: 400,
+        }
+    }
+
     #[test]
-    fn test_truncate_empty_text() {
-        // This test would require setting up SwashFontCache
-        // Skipping for now - integration tests would be better
+    fn test_truncate_long_text() {
+        let mut font_system = create_test_font_system();
+        let font_props = create_test_font_props();
+
+        let text = "This is a very long text that should definitely be truncated";
+        let result = truncate_text_to_width(text, 100.0, &font_props, &mut font_system);
+
+        assert!(result.is_ok());
+        let truncated = result.unwrap();
+        assert!(truncated.len() < text.len());
+        assert!(truncated.ends_with(ELLIPSIS));
     }
 }
