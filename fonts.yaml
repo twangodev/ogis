@@ -1,11 +1,14 @@
 sans-serif:
   - "fonts/Roboto-VariableFont.ttf"
   - "fonts/NotoSans-VariableFont.ttf"
-  - "fonts/NotoSansCJK-VariableFont.ttc"
+  - "fonts/NotoSansCJK/NotoSansCJK-Medium.ttc"
   - "fonts/NotoSansArabic-VariableFont.ttf"
+
 serif:
   - "fonts/NotoSerif.ttf"
+
 monospace:
   - "fonts/JetBrainsMono.ttf"
+
 global-fallback:
   - "fonts/NotoColorEmoji.ttf"
