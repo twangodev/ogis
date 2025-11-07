@@ -1,4 +1,8 @@
-use crate::{AppState, generator::{self, Images, TextContent}, params::OgParams};
+use crate::{
+    AppState,
+    generator::{self, Images, TextContent},
+    params::OgParams,
+};
 use axum::{
     extract::{Query, State},
     http::{StatusCode, header},

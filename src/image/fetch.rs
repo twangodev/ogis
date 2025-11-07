@@ -34,15 +34,16 @@ pub async fn fetch_http(
 
     // Check Content-Length if available to avoid downloading large files
     if let Some(content_length) = response.content_length()
-        && content_length as usize > max_size {
-            tracing::warn!(
-                "Image from {} exceeds max size (Content-Length): {} > {}",
-                parsed.original,
-                content_length,
-                max_size
-            );
-            return Err(ImageFetchError::TooLarge);
-        }
+        && content_length as usize > max_size
+    {
+        tracing::warn!(
+            "Image from {} exceeds max size (Content-Length): {} > {}",
+            parsed.original,
+            content_length,
+            max_size
+        );
+        return Err(ImageFetchError::TooLarge);
+    }
 
     // Stream response body with size limit enforcement
     let bytes = response

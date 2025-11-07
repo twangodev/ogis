@@ -133,8 +133,14 @@ pub fn generate_svg(
     // Get cached font properties and width constraints, then apply truncation
     let fonts = get_template_fonts(templates, template_name)?;
     let constraints = get_width_constraints(templates, template_name);
-    let (truncated_title, truncated_description, truncated_subtitle) =
-        apply_truncation(text.title, text.description, text.subtitle, &constraints, fonts, fontdb)?;
+    let (truncated_title, truncated_description, truncated_subtitle) = apply_truncation(
+        text.title,
+        text.description,
+        text.subtitle,
+        &constraints,
+        fonts,
+        fontdb,
+    )?;
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
