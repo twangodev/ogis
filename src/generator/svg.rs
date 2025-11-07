@@ -51,12 +51,8 @@ fn apply_truncation(
     fonts: &TemplateFonts,
     fontdb: &Arc<usvg::fontdb::Database>,
 ) -> Result<(String, String, String), String> {
-    let truncated_title = truncate_text_to_width(
-        title,
-        constraints.get_title_width(),
-        &fonts.title,
-        fontdb,
-    )?;
+    let truncated_title =
+        truncate_text_to_width(title, constraints.get_title_width(), &fonts.title, fontdb)?;
 
     let truncated_description = truncate_text_to_width(
         description,
@@ -112,14 +108,8 @@ pub fn generate_svg(
     // Get cached font properties and width constraints, then apply truncation
     let fonts = get_template_fonts(templates, template_name);
     let constraints = get_width_constraints(templates, template_name);
-    let (truncated_title, truncated_description, truncated_subtitle) = apply_truncation(
-        title,
-        description,
-        subtitle,
-        &constraints,
-        fonts,
-        fontdb,
-    )?;
+    let (truncated_title, truncated_description, truncated_subtitle) =
+        apply_truncation(title, description, subtitle, &constraints, fonts, fontdb)?;
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
