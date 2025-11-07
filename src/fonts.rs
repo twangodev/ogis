@@ -189,3 +189,114 @@ fn load_global_fallback(fontdb: &mut usvg::fontdb::Database, path: &str) {
     // Global fallbacks are available to all families when characters are missing
     log_font_loaded("Loaded global fallback", &loaded, path);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_family_font_type_from_index() {
+        // Index 0 should be Primary
+        assert!(matches!(
+            FamilyFontType::from_index(0),
+            FamilyFontType::Primary
+        ));
+
+        // Any other index should be Fallback
+        assert!(matches!(
+            FamilyFontType::from_index(1),
+            FamilyFontType::Fallback
+        ));
+        assert!(matches!(
+            FamilyFontType::from_index(2),
+            FamilyFontType::Fallback
+        ));
+        assert!(matches!(
+            FamilyFontType::from_index(100),
+            FamilyFontType::Fallback
+        ));
+    }
+
+    #[test]
+    fn test_get_font_files_in_directory_empty() {
+        let temp_dir = std::env::temp_dir().join("ogis_test_empty");
+        fs::create_dir_all(&temp_dir).unwrap();
+
+        let result = get_font_files_in_directory(temp_dir.to_str().unwrap());
+
+        assert!(result.is_empty());
+
+        fs::remove_dir_all(&temp_dir).ok();
+    }
+
+    #[test]
+    fn test_get_font_files_in_directory_filters_non_fonts() {
+        let temp_dir = std::env::temp_dir().join("ogis_test_filter");
+        fs::create_dir_all(&temp_dir).unwrap();
+
+        // Create test files
+        fs::File::create(temp_dir.join("font1.ttf")).unwrap();
+        fs::File::create(temp_dir.join("font2.otf")).unwrap();
+        fs::File::create(temp_dir.join("font3.ttc")).unwrap();
+        fs::File::create(temp_dir.join("not_a_font.txt")).unwrap();
+        fs::File::create(temp_dir.join("image.png")).unwrap();
+
+        let result = get_font_files_in_directory(temp_dir.to_str().unwrap());
+
+        assert_eq!(result.len(), 3);
+        assert!(result.iter().any(|p| p.ends_with("font1.ttf")));
+        assert!(result.iter().any(|p| p.ends_with("font2.otf")));
+        assert!(result.iter().any(|p| p.ends_with("font3.ttc")));
+        assert!(!result.iter().any(|p| p.ends_with(".txt")));
+        assert!(!result.iter().any(|p| p.ends_with(".png")));
+
+        fs::remove_dir_all(&temp_dir).ok();
+    }
+
+    #[test]
+    fn test_get_font_files_in_directory_sorted() {
+        let temp_dir = std::env::temp_dir().join("ogis_test_sorted");
+        fs::create_dir_all(&temp_dir).unwrap();
+
+        // Create files in non-alphabetical order
+        fs::File::create(temp_dir.join("zebra.ttf")).unwrap();
+        fs::File::create(temp_dir.join("alpha.ttf")).unwrap();
+        fs::File::create(temp_dir.join("beta.ttf")).unwrap();
+
+        let result = get_font_files_in_directory(temp_dir.to_str().unwrap());
+
+        assert_eq!(result.len(), 3);
+        // Results should be sorted alphabetically
+        assert!(result[0].ends_with("alpha.ttf"));
+        assert!(result[1].ends_with("beta.ttf"));
+        assert!(result[2].ends_with("zebra.ttf"));
+
+        fs::remove_dir_all(&temp_dir).ok();
+    }
+
+    #[test]
+    fn test_get_font_files_in_directory_nonexistent() {
+        let result = get_font_files_in_directory("/nonexistent/path/that/does/not/exist");
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_get_font_files_in_directory_ignores_subdirectories() {
+        let temp_dir = std::env::temp_dir().join("ogis_test_subdir");
+        fs::create_dir_all(&temp_dir).unwrap();
+
+        // Create a file and a subdirectory
+        fs::File::create(temp_dir.join("font.ttf")).unwrap();
+        fs::create_dir_all(temp_dir.join("subdir")).unwrap();
+        fs::File::create(temp_dir.join("subdir/nested.ttf")).unwrap();
+
+        let result = get_font_files_in_directory(temp_dir.to_str().unwrap());
+
+        // Should only find the top-level font file, not the nested one
+        assert_eq!(result.len(), 1);
+        assert!(result[0].ends_with("font.ttf"));
+
+        fs::remove_dir_all(&temp_dir).ok();
+    }
+}
