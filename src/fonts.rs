@@ -1,7 +1,7 @@
 use crate::yaml_loader;
 use std::path::Path;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 enum FamilyFontType {
     Primary,
     Fallback,
@@ -121,6 +121,7 @@ fn load_global_fallbacks_from_directory(fontdb: &mut usvg::fontdb::Database, dir
     }
 }
 
+#[derive(Debug)]
 struct LoadedFont {
     name: String,
     faces_count: usize,
