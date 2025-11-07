@@ -38,18 +38,17 @@ pub fn parse_url(url: &str, allow_http: bool) -> Result<ParsedUrl, ImageFetchErr
     }
 
     // SSRF Protection: Check if URL contains a direct IP address
-    if let Some(host) = parsed.host_str() {
-        if let Ok(ip) = host.parse::<IpAddr>() {
-            if !ip_rfc::global(&ip) {
-                tracing::warn!("Blocked direct private IP in URL: {} ({})", url, ip);
-                return Err(ImageFetchError::PrivateIpBlocked(format!(
-                    "Private IP address {} is not allowed",
-                    ip
-                )));
-            }
-        }
-        // For hostnames, DNS resolution will be validated by SSRFSafeResolver
+    if let Some(host) = parsed.host_str()
+        && let Ok(ip) = host.parse::<IpAddr>()
+        && !ip_rfc::global(&ip)
+    {
+        tracing::warn!("Blocked direct private IP in URL: {} ({})", url, ip);
+        return Err(ImageFetchError::PrivateIpBlocked(format!(
+            "Private IP address {} is not allowed",
+            ip
+        )));
     }
+    // For hostnames, DNS resolution will be validated by SSRFSafeResolver
 
     Ok(ParsedUrl {
         url: parsed,

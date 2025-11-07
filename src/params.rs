@@ -66,10 +66,10 @@ impl OgParams {
         ];
 
         for (name, field) in fields {
-            if let Some(value) = field {
-                if value.len() > max_length {
-                    return Err(format!("{} exceeds maximum length of {}", name, max_length));
-                }
+            if let Some(value) = field
+                && value.len() > max_length
+            {
+                return Err(format!("{} exceeds maximum length of {}", name, max_length));
             }
         }
 
@@ -87,17 +87,17 @@ impl OgParams {
         let template_colors = state.templates.colors.get(template_name);
 
         for (key, value) in &self.extra {
-            if let Some(template_colors_map) = template_colors {
-                if template_colors_map.contains_key(key) {
-                    if !is_valid_hex_color(value) {
-                        return Err(format!(
-                            "Invalid hex color '{}' for parameter '{}'. Expected 6 hex characters (e.g., 'FF0000')",
-                            value, key
-                        ));
-                    }
-
-                    color_overrides.insert(key.to_string(), format!("#{}", value.to_lowercase()));
+            if let Some(template_colors_map) = template_colors
+                && template_colors_map.contains_key(key)
+            {
+                if !is_valid_hex_color(value) {
+                    return Err(format!(
+                        "Invalid hex color '{}' for parameter '{}'. Expected 6 hex characters (e.g., 'FF0000')",
+                        value, key
+                    ));
                 }
+
+                color_overrides.insert(key.to_string(), format!("#{}", value.to_lowercase()));
             }
         }
 

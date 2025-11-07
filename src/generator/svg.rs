@@ -12,6 +12,17 @@ use super::text_measurement::truncate_text_to_width;
 use crate::image::ValidatedImage;
 use crate::templates::{TemplateFonts, TemplateMap, TextWidthConstraints};
 
+pub struct TextContent<'a> {
+    pub title: &'a str,
+    pub description: &'a str,
+    pub subtitle: &'a str,
+}
+
+pub struct Images {
+    pub logo: Option<ValidatedImage>,
+    pub image: Option<ValidatedImage>,
+}
+
 fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Result<&'a str, String> {
     template_map
         .templates
@@ -109,11 +120,8 @@ fn override_colors(
 }
 
 pub fn generate_svg(
-    title: &str,
-    description: &str,
-    subtitle: &str,
-    logo: Option<ValidatedImage>,
-    image: Option<ValidatedImage>,
+    text: TextContent,
+    images: Images,
     template_name: &str,
     templates: &TemplateMap,
     color_overrides: &HashMap<String, String>,
@@ -125,8 +133,14 @@ pub fn generate_svg(
     // Get cached font properties and width constraints, then apply truncation
     let fonts = get_template_fonts(templates, template_name)?;
     let constraints = get_width_constraints(templates, template_name);
-    let (truncated_title, truncated_description, truncated_subtitle) =
-        apply_truncation(title, description, subtitle, &constraints, fonts, fontdb)?;
+    let (truncated_title, truncated_description, truncated_subtitle) = apply_truncation(
+        text.title,
+        text.description,
+        text.subtitle,
+        &constraints,
+        fonts,
+        fontdb,
+    )?;
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
@@ -141,11 +155,11 @@ pub fn generate_svg(
     ]);
 
     // Convert ValidatedImage to ImageReplacement
-    let logo_replacement = logo.map(|v| ImageReplacement {
+    let logo_replacement = images.logo.map(|v| ImageReplacement {
         bytes: v.bytes,
         mime_type: v.mime_type,
     });
-    let image_replacement = image.map(|v| ImageReplacement {
+    let image_replacement = images.image.map(|v| ImageReplacement {
         bytes: v.bytes,
         mime_type: v.mime_type,
     });

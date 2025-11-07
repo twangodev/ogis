@@ -1,4 +1,8 @@
-use crate::{AppState, generator, params::OgParams};
+use crate::{
+    AppState,
+    generator::{self, Images, TextContent},
+    params::OgParams,
+};
 use axum::{
     extract::{Query, State},
     http::{StatusCode, header},
@@ -163,12 +167,16 @@ pub async fn generate(
     };
 
     // Generate SVG
+    let text = TextContent {
+        title: &title,
+        description: &description,
+        subtitle: &subtitle,
+    };
+    let images = Images { logo, image };
+
     let svg_data = match generator::generate_svg(
-        &title,
-        &description,
-        &subtitle,
-        logo,
-        image,
+        text,
+        images,
         template_name,
         &state.templates,
         &color_overrides,

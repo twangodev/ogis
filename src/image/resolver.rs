@@ -12,9 +12,7 @@ pub struct GlobalResolver {
 
 impl GlobalResolver {
     pub fn new() -> io::Result<Self> {
-        let resolver: TokioResolver = Resolver::builder_tokio()
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?
-            .build();
+        let resolver: TokioResolver = Resolver::builder_tokio().map_err(io::Error::other)?.build();
 
         Ok(Self {
             inner: Arc::new(resolver),
@@ -30,8 +28,7 @@ impl Resolve for GlobalResolver {
         Box::pin(async move {
             // Resolve DNS
             let lookup = resolver.lookup_ip(name.as_str()).await.map_err(|e| {
-                Box::new(io::Error::new(io::ErrorKind::Other, e))
-                    as Box<dyn std::error::Error + Send + Sync>
+                Box::new(io::Error::other(e)) as Box<dyn std::error::Error + Send + Sync>
             })?;
 
             let mut addrs = Vec::new();

@@ -105,39 +105,37 @@ fn parse_width_constraints(template_node: &Yaml) -> TextWidthConstraints {
     if let Some((_, widths_value)) = template_mapping
         .iter()
         .find(|(key, _)| key.as_str() == Some("max_widths"))
+        && let Yaml::Mapping(widths) = widths_value
     {
-        if let Yaml::Mapping(widths) = widths_value {
-            // Parse title width
-            if let Some((_, title_value)) = widths.iter().find(|(k, _)| k.as_str() == Some("title"))
-            {
-                if let Some(width) = title_value.as_integer() {
-                    constraints.title = Some(width as f32);
-                } else if let Some(width) = title_value.as_floating_point() {
-                    constraints.title = Some(width as f32);
-                }
+        // Parse title width
+        if let Some((_, title_value)) = widths.iter().find(|(k, _)| k.as_str() == Some("title")) {
+            if let Some(width) = title_value.as_integer() {
+                constraints.title = Some(width as f32);
+            } else if let Some(width) = title_value.as_floating_point() {
+                constraints.title = Some(width as f32);
             }
+        }
 
-            // Parse description width
-            if let Some((_, desc_value)) = widths
-                .iter()
-                .find(|(k, _)| k.as_str() == Some("description"))
-            {
-                if let Some(width) = desc_value.as_integer() {
-                    constraints.description = Some(width as f32);
-                } else if let Some(width) = desc_value.as_floating_point() {
-                    constraints.description = Some(width as f32);
-                }
+        // Parse description width
+        if let Some((_, desc_value)) = widths
+            .iter()
+            .find(|(k, _)| k.as_str() == Some("description"))
+        {
+            if let Some(width) = desc_value.as_integer() {
+                constraints.description = Some(width as f32);
+            } else if let Some(width) = desc_value.as_floating_point() {
+                constraints.description = Some(width as f32);
             }
+        }
 
-            // Parse subtitle width
-            if let Some((_, subtitle_value)) =
-                widths.iter().find(|(k, _)| k.as_str() == Some("subtitle"))
-            {
-                if let Some(width) = subtitle_value.as_integer() {
-                    constraints.subtitle = Some(width as f32);
-                } else if let Some(width) = subtitle_value.as_floating_point() {
-                    constraints.subtitle = Some(width as f32);
-                }
+        // Parse subtitle width
+        if let Some((_, subtitle_value)) =
+            widths.iter().find(|(k, _)| k.as_str() == Some("subtitle"))
+        {
+            if let Some(width) = subtitle_value.as_integer() {
+                constraints.subtitle = Some(width as f32);
+            } else if let Some(width) = subtitle_value.as_floating_point() {
+                constraints.subtitle = Some(width as f32);
             }
         }
     }
