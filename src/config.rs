@@ -19,7 +19,7 @@ pub struct Defaults {
     /// Default description when not provided
     #[arg(
         long,
-        default_value = "ogis is a fast, free, and beautiful platform for open graph image generation.",
+        default_value = "A fast, free, and beautiful platform for open graph image generation.",
         env = "OGIS_DEFAULT_DESCRIPTION"
     )]
     pub description: String,
@@ -27,7 +27,7 @@ pub struct Defaults {
     /// Default subtitle when not provided
     #[arg(
         long,
-        default_value = "Open Source • Always Free",
+        default_value = "Open Graph Images for Everyone",
         env = "OGIS_DEFAULT_SUBTITLE"
     )]
     pub subtitle: String,
