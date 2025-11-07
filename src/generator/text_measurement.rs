@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-use crate::fonts::SwashFontCache;
-
 /// Font properties extracted from SVG text elements
 #[derive(Debug, Clone)]
 pub struct FontProperties {
@@ -14,52 +12,79 @@ pub struct FontProperties {
 fn measure_text_width(
     text: &str,
     font_props: &FontProperties,
-    font_cache: &SwashFontCache,
+    fontdb: &usvg::fontdb::Database,
 ) -> Result<f32, String> {
     if text.is_empty() {
         return Ok(0.0);
     }
 
-    // Get the font from cache
-    let font = font_cache
-        .get_font(&font_props.family)
-        .ok_or_else(|| format!("Font family '{}' not found in cache", font_props.family))?;
+    // Query fontdb using the same logic as usvg
+    // Map generic family names to fontdb Family enum
+    let family = match font_props.family.as_str() {
+        "sans-serif" => usvg::fontdb::Family::SansSerif,
+        "serif" => usvg::fontdb::Family::Serif,
+        "monospace" => usvg::fontdb::Family::Monospace,
+        "cursive" => usvg::fontdb::Family::Cursive,
+        "fantasy" => usvg::fontdb::Family::Fantasy,
+        name => usvg::fontdb::Family::Name(name),
+    };
 
-    // Create charmap
-    let charmap = font.charmap();
+    let query = usvg::fontdb::Query {
+        families: &[family],
+        weight: usvg::fontdb::Weight(font_props.weight),
+        ..Default::default()
+    };
 
-    // Set up variations for variable fonts
-    let mut coords = Vec::new();
+    let face_id = fontdb
+        .query(&query)
+        .ok_or_else(|| format!("Font family '{}' not found in database", font_props.family))?;
 
-    // If the font supports variable weight, set it
-    if let Some(wght_axis) = font
-        .variations()
-        .find(|v| v.tag() == swash::tag_from_bytes(b"wght"))
-    {
-        // Normalize the weight value to the axis range
-        let normalized = wght_axis.normalize(font_props.weight as f32);
-        coords.push(normalized);
-    }
+    // Access font data and measure text inside the closure
+    let width = fontdb
+        .with_face_data(face_id, |data, face_index| {
+            // Create font reference from the data
+            let font = swash::FontRef::from_index(data, face_index as usize)?;
 
-    // Get glyph metrics with the specified font size and variations
-    let glyph_metrics = font.glyph_metrics(&coords);
+            // Create charmap
+            let charmap = font.charmap();
 
-    // Scale factor to convert design units to pixels
-    let ppem = font_props.size;
-    let scale = ppem / glyph_metrics.units_per_em() as f32;
+            // Set up variations for variable fonts
+            let mut coords = Vec::new();
 
-    let mut total_width = 0.0;
+            // If the font supports variable weight, set it
+            if let Some(wght_axis) = font
+                .variations()
+                .find(|v| v.tag() == swash::tag_from_bytes(b"wght"))
+            {
+                // Normalize the weight value to the axis range
+                let normalized = wght_axis.normalize(font_props.weight as f32);
+                coords.push(normalized);
+            }
 
-    for ch in text.chars() {
-        // Get glyph ID for character
-        let glyph_id = charmap.map(ch);
+            // Get glyph metrics with the specified font size and variations
+            let glyph_metrics = font.glyph_metrics(&coords);
 
-        // Get advance width for this glyph
-        let advance = glyph_metrics.advance_width(glyph_id);
-        total_width += advance * scale;
-    }
+            // Scale factor to convert design units to pixels
+            let ppem = font_props.size;
+            let scale = ppem / glyph_metrics.units_per_em() as f32;
 
-    Ok(total_width)
+            let mut total_width = 0.0;
+
+            for ch in text.chars() {
+                // Get glyph ID for character
+                let glyph_id = charmap.map(ch);
+
+                // Get advance width for this glyph
+                let advance = glyph_metrics.advance_width(glyph_id);
+                total_width += advance * scale;
+            }
+
+            Some(total_width)
+        })
+        .ok_or_else(|| "Failed to access font data from fontdb".to_string())?
+        .ok_or_else(|| "Failed to measure text width".to_string())?;
+
+    Ok(width)
 }
 
 /// Truncates text to fit within the specified width, adding "…" if truncated
@@ -69,21 +94,21 @@ pub fn truncate_text_to_width(
     text: &str,
     max_width: f32,
     font_props: &FontProperties,
-    font_cache: &Arc<SwashFontCache>,
+    fontdb: &Arc<usvg::fontdb::Database>,
 ) -> Result<String, String> {
     // If empty or already fits, return as-is
     if text.is_empty() {
         return Ok(text.to_string());
     }
 
-    let full_width = measure_text_width(text, font_props, font_cache)?;
+    let full_width = measure_text_width(text, font_props, fontdb)?;
     if full_width <= max_width {
         return Ok(text.to_string());
     }
 
     // Measure ellipsis width
     let ellipsis = "…";
-    let ellipsis_width = measure_text_width(ellipsis, font_props, font_cache)?;
+    let ellipsis_width = measure_text_width(ellipsis, font_props, fontdb)?;
 
     // If even ellipsis doesn't fit, return empty string
     if ellipsis_width > max_width {
@@ -105,7 +130,7 @@ pub fn truncate_text_to_width(
         }
 
         let substring: String = chars[..mid].iter().collect();
-        let width = measure_text_width(&substring, font_props, font_cache)?;
+        let width = measure_text_width(&substring, font_props, fontdb)?;
 
         if width <= available_width {
             best_fit = mid;

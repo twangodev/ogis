@@ -20,7 +20,6 @@ pub struct ImageState {
 #[derive(Clone)]
 pub struct AppState {
     pub fontdb: Arc<usvg::fontdb::Database>,
-    pub swash_fonts: Arc<fonts::SwashFontCache>,
     pub templates: Arc<templates::TemplateMap>,
     pub max_input_length: usize,
     pub defaults: config::Defaults,
@@ -41,7 +40,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Load fonts
     let fontdb = fonts::load_fonts();
-    let swash_fonts = fonts::load_swash_fonts();
 
     // Load templates
     let templates = templates::load_templates();
@@ -72,7 +70,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let state = AppState {
         fontdb: Arc::new(fontdb),
-        swash_fonts: Arc::new(swash_fonts),
         templates: Arc::new(templates),
         max_input_length: config.max_input_length,
         defaults: config.defaults,
