@@ -127,8 +127,6 @@ pub fn truncate_text_to_width(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn test_truncate_empty_text() {
         // This test would require setting up SwashFontCache
