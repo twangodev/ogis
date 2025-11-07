@@ -6,7 +6,7 @@ use saphyr::Yaml;
 use std::collections::HashMap;
 
 /// Width constraints for text elements in a template
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct TextWidthConstraints {
     pub title: Option<f32>,
     pub description: Option<f32>,
@@ -23,11 +23,7 @@ pub struct TemplateFonts {
 
 impl TextWidthConstraints {
     pub fn new() -> Self {
-        Self {
-            title: None,
-            description: None,
-            subtitle: None,
-        }
+        Self::default()
     }
 
     /// Get width constraint with fallback to 75% of canvas width (900px for 1200px canvas)
