@@ -2,7 +2,7 @@ sans-serif:
   - "fonts/Roboto/Roboto-Medium.ttf"
   - "fonts/NotoSans/NotoSans-Medium.ttf"
   - "fonts/NotoSansCJK/NotoSansCJK-Medium.ttc"
-  - "fonts/NotoSansArabic-VariableFont.ttf"
+  - "fonts/NotoSansArabic/NotoSansArabic-Medium.ttf"
 
 serif:
   - "fonts/NotoSerif.ttf"
