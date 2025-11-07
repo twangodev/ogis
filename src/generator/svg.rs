@@ -1,13 +1,16 @@
+use cosmic_text::FontSystem;
 use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
 use std::collections::HashMap;
 use std::io::Cursor;
+use std::sync::Arc;
 
 use super::events::{
     ImageReplacement, State, handle_default, handle_empty, handle_end, handle_start,
 };
+use super::text_measurement::truncate_text_to_width;
 use crate::image::ValidatedImage;
-use crate::templates::TemplateMap;
+use crate::templates::{TemplateFonts, TemplateMap, TextWidthConstraints};
 
 fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Result<&'a str, String> {
     template_map
@@ -21,6 +24,68 @@ fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Resul
                 template_map.available_templates()
             )
         })
+}
+
+/// Get cached font properties for a template
+fn get_template_fonts<'a>(
+    templates: &'a TemplateMap,
+    template_name: &str,
+) -> Result<&'a TemplateFonts, String> {
+    templates.font_properties.get(template_name).ok_or_else(|| {
+        format!(
+            "Font properties not found for template '{}'. \
+                This may indicate a template loading error.",
+            template_name
+        )
+    })
+}
+
+/// Get width constraints for a template, falling back to defaults
+fn get_width_constraints(templates: &TemplateMap, template_name: &str) -> TextWidthConstraints {
+    templates
+        .width_constraints
+        .get(template_name)
+        .cloned()
+        .unwrap_or_else(TextWidthConstraints::new)
+}
+
+/// Truncate text to fit within width constraints using cached font properties
+fn apply_truncation(
+    title: &str,
+    description: &str,
+    subtitle: &str,
+    constraints: &TextWidthConstraints,
+    fonts: &TemplateFonts,
+    fontdb: &Arc<usvg::fontdb::Database>,
+) -> Result<(String, String, String), String> {
+    // Create FontSystem once and reuse it for all truncation operations
+    // This is a major performance optimization: previously we created a new FontSystem
+    // for each text measurement (21-63 times per request), now we create it just once
+    let mut font_system =
+        FontSystem::new_with_locale_and_db("en-US".into(), fontdb.as_ref().clone());
+
+    let truncated_title = truncate_text_to_width(
+        title,
+        constraints.get_title_width(),
+        &fonts.title,
+        &mut font_system,
+    )?;
+
+    let truncated_description = truncate_text_to_width(
+        description,
+        constraints.get_description_width(),
+        &fonts.description,
+        &mut font_system,
+    )?;
+
+    let truncated_subtitle = truncate_text_to_width(
+        subtitle,
+        constraints.get_subtitle_width(),
+        &fonts.subtitle,
+        &mut font_system,
+    )?;
+
+    Ok((truncated_title, truncated_description, truncated_subtitle))
 }
 
 /// Apply color overrides to template content by replacing default hex values
@@ -52,20 +117,27 @@ pub fn generate_svg(
     template_name: &str,
     templates: &TemplateMap,
     color_overrides: &HashMap<String, String>,
+    fontdb: &Arc<usvg::fontdb::Database>,
 ) -> Result<String, String> {
     let template_content = get_template(templates, template_name)?;
     let content = override_colors(template_content, template_name, templates, color_overrides);
+
+    // Get cached font properties and width constraints, then apply truncation
+    let fonts = get_template_fonts(templates, template_name)?;
+    let constraints = get_width_constraints(templates, template_name);
+    let (truncated_title, truncated_description, truncated_subtitle) =
+        apply_truncation(title, description, subtitle, &constraints, fonts, fontdb)?;
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
 
     let mut writer = Writer::new(Cursor::new(Vec::new()));
 
-    // Create text replacement map: element ID -> replacement text
+    // Create text replacement map with truncated text: element ID -> replacement text
     let text_replacements = HashMap::from([
-        ("ogis_title".to_string(), title.to_string()),
-        ("ogis_description".to_string(), description.to_string()),
-        ("ogis_subtitle".to_string(), subtitle.to_string()),
+        ("ogis_title".to_string(), truncated_title),
+        ("ogis_description".to_string(), truncated_description),
+        ("ogis_subtitle".to_string(), truncated_subtitle),
     ]);
 
     // Convert ValidatedImage to ImageReplacement
@@ -101,4 +173,38 @@ pub fn generate_svg(
     }
 
     String::from_utf8(writer.into_inner().into_inner()).map_err(|e| format!("UTF-8 error: {}", e))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_template_fonts_not_found() {
+        let templates = TemplateMap {
+            templates: HashMap::new(),
+            default: "default".to_string(),
+            colors: HashMap::new(),
+            width_constraints: HashMap::new(),
+            font_properties: HashMap::new(),
+        };
+
+        let result = get_template_fonts(&templates, "test");
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Font properties not found"));
+    }
+
+    #[test]
+    fn test_get_width_constraints_returns_defaults() {
+        let templates = TemplateMap {
+            templates: HashMap::new(),
+            default: "default".to_string(),
+            colors: HashMap::new(),
+            width_constraints: HashMap::new(),
+            font_properties: HashMap::new(),
+        };
+
+        let constraints = get_width_constraints(&templates, "test");
+        assert_eq!(constraints.get_title_width(), 900.0);
+    }
 }
