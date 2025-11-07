@@ -123,8 +123,7 @@ fn load_global_fallbacks_from_directory(fontdb: &mut usvg::fontdb::Database, dir
 
 #[derive(Debug)]
 struct LoadedFont {
-    name: String,
-    faces_count: usize,
+    names: Vec<String>,
 }
 
 /// Low-level function to load a font file into the database
@@ -137,21 +136,27 @@ fn load_font_file(fontdb: &mut usvg::fontdb::Database, path: &str) -> Option<Loa
     let faces_after = fontdb.faces().count();
     let faces_loaded = faces_after - faces_before;
 
-    let face = fontdb.faces().last()?;
-    let name = face.families.first()?.0.clone();
+    if faces_loaded == 0 {
+        tracing::warn!("No faces loaded from font file: {}", path);
+        return None;
+    }
 
-    Some(LoadedFont {
-        name,
-        faces_count: faces_loaded,
-    })
+    let names: Vec<String> = fontdb
+        .faces()
+        .skip(faces_before)
+        .filter_map(|face| face.families.first().map(|(name, _)| name.clone()))
+        .collect();
+
+    Some(LoadedFont { names })
 }
 
 fn log_font_loaded(prefix: &str, loaded: &LoadedFont, path: &str) {
+    let names_display = loaded.names.join(", ");
     tracing::info!(
         "{}: {} ({} face(s) from {})",
         prefix,
-        loaded.name,
-        loaded.faces_count,
+        names_display,
+        loaded.names.len(),
         path
     );
 }
@@ -168,11 +173,13 @@ fn load_family_font(
 
     match font_type {
         FamilyFontType::Primary => {
-            match family {
-                "sans-serif" => fontdb.set_sans_serif_family(&loaded.name),
-                "serif" => fontdb.set_serif_family(&loaded.name),
-                "monospace" => fontdb.set_monospace_family(&loaded.name),
-                _ => return,
+            if let Some(first_name) = loaded.names.first() {
+                match family {
+                    "sans-serif" => fontdb.set_sans_serif_family(first_name),
+                    "serif" => fontdb.set_serif_family(first_name),
+                    "monospace" => fontdb.set_monospace_family(first_name),
+                    _ => return,
+                }
             }
             log_font_loaded(&format!("Set {} primary to", family), &loaded, path);
         }
