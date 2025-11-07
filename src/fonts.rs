@@ -137,7 +137,7 @@ fn load_font_file(fontdb: &mut usvg::fontdb::Database, path: &str) -> Option<Loa
     let faces_loaded = faces_after - faces_before;
 
     let face = fontdb.faces().last()?;
-    let name = face.families[0].0.clone();
+    let name = face.families.first()?.0.clone();
 
     Some(LoadedFont {
         name,
