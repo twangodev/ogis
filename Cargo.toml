@@ -8,6 +8,7 @@ axum = "0.8.6"
 base64 = "0.22"
 bytesize = "2.1.0"
 clap = { version = "4.5.49", features = ["derive", "env"] }
+cosmic-text = "0.15"
 dotenvy = "0.15.7"
 futures-util = "0.3.31"
 hex = "0.4.3"
@@ -22,7 +23,6 @@ resvg = "0.45.1"
 saphyr = "0.0.6"
 serde = { version = "1.0.228", features = ["derive"] }
 sha2 = "0.10"
-swash = "0.2.6"
 thiserror = "2.0.17"
 tiny-skia = "0.11.4"
 tokio = { version = "1.48.0", features = ["full"] }

@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use cosmic_text::{Attrs, Buffer, FontSystem, Metrics, Shaping};
+
 /// Font properties extracted from SVG text elements
 #[derive(Debug, Clone)]
 pub struct FontProperties {
@@ -8,7 +10,8 @@ pub struct FontProperties {
     pub weight: u16, // 400 = normal, 700 = bold
 }
 
-/// Measures the rendered width of text with given font properties using swash
+/// Measures the rendered width of text with given font properties using cosmic-text
+/// Automatically handles per-character font fallback
 fn measure_text_width(
     text: &str,
     font_props: &FontProperties,
@@ -18,71 +21,31 @@ fn measure_text_width(
         return Ok(0.0);
     }
 
-    // Query fontdb using the same logic as usvg
-    // Map generic family names to fontdb Family enum
-    let family = match font_props.family.as_str() {
-        "sans-serif" => usvg::fontdb::Family::SansSerif,
-        "serif" => usvg::fontdb::Family::Serif,
-        "monospace" => usvg::fontdb::Family::Monospace,
-        "cursive" => usvg::fontdb::Family::Cursive,
-        "fantasy" => usvg::fontdb::Family::Fantasy,
-        name => usvg::fontdb::Family::Name(name),
-    };
+    // Create FontSystem from the existing fontdb
+    // cosmic-text will use the same fonts we loaded for rendering
+    let mut font_system = FontSystem::new_with_locale_and_db("en-US".into(), fontdb.clone());
 
-    let query = usvg::fontdb::Query {
-        families: &[family],
-        weight: usvg::fontdb::Weight(font_props.weight),
-        ..Default::default()
-    };
+    // Set up text attributes matching the font properties
+    let attrs = Attrs::new()
+        .family(cosmic_text::Family::Name(&font_props.family))
+        .weight(cosmic_text::Weight(font_props.weight));
 
-    let face_id = fontdb
-        .query(&query)
-        .ok_or_else(|| format!("Font family '{}' not found in database", font_props.family))?;
+    // Create metrics with the font size
+    let metrics = Metrics::new(font_props.size, font_props.size);
 
-    // Access font data and measure text inside the closure
-    let width = fontdb
-        .with_face_data(face_id, |data, face_index| {
-            // Create font reference from the data
-            let font = swash::FontRef::from_index(data, face_index as usize)?;
+    // Create a buffer and set the text
+    let mut buffer = Buffer::new(&mut font_system, metrics);
+    buffer.set_text(&mut font_system, text, &attrs, Shaping::Advanced, None);
 
-            // Create charmap
-            let charmap = font.charmap();
+    // Shape the text (this applies font fallback automatically)
+    buffer.shape_until_scroll(&mut font_system, false);
 
-            // Set up variations for variable fonts
-            let mut coords = Vec::new();
-
-            // If the font supports variable weight, set it
-            if let Some(wght_axis) = font
-                .variations()
-                .find(|v| v.tag() == swash::tag_from_bytes(b"wght"))
-            {
-                // Normalize the weight value to the axis range
-                let normalized = wght_axis.normalize(font_props.weight as f32);
-                coords.push(normalized);
-            }
-
-            // Get glyph metrics with the specified font size and variations
-            let glyph_metrics = font.glyph_metrics(&coords);
-
-            // Scale factor to convert design units to pixels
-            let ppem = font_props.size;
-            let scale = ppem / glyph_metrics.units_per_em() as f32;
-
-            let mut total_width = 0.0;
-
-            for ch in text.chars() {
-                // Get glyph ID for character
-                let glyph_id = charmap.map(ch);
-
-                // Get advance width for this glyph
-                let advance = glyph_metrics.advance_width(glyph_id);
-                total_width += advance * scale;
-            }
-
-            Some(total_width)
-        })
-        .ok_or_else(|| "Failed to access font data from fontdb".to_string())?
-        .ok_or_else(|| "Failed to measure text width".to_string())?;
+    // Get the width from the first layout run
+    let width = buffer
+        .layout_runs()
+        .next()
+        .map(|run| run.line_w)
+        .unwrap_or(0.0);
 
     Ok(width)
 }
