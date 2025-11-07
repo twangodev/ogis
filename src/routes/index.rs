@@ -172,7 +172,7 @@ pub async fn generate(
         template_name,
         &state.templates,
         &color_overrides,
-        &state.fontdb,
+        &state.swash_fonts,
     ) {
         Ok(data) => data,
         Err(err) => {

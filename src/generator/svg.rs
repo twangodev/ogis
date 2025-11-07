@@ -8,6 +8,7 @@ use super::events::{
     ImageReplacement, State, handle_default, handle_empty, handle_end, handle_start,
 };
 use super::text_measurement::truncate_text_to_width;
+use crate::fonts::SwashFontCache;
 use crate::image::ValidatedImage;
 use crate::templates::{TemplateFonts, TemplateMap, TextWidthConstraints};
 
@@ -49,23 +50,27 @@ fn apply_truncation(
     subtitle: &str,
     constraints: &TextWidthConstraints,
     fonts: &TemplateFonts,
-    fontdb: &Arc<usvg::fontdb::Database>,
+    swash_fonts: &Arc<SwashFontCache>,
 ) -> Result<(String, String, String), String> {
-    let truncated_title =
-        truncate_text_to_width(title, constraints.get_title_width(), &fonts.title, fontdb)?;
+    let truncated_title = truncate_text_to_width(
+        title,
+        constraints.get_title_width(),
+        &fonts.title,
+        swash_fonts,
+    )?;
 
     let truncated_description = truncate_text_to_width(
         description,
         constraints.get_description_width(),
         &fonts.description,
-        fontdb,
+        swash_fonts,
     )?;
 
     let truncated_subtitle = truncate_text_to_width(
         subtitle,
         constraints.get_subtitle_width(),
         &fonts.subtitle,
-        fontdb,
+        swash_fonts,
     )?;
 
     Ok((truncated_title, truncated_description, truncated_subtitle))
@@ -100,7 +105,7 @@ pub fn generate_svg(
     template_name: &str,
     templates: &TemplateMap,
     color_overrides: &HashMap<String, String>,
-    fontdb: &Arc<usvg::fontdb::Database>,
+    swash_fonts: &Arc<SwashFontCache>,
 ) -> Result<String, String> {
     let template_content = get_template(templates, template_name)?;
     let content = override_colors(template_content, template_name, templates, color_overrides);
@@ -108,8 +113,14 @@ pub fn generate_svg(
     // Get cached font properties and width constraints, then apply truncation
     let fonts = get_template_fonts(templates, template_name);
     let constraints = get_width_constraints(templates, template_name);
-    let (truncated_title, truncated_description, truncated_subtitle) =
-        apply_truncation(title, description, subtitle, &constraints, fonts, fontdb)?;
+    let (truncated_title, truncated_description, truncated_subtitle) = apply_truncation(
+        title,
+        description,
+        subtitle,
+        &constraints,
+        fonts,
+        swash_fonts,
+    )?;
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
