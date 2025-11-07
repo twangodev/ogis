@@ -1,3 +1,4 @@
+use cosmic_text::FontSystem;
 use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
 use std::collections::HashMap;
@@ -26,11 +27,20 @@ fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Resul
 }
 
 /// Get cached font properties for a template
-fn get_template_fonts<'a>(templates: &'a TemplateMap, template_name: &str) -> &'a TemplateFonts {
+fn get_template_fonts<'a>(
+    templates: &'a TemplateMap,
+    template_name: &str,
+) -> Result<&'a TemplateFonts, String> {
     templates
         .font_properties
         .get(template_name)
-        .expect("Template fonts should have been parsed during loading")
+        .ok_or_else(|| {
+            format!(
+                "Font properties not found for template '{}'. \
+                This may indicate a template loading error.",
+                template_name
+            )
+        })
 }
 
 /// Get width constraints for a template, falling back to defaults
@@ -51,21 +61,30 @@ fn apply_truncation(
     fonts: &TemplateFonts,
     fontdb: &Arc<usvg::fontdb::Database>,
 ) -> Result<(String, String, String), String> {
-    let truncated_title =
-        truncate_text_to_width(title, constraints.get_title_width(), &fonts.title, fontdb)?;
+    // Create FontSystem once and reuse it for all truncation operations
+    // This is a major performance optimization: previously we created a new FontSystem
+    // for each text measurement (21-63 times per request), now we create it just once
+    let mut font_system = FontSystem::new_with_locale_and_db("en-US".into(), fontdb.as_ref().clone());
+
+    let truncated_title = truncate_text_to_width(
+        title,
+        constraints.get_title_width(),
+        &fonts.title,
+        &mut font_system,
+    )?;
 
     let truncated_description = truncate_text_to_width(
         description,
         constraints.get_description_width(),
         &fonts.description,
-        fontdb,
+        &mut font_system,
     )?;
 
     let truncated_subtitle = truncate_text_to_width(
         subtitle,
         constraints.get_subtitle_width(),
         &fonts.subtitle,
-        fontdb,
+        &mut font_system,
     )?;
 
     Ok((truncated_title, truncated_description, truncated_subtitle))
@@ -106,7 +125,7 @@ pub fn generate_svg(
     let content = override_colors(template_content, template_name, templates, color_overrides);
 
     // Get cached font properties and width constraints, then apply truncation
-    let fonts = get_template_fonts(templates, template_name);
+    let fonts = get_template_fonts(templates, template_name)?;
     let constraints = get_width_constraints(templates, template_name);
     let (truncated_title, truncated_description, truncated_subtitle) =
         apply_truncation(title, description, subtitle, &constraints, fonts, fontdb)?;
