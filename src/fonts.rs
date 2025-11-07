@@ -85,8 +85,8 @@ fn get_font_files_in_directory(dir_path: &str) -> Vec<String> {
                 return None;
             }
 
-            let ext = path.extension()?.to_str()?;
-            if matches!(ext, "ttf" | "ttc" | "otf") {
+            let ext = path.extension()?.to_str()?.to_lowercase();
+            if matches!(ext.as_str(), "ttf" | "ttc" | "otf") {
                 Some(path.to_string_lossy().to_string())
             } else {
                 None
