@@ -1,0 +1,315 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <radialGradient id="bgGradient" cx="120%" cy="120%" r="80%">
+            <stop offset="0%" style="stop-color:#764ba2;stop-opacity:0.6" />
+            <stop offset="100%" style="stop-color:#0f0f23;stop-opacity:0" />
+        </radialGradient>
+
+        <!-- Waveform gradients -->
+        <linearGradient id="waveUp" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#808080;stop-opacity:0" />
+            <stop offset="40%" style="stop-color:#808080;stop-opacity:0.15" />
+            <stop offset="70.5%" style="stop-color:#808080;stop-opacity:0.5" />
+            <stop offset="90%" style="stop-color:#808080;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#808080;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="waveDown" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#808080;stop-opacity:0.3" />
+            <stop offset="60%" style="stop-color:#808080;stop-opacity:0.05" />
+            <stop offset="100%" style="stop-color:#808080;stop-opacity:0" />
+        </linearGradient>
+    </defs>
+
+    <!-- Background with gradient weighted to bottom-right -->
+    <rect width="100%" height="100%" fill="#0a0615"/>
+    <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+
+    <g id="ogis_logo">
+        <rect x="80" y="60" width="400" height="120"
+              rx="12"
+              fill="none"
+              stroke="#667eea"
+              stroke-width="2"
+              stroke-dasharray="5,5"
+              opacity="0.3"/>
+        <text x="280" y="125"
+              font-family="sans-serif"
+              font-weight="bold"
+              font-size="20"
+              fill="#667eea"
+              text-anchor="middle">
+            Placeholder Logo (400×120)
+        </text>
+    </g>
+
+    <g id="ogis_image">
+        <rect x="900" y="60" width="200" height="200"
+              rx="12"
+              fill="none"
+              stroke="#764ba2"
+              stroke-width="2"
+              stroke-dasharray="5,5"
+              opacity="0.3"/>
+        <text x="1000" y="165"
+              font-family="sans-serif"
+              font-weight="bold"
+              font-size="16"
+              fill="#764ba2"
+              text-anchor="middle">
+            Image (200×200)
+        </text>
+    </g>
+
+    <!-- Content area on bottom (left side) -->
+    <g transform="translate(80, 0)">
+        <!-- Subtitle -->
+        <text id="ogis_subtitle" x="0" y="410" font-family="sans-serif" font-size="28" fill="#9ca3af">Placeholder Subtitle</text>
+
+        <!-- Title -->
+        <text x="0" y="505" font-family="sans-serif" font-size="80" font-weight="bold" fill="#ffffff">
+            <tspan id="ogis_title" x="0" dy="0">Placeholder Title</tspan>
+        </text>
+
+        <!-- Description -->
+        <text x="0" y="560" font-family="sans-serif" font-size="28" fill="#d1d5db">
+            <tspan id="ogis_description" x="0" dy="0">Placeholder Description</tspan>
+        </text>
+    </g>
+
+    <!-- Waveform at bottom -->
+    <g id="waveform" transform="translate(20, 375) scale(1.25, 3.5)" opacity="0.2">
+        <rect x="0" y="0" width="3" height="42" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="0" y="40" width="3" height="42" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="14" y="2" width="3" height="42" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="14" y="40" width="3" height="42" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="28" y="5" width="3" height="42" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="28" y="45" width="3" height="42" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="42" y="10" width="3" height="36" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="42" y="44" width="3" height="36" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="56" y="16" width="3" height="32" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="56" y="46" width="3" height="32" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="70" y="19" width="3" height="30" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="70" y="47" width="3" height="30" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="84" y="25" width="3" height="28" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="84" y="51" width="3" height="28" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="98" y="32" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="98" y="56" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="112" y="37" width="3" height="24" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="112" y="59" width="3" height="24" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="126" y="40" width="3" height="22" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="126" y="60" width="3" height="22" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="140" y="37" width="3" height="24" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="140" y="59" width="3" height="24" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="154" y="30" width="3" height="30" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="154" y="58" width="3" height="30" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="168" y="20" width="3" height="38" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="168" y="56" width="3" height="38" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="182" y="15" width="3" height="42" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="182" y="55" width="3" height="42" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="196" y="8" width="3" height="47" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="196" y="53" width="3" height="47" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="210" y="-3" width="3" height="54" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="210" y="49" width="3" height="54" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="224" y="-15" width="3" height="60" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="224" y="43" width="3" height="60" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="238" y="-27" width="3" height="67" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="238" y="38" width="3" height="67" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="252" y="-33" width="3" height="67" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="252" y="32" width="3" height="67" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="266" y="-41" width="3" height="67" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="266" y="24" width="3" height="67" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="280" y="-46" width="3" height="67" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="280" y="19" width="3" height="67" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="294" y="-51" width="3" height="67" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="294" y="14" width="3" height="67" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="308" y="-58" width="3" height="67" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="308" y="7" width="3" height="67" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="322" y="-58" width="3" height="61" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="322" y="1" width="3" height="61" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="336" y="-64" width="3" height="62" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="336" y="-4" width="3" height="62" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="350" y="-67" width="3" height="58" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="350" y="-11" width="3" height="58" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="364" y="-67" width="3" height="55" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="364" y="-14" width="3" height="55" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="378" y="-67" width="3" height="48" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="378" y="-21" width="3" height="48" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="392" y="-64" width="3" height="43" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="392" y="-23" width="3" height="43" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="406" y="-58" width="3" height="39" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="406" y="-21" width="3" height="39" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="420" y="-51" width="3" height="33" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="420" y="-20" width="3" height="33" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="434" y="-45" width="3" height="33" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="434" y="-14" width="3" height="33" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="448" y="-36" width="3" height="30" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="448" y="-8" width="3" height="30" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="462" y="-25" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="462" y="-1" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="476" y="-14" width="3" height="24" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="476" y="8" width="3" height="24" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="490" y="-4" width="3" height="24" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="490" y="18" width="3" height="24" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="504" y="9" width="3" height="21" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="504" y="28" width="3" height="21" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="518" y="18" width="3" height="21" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="518" y="37" width="3" height="21" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="532" y="25" width="3" height="21" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="532" y="44" width="3" height="21" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="546" y="29" width="3" height="23" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="546" y="50" width="3" height="23" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="560" y="31" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="560" y="55" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="574" y="32" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="574" y="56" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="588" y="31" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="588" y="55" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="602" y="28" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="602" y="52" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="616" y="21" width="3" height="29" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="616" y="48" width="3" height="29" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="630" y="13" width="3" height="32" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="630" y="43" width="3" height="32" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="644" y="7" width="3" height="34" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="644" y="39" width="3" height="34" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="658" y="7" width="3" height="31" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="658" y="36" width="3" height="31" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="672" y="7" width="3" height="29" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="672" y="34" width="3" height="29" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="686" y="13" width="3" height="25" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="686" y="36" width="3" height="25" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="700" y="19" width="3" height="20" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="700" y="37" width="3" height="20" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="714" y="27" width="3" height="15" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="714" y="40" width="3" height="15" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="728" y="34" width="3" height="11" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="728" y="43" width="3" height="11" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="742" y="39" width="3" height="9" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="742" y="46" width="3" height="9" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="756" y="41" width="3" height="9" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="756" y="48" width="3" height="9" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="770" y="43" width="3" height="9" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="770" y="50" width="3" height="9" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="784" y="45" width="3" height="9" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="784" y="52" width="3" height="9" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="798" y="42" width="3" height="11" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="798" y="51" width="3" height="11" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="812" y="40" width="3" height="11" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="812" y="49" width="3" height="11" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="826" y="38" width="3" height="11" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="826" y="47" width="3" height="11" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="840" y="36" width="3" height="11" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="840" y="45" width="3" height="11" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="854" y="27" width="3" height="15" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="854" y="40" width="3" height="15" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="868" y="19" width="3" height="20" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="868" y="37" width="3" height="20" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="882" y="13" width="3" height="25" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="882" y="36" width="3" height="25" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="896" y="7" width="3" height="29" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="896" y="34" width="3" height="29" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="910" y="7" width="3" height="31" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="910" y="36" width="3" height="31" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="924" y="7" width="3" height="34" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="924" y="39" width="3" height="34" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="938" y="13" width="3" height="32" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="938" y="43" width="3" height="32" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="952" y="21" width="3" height="29" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="952" y="48" width="3" height="29" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="966" y="28" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="966" y="52" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="980" y="31" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="980" y="55" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="994" y="32" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="994" y="56" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="1008" y="31" width="3" height="26" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="1008" y="55" width="3" height="26" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="1022" y="29" width="3" height="23" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="1022" y="50" width="3" height="23" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="1036" y="25" width="3" height="21" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="1036" y="44" width="3" height="21" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="1050" y="18" width="3" height="21" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="1050" y="37" width="3" height="21" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="1064" y="9" width="3" height="21" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="1064" y="28" width="3" height="21" rx="1.5" fill="url(#waveDown)"/>
+
+        <rect x="1078" y="-4" width="3" height="24" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="1078" y="18" width="3" height="24" rx="1.5" fill="url(#waveDown)"/>
+    </g>
+</svg>
