@@ -68,3 +68,13 @@ templates:
       title_text: "#0f172a"
       subtitle_text: "#64748b"
       description_text: "#475569"
+  - name: fish
+    file: templates/fish.svg
+    colors:
+      background: "#0a0615"
+      gradient_purple: "#764ba2"
+      accent_blue: "#667eea"
+      waveform: "#808080"
+      title_text: "#ffffff"
+      subtitle_text: "#9ca3af"
+      description_text: "#d1d5db"
