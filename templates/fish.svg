@@ -78,6 +78,9 @@
 
     <!-- Waveform at bottom -->
     <g id="waveform" transform="translate(20, 375) scale(1.25, 3.5)" opacity="0.2">
+        <rect x="-14" y="0" width="3" height="42" rx="1.5" fill="url(#waveUp)"/>
+        <rect x="-14" y="40" width="3" height="42" rx="1.5" fill="url(#waveDown)"/>
+
         <rect x="0" y="0" width="3" height="42" rx="1.5" fill="url(#waveUp)"/>
         <rect x="0" y="40" width="3" height="42" rx="1.5" fill="url(#waveDown)"/>
 
