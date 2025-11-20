@@ -1,4 +1,4 @@
-name: TypeScript Client
+name: TypeScript SDK
 
 on:
   push:
