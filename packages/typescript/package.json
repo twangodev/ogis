@@ -1,1 +1,49 @@
-{"name":"@twangodev/ogis","version":"0.1.0","type":"module","description":"TypeScript client for OGIS OpenGraph image generation service","main":"dist/index.js","types":"dist/index.d.ts","exports":{".":{"types":"./dist/index.d.ts","import":"./dist/index.js","default":"./dist/index.js"}},"files":["dist"],"scripts":{"build":"tsc","dev":"tsc --watch","test":"vitest run","test:watch":"vitest","test:coverage":"vitest run --coverage","prepublishOnly":"npm run build"},"keywords":["opengraph","og-image","image-generation","typescript","ogis"],"author":"twangodev","license":"MIT","repository":{"type":"git","url":"git+https://github.com/twangodev/ogis.git","directory":"packages/typescript"},"bugs":{"url":"https://github.com/twangodev/ogis/issues"},"homepage":"https://github.com/twangodev/ogis#readme","devDependencies":{"@types/node":"^22.10.1","typescript":"^5.7.2","vitest":"^4.0.10"}}
+{
+  "name": "@twangodev/ogis",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "TypeScript client for OGIS OpenGraph image generation service",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "opengraph",
+    "og-image",
+    "image-generation",
+    "typescript",
+    "ogis"
+  ],
+  "author": "twangodev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twangodev/ogis.git",
+    "directory": "packages/typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/twangodev/ogis/issues"
+  },
+  "homepage": "https://github.com/twangodev/ogis#readme",
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2",
+    "vitest": "^4.0.10"
+  }
+}
