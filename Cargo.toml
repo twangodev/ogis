@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 axum = "0.8.6"
 base64 = "0.22"
-bytesize = "2.1.0"
+bytesize = "2.2.0"
 clap = { version = "4.5.49", features = ["derive", "env"] }
 cosmic-text = "0.15"
 dotenvy = "0.15.7"
