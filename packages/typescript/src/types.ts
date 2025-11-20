@@ -40,9 +40,19 @@ export interface OgisParams {
   description?: string;
 
   /**
+   * Subtitle text to display above the title
+   */
+  subtitle?: string;
+
+  /**
    * Logo URL to display in the image
    */
   logo?: string;
+
+  /**
+   * Custom image URL to display in the image
+   */
+  image?: string;
 
   /**
    * Custom parameters specific to the template
