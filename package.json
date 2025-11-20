@@ -1,0 +1,37 @@
+{
+  "name": "ogis",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OGIS - OpenGraph Image Service monorepo",
+  "workspaces": [
+    "packages/*",
+    "web"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "dev:service": "cargo run",
+    "dev:web": "npm run dev -w web",
+    "dev:client": "npm run dev -w @twangodev/ogis"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twangodev/ogis.git"
+  },
+  "keywords": [
+    "opengraph",
+    "og-image",
+    "image-generation",
+    "rust",
+    "typescript"
+  ],
+  "author": "twangodev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/twangodev/ogis/issues"
+  },
+  "homepage": "https://github.com/twangodev/ogis#readme",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
