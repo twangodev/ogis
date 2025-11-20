@@ -11,7 +11,7 @@ describe('Utility functions', () => {
     it('merges parameters correctly', () => {
       const merged = mergeParams(
         { template: 'fish', logo: 'default.png' },
-        { title: 'Hello', template: 'custom' },
+        { title: 'Hello', template: 'custom' }
       );
 
       expect(merged.title).toBe('Hello');
@@ -22,7 +22,7 @@ describe('Utility functions', () => {
     it('filters undefined values', () => {
       const merged = mergeParams(
         { template: 'fish' },
-        { title: 'Hello', description: undefined },
+        { title: 'Hello', description: undefined }
       );
 
       expect(merged).toEqual({ template: 'fish', title: 'Hello' });
@@ -67,7 +67,9 @@ describe('Utility functions', () => {
     });
 
     it('throws on non-HTTP protocol', () => {
-      expect(() => validateBaseUrl('ftp://example.com')).toThrow('http or https');
+      expect(() => validateBaseUrl('ftp://example.com')).toThrow(
+        'http or https'
+      );
     });
 
     it('accepts valid HTTPS URL', () => {
@@ -81,11 +83,15 @@ describe('Utility functions', () => {
 
   describe('normalizeBaseUrl', () => {
     it('removes trailing slash', () => {
-      expect(normalizeBaseUrl('https://example.com/')).toBe('https://example.com');
+      expect(normalizeBaseUrl('https://example.com/')).toBe(
+        'https://example.com'
+      );
     });
 
     it('leaves URL without trailing slash unchanged', () => {
-      expect(normalizeBaseUrl('https://example.com')).toBe('https://example.com');
+      expect(normalizeBaseUrl('https://example.com')).toBe(
+        'https://example.com'
+      );
     });
   });
 });

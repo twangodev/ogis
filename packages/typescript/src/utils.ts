@@ -14,7 +14,7 @@ import type { OgisParams } from './types.js';
  */
 export function mergeParams(
   defaults: Partial<OgisParams> | undefined,
-  params: OgisParams,
+  params: OgisParams
 ): Record<string, string> {
   const merged: Record<string, string> = {};
 

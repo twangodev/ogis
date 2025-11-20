@@ -25,7 +25,7 @@ import { createHmac } from 'node:crypto';
  */
 export function generateHmacSignature(
   secret: string,
-  params: Record<string, string | undefined>,
+  params: Record<string, string | undefined>
 ): string {
   const canonicalQuery = buildCanonicalQuery(params);
   const hmac = createHmac('sha256', secret);
@@ -47,7 +47,7 @@ export function generateHmacSignature(
  * @internal
  */
 export function buildCanonicalQuery(
-  params: Record<string, string | undefined>,
+  params: Record<string, string | undefined>
 ): string {
   // Sort parameters alphabetically and filter out undefined values and 'signature'
   const sortedKeys = Object.keys(params)

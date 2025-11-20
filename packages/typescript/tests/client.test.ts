@@ -44,8 +44,12 @@ describe('OgisClient', () => {
   });
 
   it('throws on invalid base URL', () => {
-    expect(() => new OgisClient({ baseUrl: '' })).toThrow('baseUrl is required');
-    expect(() => new OgisClient({ baseUrl: 'not-a-url' })).toThrow('Invalid baseUrl');
+    expect(() => new OgisClient({ baseUrl: '' })).toThrow(
+      'baseUrl is required'
+    );
+    expect(() => new OgisClient({ baseUrl: 'not-a-url' })).toThrow(
+      'Invalid baseUrl'
+    );
   });
 
   it('normalizes base URL trailing slash', () => {
