@@ -1,10 +1,10 @@
 # ogis: Open Graph Images as a Service
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/twangodev/ogis/rust.yml?logo=rust)
-![Docker Pulls](https://img.shields.io/docker/pulls/twango/ogis?logo=docker)
-![Docker Image Size](https://img.shields.io/docker/image-size/twango/ogis/latest?logo=docker)
-![Codecov](https://img.shields.io/codecov/c/github/twangodev/ogis)
-![License](https://img.shields.io/github/license/twangodev/ogis)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/twangodev/ogis/rust.yml?logo=rust)](https://github.com/twangodev/ogis/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/twango/ogis?logo=docker)](https://hub.docker.com/r/twango/ogis)
+[![Docker Image Size](https://img.shields.io/docker/image-size/twango/ogis/latest?logo=docker)](https://hub.docker.com/r/twango/ogis)
+[![Codecov](https://img.shields.io/codecov/c/github/twangodev/ogis)](https://codecov.io/gh/twangodev/ogis)
+[![License](https://img.shields.io/github/license/twangodev/ogis)](https://github.com/twangodev/ogis/blob/main/LICENSE)
 
 
 Generating [open graph images](https://ogp.me/) is a lot more work than it should be.
