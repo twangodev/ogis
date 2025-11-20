@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = "0.8.6"
+axum = "0.8.7"
 base64 = "0.22"
-bytesize = "2.1.0"
-clap = { version = "4.5.49", features = ["derive", "env"] }
+bytesize = "2.3.0"
+clap = { version = "4.5.53", features = ["derive", "env"] }
 cosmic-text = "0.15"
 dotenvy = "0.15.7"
 futures-util = "0.3.31"
@@ -17,7 +17,7 @@ hmac = "0.12.1"
 infer = "0.19.0"
 ip_rfc = "0.1.0"
 moka = { version = "0.12", features = ["future"] }
-quick-xml = "0.38.3"
+quick-xml = "0.38.4"
 reqwest = { version = "0.12", features = ["default-tls", "stream"] }
 resvg = "0.45.1"
 saphyr = "0.0.6"
