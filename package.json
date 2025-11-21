@@ -30,8 +30,5 @@
   "bugs": {
     "url": "https://github.com/twangodev/ogis/issues"
   },
-  "homepage": "https://github.com/twangodev/ogis#readme",
-  "devDependencies": {
-    "typescript": "^5.7.2"
-  }
+  "homepage": "https://github.com/twangodev/ogis#readme"
 }
