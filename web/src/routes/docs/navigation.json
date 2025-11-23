@@ -1,0 +1,29 @@
+[
+	{
+		"title": "Overview",
+		"href": "/docs",
+		"icon": "home"
+	},
+	{
+		"title": "Getting Started",
+		"href": "/docs/getting-started",
+		"icon": "rocket"
+	},
+	{
+		"title": "API Reference",
+		"href": "/docs/api",
+		"icon": "code",
+		"items": [
+			{
+				"title": "Parameters",
+				"href": "/docs/api/parameters",
+				"icon": "settings"
+			},
+			{
+				"title": "Authentication",
+				"href": "/docs/api/authentication",
+				"icon": "lock"
+			}
+		]
+	}
+]

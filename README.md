@@ -32,6 +32,7 @@ ogis comes with a variety of built-in templates to get you started quickly.
 Check out the full supported templates at [ogis.dev/templates](https://ogis.dev/templates).
 
 <table>
+  <tbody>
   <tr>
     <td align="center">
       <img src="https://img.ogis.dev/?template=twilight&title=Dark%20%26%20Bold&subtitle=Default%20Template&description=Perfect%20for%20tech%20and%20development%20content&logo=https://ogis.dev/logo-light.png" alt="Twilight" width="100%"/>
@@ -68,6 +69,7 @@ Check out the full supported templates at [ogis.dev/templates](https://ogis.dev/
     <td align="center">Add your own!</td>
     <td align="center">Or submit a PR :)</td>
   </tr>
+  </tbody>
 </table>
 
 ## Deploy
