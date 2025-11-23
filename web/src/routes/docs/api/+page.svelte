@@ -18,7 +18,7 @@
 			try {
 				// Initialize Swagger UI
 				(window as any).SwaggerUIBundle({
-					url: 'https://img.ogis.dev/api-docs/openapi.json',
+					url: 'https://img.ogis.dev/docs/openapi.json',
 					dom_id: '#swagger-ui',
 					deepLinking: true,
 					presets: [
