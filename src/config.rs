@@ -119,7 +119,11 @@ impl HmacSettings {
 pub struct DocsSettings {
     /// Allowed CORS origins for /docs endpoints (comma-separated)
     /// Example: https://ogis.dev,https://www.ogis.dev
-    #[arg(long, default_value = "https://ogis.dev", env = "OGIS_DOCS_CORS_ORIGINS")]
+    #[arg(
+        long,
+        default_value = "https://ogis.dev",
+        env = "OGIS_DOCS_CORS_ORIGINS"
+    )]
     pub cors_origins: Option<String>,
 }
 
