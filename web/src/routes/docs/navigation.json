@@ -15,11 +15,6 @@
 		"icon": "code",
 		"items": [
 			{
-				"title": "Parameters",
-				"href": "/docs/api/parameters",
-				"icon": "settings"
-			},
-			{
 				"title": "Authentication",
 				"href": "/docs/api/authentication",
 				"icon": "lock"
