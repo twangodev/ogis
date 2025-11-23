@@ -25,6 +25,7 @@ pub struct AppState {
     pub defaults: config::Defaults,
     pub image: ImageState,
     pub hmac_validator: Option<Arc<auth::HmacValidator>>,
+    pub docs: config::DocsSettings,
 }
 
 #[tokio::main]
@@ -78,6 +79,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             fallback: config.image.fallback,
         },
         hmac_validator,
+        docs: config.docs,
     };
 
     let app = routes::create_router(state);

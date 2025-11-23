@@ -114,6 +114,28 @@ impl HmacSettings {
     }
 }
 
+/// Documentation/API settings
+#[derive(Clone, Debug, Args)]
+pub struct DocsSettings {
+    /// Allowed CORS origins for /docs endpoints (comma-separated)
+    /// Example: https://ogis.dev,https://www.ogis.dev
+    #[arg(long, default_value = "https://ogis.dev", env = "OGIS_DOCS_CORS_ORIGINS")]
+    pub cors_origins: Option<String>,
+}
+
+impl DocsSettings {
+    /// Get list of allowed CORS origins
+    pub fn allowed_origins(&self) -> Option<Vec<String>> {
+        self.cors_origins.as_ref().map(|origins| {
+            origins
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect()
+        })
+    }
+}
+
 #[derive(Parser)]
 #[command(name = "ogis")]
 #[command(version)]
@@ -135,6 +157,9 @@ pub struct Config {
 
     #[command(flatten)]
     pub hmac: HmacSettings,
+
+    #[command(flatten)]
+    pub docs: DocsSettings,
 }
 
 impl Config {

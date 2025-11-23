@@ -1436,6 +1436,7 @@ dependencies = [
  "thiserror",
  "tiny-skia",
  "tokio",
+ "tower-http",
  "tracing",
  "tracing-subscriber",
  "url",
