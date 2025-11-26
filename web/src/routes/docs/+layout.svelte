@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import * as ScrollArea from '$lib/components/ui/scroll-area';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Home, Rocket, Code, Settings, Lock } from '@lucide/svelte';
+	import { Home, Rocket, Code, Settings, Lock, Server } from '@lucide/svelte';
 	import navigationData from './navigation.json';
 
 	let { children } = $props();
@@ -12,7 +12,8 @@
 		rocket: Rocket,
 		code: Code,
 		settings: Settings,
-		lock: Lock
+		lock: Lock,
+		server: Server
 	};
 
 	const navigation = navigationData.map((item) => ({

@@ -10,6 +10,11 @@
 		"icon": "rocket"
 	},
 	{
+		"title": "Self Hosting",
+		"href": "/docs/self-hosting",
+		"icon": "server"
+	},
+	{
 		"title": "API Reference",
 		"href": "/docs/api",
 		"icon": "code",
