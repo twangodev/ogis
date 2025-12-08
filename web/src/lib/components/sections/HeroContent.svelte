@@ -47,7 +47,7 @@
 </script>
 
 <section>
-	<div class="pt-12 pb-24 md:pb-24 lg:pt-44">
+	<div class="pb-24 md:pb-24 lg:pt-28">
 		<div class="relative mx-auto max-w-7xl px-6">
 			<div class="lg:grid lg:grid-cols-2 lg:items-center">
 				<!-- Left side: Hero content -->

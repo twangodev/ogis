@@ -31,7 +31,7 @@
 </script>
 
 <div class="container mx-auto">
-	<div class="flex gap-10 pt-28 pb-10">
+	<div class="flex gap-10 pt-12 pb-10">
 		<aside class="hidden md:block w-64 shrink-0">
 			<div class="sticky top-20">
 				<ScrollArea.Root class="h-[calc(100vh-8rem)] pr-6">
