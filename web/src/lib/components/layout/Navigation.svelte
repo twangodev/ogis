@@ -17,8 +17,8 @@
 
 	let {
 		menuItems = [
+			{ name: 'Home', href: '/' },
 			{ name: 'Playground', href: '/playground' },
-			{ name: 'Templates', href: '/templates' },
 			{ name: 'Docs', href: '/docs' }
 		],
 		logoHref = '/'
