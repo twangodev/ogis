@@ -28,7 +28,6 @@
 				links: [
 					{ name: 'Playground', href: '/playground' },
 					{ name: 'Templates', href: '/templates' },
-					{ name: 'Showcase', href: '/showcase' },
 					{ name: 'API Reference', href: 'https://img.ogis.dev/docs' }
 				]
 			},

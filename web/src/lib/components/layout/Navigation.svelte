@@ -19,7 +19,6 @@
 		menuItems = [
 			{ name: 'Playground', href: '/playground' },
 			{ name: 'Templates', href: '/templates' },
-			{ name: 'Showcase', href: '/showcase' },
 			{ name: 'Docs', href: '/docs' }
 		],
 		logoHref = '/'
