@@ -19,12 +19,12 @@
 	}: Props = $props();
 </script>
 
-<section class="py-16">
+<section class="pt-4 pb-16">
 	<!-- Header -->
-	<div class="max-w-6xl mx-auto px-6 mb-6">
-		<h2 class="text-2xl font-medium">{title}</h2>
+	<div class="max-w-7xl mx-auto px-6 mb-8">
+		<h2 class="text-3xl font-semibold md:text-4xl">{title}</h2>
 		{#if description}
-			<p class="text-muted-foreground mt-1">{description}</p>
+			<p class="text-muted-foreground mt-4 text-lg">{description}</p>
 		{/if}
 	</div>
 
