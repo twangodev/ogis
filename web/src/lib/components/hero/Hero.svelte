@@ -7,7 +7,7 @@
 
 <div class="overflow-x-hidden">
 	<HeroContent />
-	<LogoMarquee />
 	<TemplateMarquee />
 	<PerformanceChart />
+	<LogoMarquee />
 </div>
