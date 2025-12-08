@@ -1,0 +1,64 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="baseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#92400e"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+
+    <radialGradient id="blob1" cx="20%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#d4a574" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#d4a574" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="blob2" cx="75%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#c2703e" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#c2703e" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="blob3" cx="50%" cy="20%" r="45%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="blob4" cx="85%" cy="25%" r="40%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="blob5" cx="15%" cy="80%" r="50%">
+      <stop offset="0%" stop-color="#8b5a2b" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#8b5a2b" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="noiseCoarse" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="3"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="1.5" intercept="-0.3"/></feComponentTransfer>
+    </filter>
+    <filter id="noiseFine" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="5"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="2" intercept="-0.5"/></feComponentTransfer>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#baseGradient)"/>
+  <rect width="100%" height="100%" fill="url(#blob1)"/>
+  <rect width="100%" height="100%" fill="url(#blob3)"/>
+  <rect width="100%" height="100%" fill="url(#blob2)"/>
+  <rect width="100%" height="100%" fill="url(#blob4)"/>
+  <rect width="100%" height="100%" fill="url(#blob5)"/>
+  <rect width="100%" height="100%" fill="#000" filter="url(#noiseCoarse)" opacity="0.18"/>
+  <rect width="100%" height="100%" fill="#000" filter="url(#noiseFine)" opacity="0.10"/>
+
+  <!-- Minimal layout: just text, no logo/image placeholders -->
+  <g transform="translate(80, 0)">
+    <text x="0" y="280" font-family="sans-serif" font-size="64" font-weight="bold" fill="#ffffff">
+      <tspan id="ogis_title" x="0" dy="0">Placeholder Title</tspan>
+    </text>
+    <text x="0" y="350" font-family="sans-serif" font-size="28" fill="#ffffff" opacity="0.85">
+      <tspan id="ogis_description" x="0" dy="0">Placeholder Description</tspan>
+    </text>
+    <text id="ogis_subtitle" x="0" y="580" font-family="sans-serif" font-size="20" font-weight="600" fill="#ffffff" opacity="0.7">Placeholder Subtitle</text>
+  </g>
+</svg>

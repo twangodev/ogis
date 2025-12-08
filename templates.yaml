@@ -242,3 +242,124 @@ templates:
       blob_pink: "#ec4899"
       blob_rose: "#be185d"
       text: "#ffffff"
+  - name: gradient-autumn
+    file: templates/gradient-autumn.svg
+    colors:
+      background: "#451a03"
+      blob_orange: "#ea580c"
+      blob_red: "#b91c1c"
+      blob_light_orange: "#f97316"
+      blob_crimson: "#dc2626"
+      blob_yellow: "#fbbf24"
+      text: "#ffffff"
+  - name: gradient-champagne
+    file: templates/gradient-champagne.svg
+    colors:
+      background: "#451a03"
+      blob_cream: "#f7e7ce"
+      blob_gold: "#d4af37"
+      blob_tan: "#c9a66b"
+      blob_yellow: "#fcd34d"
+      blob_ivory: "#fef3c7"
+      text: "#ffffff"
+  - name: gradient-citrus
+    file: templates/gradient-citrus.svg
+    colors:
+      background: "#14532d"
+      blob_yellow: "#ffd93d"
+      blob_green: "#6bcb77"
+      blob_orange: "#ff6b35"
+      blob_lime: "#84cc16"
+      blob_amber: "#fbbf24"
+      text: "#ffffff"
+  - name: gradient-cobalt
+    file: templates/gradient-cobalt.svg
+    colors:
+      background: "#0c1929"
+      blob_blue: "#1d4ed8"
+      blob_blue_mid: "#2563eb"
+      blob_light_blue: "#60a5fa"
+      blob_royal: "#3b82f6"
+      blob_sky: "#93c5fd"
+      text: "#ffffff"
+  - name: gradient-coral
+    file: templates/gradient-coral.svg
+    colors:
+      background: "#134e4a"
+      blob_coral: "#ff6b6b"
+      blob_turquoise: "#4ecdc4"
+      blob_teal: "#2a9d8f"
+      blob_light_coral: "#f8b4b4"
+      blob_aqua: "#99f6e4"
+      text: "#ffffff"
+  - name: gradient-dusk
+    file: templates/gradient-dusk.svg
+    colors:
+      background: "#1e1b4b"
+      blob_violet: "#a78bfa"
+      blob_indigo: "#818cf8"
+      blob_light_violet: "#c4b5fd"
+      blob_blue: "#6366f1"
+      blob_pale: "#ddd6fe"
+      text: "#ffffff"
+  - name: gradient-frost
+    file: templates/gradient-frost.svg
+    colors:
+      background: "#475569"
+      blob_light_gray: "#e2e8f0"
+      blob_silver: "#cbd5e1"
+      blob_slate: "#94a3b8"
+      blob_ice: "#f1f5f9"
+      blob_gray: "#64748b"
+      text: "#ffffff"
+  - name: gradient-noir
+    file: templates/gradient-noir.svg
+    colors:
+      background: "#09090b"
+      blob_dark: "#27272a"
+      blob_gray: "#3f3f46"
+      blob_mid: "#52525b"
+      blob_light: "#71717a"
+      blob_silver: "#a1a1aa"
+      text: "#ffffff"
+  - name: gradient-sahara
+    file: templates/gradient-sahara.svg
+    colors:
+      background: "#92400e"
+      blob_tan: "#d4a574"
+      blob_terracotta: "#c2703e"
+      blob_yellow: "#fbbf24"
+      blob_amber: "#f59e0b"
+      blob_sienna: "#8b5a2b"
+      text: "#ffffff"
+  - name: gradient-tropics
+    file: templates/gradient-tropics.svg
+    colors:
+      background: "#0f172a"
+      blob_pink: "#f472b6"
+      blob_cyan: "#22d3ee"
+      blob_lime: "#a3e635"
+      blob_magenta: "#ec4899"
+      blob_light_cyan: "#67e8f9"
+      blob_light_lime: "#bef264"
+      text: "#ffffff"
+  - name: gradient-velvet
+    file: templates/gradient-velvet.svg
+    colors:
+      background: "#2e1065"
+      blob_violet: "#7c3aed"
+      blob_purple: "#5b21b6"
+      blob_light_purple: "#a855f7"
+      blob_orchid: "#c084fc"
+      blob_indigo: "#8b5cf6"
+      text: "#ffffff"
+  - name: gradient-wine
+    file: templates/gradient-wine.svg
+    colors:
+      background: "#1c1917"
+      blob_burgundy: "#881337"
+      blob_rose: "#9f1239"
+      blob_crimson: "#be123c"
+      blob_dark_wine: "#4c0519"
+      blob_light_rose: "#fda4af"
+      text: "#ffffff"
