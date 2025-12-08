@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 axum = "0.8.7"
 base64 = "0.22"
-bytesize = "2.3.0"
+bytesize = "2.3.1"
 clap = { version = "4.5.53", features = ["derive", "env"] }
 cosmic-text = "0.15"
 dotenvy = "0.15.7"
@@ -26,9 +26,9 @@ sha2 = "0.10"
 thiserror = "2.0.17"
 tiny-skia = "0.11.4"
 tokio = { version = "1.48.0", features = ["full"] }
-tower-http = { version = "0.6.6", features = ["cors"] }
-tracing = "0.1.41"
-tracing-subscriber = "0.3.20"
+tower-http = { version = "0.6.7", features = ["cors"] }
+tracing = "0.1.43"
+tracing-subscriber = "0.3.22"
 url = "2.5"
 usvg = "0.45.1"
 utoipa = "5.4.0"
