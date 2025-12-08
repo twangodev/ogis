@@ -1,5 +1,7 @@
-<script>
+<script lang="ts">
 	import Hero from '$lib/components/hero/Hero.svelte';
+
+	let { data } = $props();
 </script>
 
-<Hero />
+<Hero templates={data.templates} />

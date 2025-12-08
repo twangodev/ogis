@@ -80,7 +80,6 @@
 					<TemplateCard
 						name={template.name}
 						label={template.label}
-						description={template.description}
 					/>
 				</div>
 			{/each}
@@ -92,7 +91,6 @@
 					<TemplateCard
 						name={template.name}
 						label={template.label}
-						description={template.description}
 					/>
 				{/each}
 			</div>
@@ -106,7 +104,6 @@
 						<TemplateCard
 							name={template.name}
 							label={template.label}
-							description={template.description}
 							size={isLarge ? 'lg' : 'md'}
 						/>
 					</div>

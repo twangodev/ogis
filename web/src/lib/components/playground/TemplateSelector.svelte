@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { playground, TEMPLATES, type TemplateName } from '$lib/stores/playground.svelte';
+	import { playground } from '$lib/stores/playground.svelte';
 	import TemplateCard from './TemplateCard.svelte';
 </script>
 
 <div class="grid grid-cols-3 gap-2">
-	{#each TEMPLATES as template (template.name)}
+	{#each playground.templates as template (template.name)}
 		<TemplateCard
 			name={template.name}
 			label={template.label}

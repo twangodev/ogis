@@ -1,35 +1,10 @@
 import { goto } from '$app/navigation';
-import { page } from '$app/state';
 
-// Template definitions with their customizable colors
-export const TEMPLATES = [
-	{ name: 'twilight', label: 'Twilight', colors: ['background', 'primary', 'secondary', 'title_text', 'subtitle_text', 'description_text'] },
-	{ name: 'daybreak', label: 'Daybreak', colors: ['background', 'gradient_accent', 'title_text', 'subtitle_text', 'description_text', 'logo_accent', 'image_accent'] },
-	{ name: 'minimal', label: 'Minimal', colors: ['background', 'border', 'title_text', 'subtitle_text', 'description_text'] },
-	{ name: 'stripe', label: 'Stripe', colors: ['background', 'accent_primary', 'accent_secondary', 'border', 'box_background', 'title_text', 'subtitle_text', 'description_text'] },
-	{ name: 'hero', label: 'Hero', colors: ['background', 'placeholder_text', 'title_text', 'subtitle_text', 'description_text'] },
-	{ name: 'modern', label: 'Modern', colors: ['gradient_start', 'gradient_end', 'accent_blue', 'accent_pink', 'box_background', 'border', 'title_text', 'subtitle_text', 'description_text'] },
-	{ name: 'fish', label: 'Fish', colors: ['background', 'background_end', 'blob_purple', 'blob_purple_mid', 'blob_purple_dark', 'waveform_dark', 'waveform_mid', 'waveform_light', 'text'] },
-	{ name: 'gradient-arctic', label: 'Arctic', colors: ['background', 'blob_cyan', 'blob_light_cyan', 'blob_sky', 'blob_ice', 'blob_teal', 'text'] },
-	{ name: 'gradient-aurora', label: 'Aurora', colors: ['background', 'blob_violet', 'blob_pink', 'blob_orange', 'blob_yellow', 'blob_blue', 'text'] },
-	{ name: 'gradient-berry', label: 'Berry', colors: ['background', 'blob_rose', 'blob_crimson', 'blob_red', 'blob_wine', 'blob_pink', 'text'] },
-	{ name: 'gradient-candy', label: 'Candy', colors: ['background', 'blob_pink', 'blob_fuchsia', 'blob_purple', 'blob_rose', 'blob_light_pink', 'text'] },
-	{ name: 'gradient-copper', label: 'Copper', colors: ['background', 'blob_amber', 'blob_orange', 'blob_yellow', 'blob_gold', 'blob_brown', 'text'] },
-	{ name: 'gradient-ember', label: 'Ember', colors: ['background', 'blob_red', 'blob_orange', 'blob_flame', 'blob_yellow', 'blob_dark_red', 'text'] },
-	{ name: 'gradient-forest', label: 'Forest', colors: ['background', 'blob_green', 'blob_emerald', 'blob_teal', 'blob_lime', 'blob_light_lime', 'text'] },
-	{ name: 'gradient-galaxy', label: 'Galaxy', colors: ['background', 'blob_indigo', 'blob_violet', 'blob_purple', 'blob_blue', 'blob_pink', 'blob_light_pink', 'text'] },
-	{ name: 'gradient-lavender', label: 'Lavender', colors: ['background', 'blob_violet', 'blob_light_violet', 'blob_pale_violet', 'blob_pink', 'blob_lavender', 'text'] },
-	{ name: 'gradient-midnight', label: 'Midnight', colors: ['background', 'blob_navy', 'blob_indigo', 'blob_violet', 'blob_light_indigo', 'blob_periwinkle', 'text'] },
-	{ name: 'gradient-mint', label: 'Mint', colors: ['background', 'blob_aqua', 'blob_teal', 'blob_light_teal', 'blob_green', 'blob_emerald', 'text'] },
-	{ name: 'gradient-moss', label: 'Moss', colors: ['background', 'blob_olive', 'blob_lime', 'blob_stone', 'blob_green', 'blob_gray', 'text'] },
-	{ name: 'gradient-neon', label: 'Neon', colors: ['background', 'blob_cyan', 'blob_fuchsia', 'blob_light_cyan', 'blob_purple', 'blob_pink', 'text'] },
-	{ name: 'gradient-ocean', label: 'Ocean', colors: ['background', 'blob_sky', 'blob_cyan', 'blob_teal', 'blob_light_cyan', 'blob_aqua', 'text'] },
-	{ name: 'gradient-peach', label: 'Peach', colors: ['background', 'blob_peach', 'blob_light_peach', 'blob_yellow', 'blob_orange', 'blob_cream', 'text'] },
-	{ name: 'gradient-storm', label: 'Storm', colors: ['background', 'blob_slate', 'blob_gray', 'blob_dark_slate', 'blob_light_gray', 'blob_silver', 'text'] },
-	{ name: 'gradient-sunset', label: 'Sunset', colors: ['background', 'blob_yellow', 'blob_orange', 'blob_red', 'blob_pink', 'blob_rose', 'text'] }
-] as const;
-
-export type TemplateName = typeof TEMPLATES[number]['name'];
+export interface TemplateDefinition {
+	name: string;
+	label: string;
+	colors: string[];
+}
 
 export interface PlaygroundContent {
 	title: string;
@@ -44,7 +19,8 @@ export interface PlaygroundMedia {
 
 // Create the playground state as an object (so it can be exported)
 function createPlaygroundState() {
-	let template = $state<TemplateName>('twilight');
+	let templates = $state<TemplateDefinition[]>([]);
+	let template = $state<string>('twilight');
 	let content = $state<PlaygroundContent>({
 		title: 'Your Title Here',
 		subtitle: 'Open Graph Images',
@@ -60,11 +36,16 @@ function createPlaygroundState() {
 	// Debounce timer for URL updates
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
 
+	// Set templates from layout data
+	function setTemplates(newTemplates: TemplateDefinition[]) {
+		templates = newTemplates;
+	}
+
 	// Initialize state from URL params
 	function initFromUrl(searchParams: URLSearchParams) {
 		const urlTemplate = searchParams.get('template');
-		if (urlTemplate && TEMPLATES.some(t => t.name === urlTemplate)) {
-			template = urlTemplate as TemplateName;
+		if (urlTemplate && templates.some(t => t.name === urlTemplate)) {
+			template = urlTemplate;
 		}
 
 		const urlTitle = searchParams.get('title');
@@ -83,7 +64,7 @@ function createPlaygroundState() {
 		if (urlImage) media.image = urlImage;
 
 		// Parse color overrides
-		const templateColors = TEMPLATES.find(t => t.name === template)?.colors ?? [];
+		const templateColors = templates.find(t => t.name === template)?.colors ?? [];
 		for (const colorKey of templateColors) {
 			const colorValue = searchParams.get(colorKey);
 			if (colorValue && /^[0-9a-fA-F]{6}$/.test(colorValue)) {
@@ -139,8 +120,11 @@ function createPlaygroundState() {
 	}
 
 	return {
+		get templates() { return templates; },
+		setTemplates,
+
 		get template() { return template; },
-		set template(value: TemplateName) {
+		set template(value: string) {
 			template = value;
 			// Reset colors when template changes
 			colors = {};
@@ -206,7 +190,7 @@ function createPlaygroundState() {
 
 		// Get current template info
 		get currentTemplate() {
-			return TEMPLATES.find(t => t.name === template);
+			return templates.find(t => t.name === template);
 		}
 	};
 }

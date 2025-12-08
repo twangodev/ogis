@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { playground, TEMPLATES } from '$lib/stores/playground.svelte';
+	import { playground } from '$lib/stores/playground.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ColorPicker from './ColorPicker.svelte';
 	import { RotateCcwIcon, ChevronDownIcon, ChevronUpIcon } from '@lucide/svelte';
@@ -8,7 +8,7 @@
 
 	// Get available colors for current template
 	const templateColors = $derived(
-		TEMPLATES.find((t) => t.name === playground.template)?.colors ?? []
+		playground.currentTemplate?.colors ?? []
 	);
 
 	// Check if any colors are customized

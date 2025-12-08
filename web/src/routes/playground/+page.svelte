@@ -8,7 +8,11 @@
 	import ColorCustomizer from '$lib/components/playground/ColorCustomizer.svelte';
 	import PreviewPanel from '$lib/components/playground/PreviewPanel.svelte';
 
+	let { data } = $props();
+
 	onMount(() => {
+		// Set templates from layout data
+		playground.setTemplates(data.templates.all);
 		// Initialize state from URL params on mount
 		playground.initFromUrl(page.url.searchParams);
 	});

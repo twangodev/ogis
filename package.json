@@ -12,7 +12,8 @@
     "test": "npm run test --workspaces",
     "dev:service": "cargo run",
     "dev:web": "npm run dev -w web",
-    "dev:client": "npm run dev -w @twangodev/ogis"
+    "dev:client": "npm run dev -w @twangodev/ogis",
+    "preview:web": "npm run preview -w web"
   },
   "repository": {
     "type": "git",

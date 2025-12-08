@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { TemplateName } from '$lib/stores/playground.svelte';
 	import ImagePreview from './ImagePreview.svelte';
 
 	interface Props {
-		name: TemplateName;
+		name: string;
 		label: string;
 		selected?: boolean;
 		onclick?: () => void;

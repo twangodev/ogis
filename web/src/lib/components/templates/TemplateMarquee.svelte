@@ -2,16 +2,20 @@
 	import Marquee from '$lib/components/magic/Marquee.svelte';
 	import ProgressiveBlur from '$lib/components/magic/ProgressiveBlur.svelte';
 	import TemplateCard from './TemplateCard.svelte';
-	import { TEMPLATE_CATEGORIES } from './index';
+	import type { TemplateInfo } from './index';
 
 	interface Props {
 		title?: string;
 		description?: string;
+		base: TemplateInfo[];
+		gradients: TemplateInfo[];
 	}
 
 	let {
 		title = 'Templates',
-		description = '24 designs, fully customizable.'
+		description,
+		base,
+		gradients
 	}: Props = $props();
 </script>
 
@@ -29,7 +33,7 @@
 		<!-- Top row: Base templates -->
 		<div class="mb-4">
 			<Marquee pauseOnHover repeat={4} class="[--duration:60s] [--gap:1rem]">
-				{#each TEMPLATE_CATEGORIES.base as template (template.name)}
+				{#each base as template (template.name)}
 					<div class="w-[220px] flex-none">
 						<TemplateCard
 							name={template.name}
@@ -42,7 +46,7 @@
 
 		<!-- Bottom row: Gradient templates (reversed) -->
 		<Marquee pauseOnHover repeat={3} reverse class="[--duration:80s] [--gap:1rem]">
-			{#each TEMPLATE_CATEGORIES.gradients as template (template.name)}
+			{#each gradients as template (template.name)}
 				<div class="w-[220px] flex-none">
 					<TemplateCard
 						name={template.name}
