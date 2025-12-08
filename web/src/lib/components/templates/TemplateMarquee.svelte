@@ -17,6 +17,11 @@
 		base,
 		gradients
 	}: Props = $props();
+
+	// Split gradients into two halves
+	const gradientsMid = Math.ceil(gradients.length / 2);
+	const gradientsRow1 = $derived(gradients.slice(0, gradientsMid));
+	const gradientsRow2 = $derived(gradients.slice(gradientsMid));
 </script>
 
 <section class="pt-4 pb-16">
@@ -44,9 +49,23 @@
 			</Marquee>
 		</div>
 
-		<!-- Bottom row: Gradient templates (reversed) -->
-		<Marquee pauseOnHover repeat={3} reverse class="[--duration:80s] [--gap:1rem]">
-			{#each gradients as template (template.name)}
+		<!-- Middle row: First half of gradient templates (reversed) -->
+		<div class="mb-4">
+			<Marquee pauseOnHover repeat={3} reverse class="[--duration:90s] [--gap:1rem]">
+				{#each gradientsRow1 as template (template.name)}
+					<div class="w-[220px] flex-none">
+						<TemplateCard
+							name={template.name}
+							label={template.label}
+						/>
+					</div>
+				{/each}
+			</Marquee>
+		</div>
+
+		<!-- Bottom row: Second half of gradient templates -->
+		<Marquee pauseOnHover repeat={3} class="[--duration:100s] [--gap:1rem]">
+			{#each gradientsRow2 as template (template.name)}
 				<div class="w-[220px] flex-none">
 					<TemplateCard
 						name={template.name}

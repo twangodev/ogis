@@ -622,10 +622,13 @@ templates:
   - name: gradient-cloud
     file: templates/gradient-cloud.svg
     colors:
-      background: "#e8eef2"
-      blob_white: "#f0f0f0"
-      blob_gray: "#dce4e8"
-      blob_silver: "#c5d0d8"
+      background: "#8a9cae"
+      blob_light: "#d0dce8"
+      blob_dark: "#6a7a8a"
+      blob_slate: "#586878"
+      blob_silver: "#c0d0e0"
+      blob_charcoal: "#4a5a6a"
+      blob_steel: "#b8c8d8"
       text: "#2d3748"
   - name: gradient-duotone
     file: templates/gradient-duotone.svg
@@ -666,10 +669,12 @@ templates:
   - name: gradient-moonstone
     file: templates/gradient-moonstone.svg
     colors:
-      background: "#b8c5d0"
-      blob_blue: "#c5d5e4"
-      blob_silver: "#d4e4ed"
-      blob_ice: "#e8f0f5"
+      background: "#8a98a6"
+      blob_silver: "#a8b8c8"
+      blob_light: "#c0d0e0"
+      blob_slate: "#58687a"
+      blob_charcoal: "#4a5a6a"
+      blob_ice: "#d0dce8"
       text: "#2d3a4a"
   - name: gradient-raven
     file: templates/gradient-raven.svg
