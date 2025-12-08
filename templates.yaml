@@ -39,15 +39,6 @@ templates:
       title_text: "#111827"
       subtitle_text: "#6b7280"
       description_text: "#374151"
-  - name: gradient
-    file: templates/gradient.svg
-    colors:
-      background: "#1a1a2e"
-      gradient_pink: "#ec4899"
-      gradient_yellow: "#fbbf24"
-      gradient_blue: "#3b82f6"
-      gradient_purple: "#8b5cf6"
-      text: "#ffffff"
   - name: hero
     file: templates/hero.svg
     colors:
@@ -72,9 +63,182 @@ templates:
     file: templates/fish.svg
     colors:
       background: "#0a0615"
-      gradient_purple: "#764ba2"
-      accent_blue: "#667eea"
-      waveform: "#808080"
-      title_text: "#ffffff"
-      subtitle_text: "#9ca3af"
-      description_text: "#d1d5db"
+      background_end: "#0f0f23"
+      blob_purple: "#6b21a8"
+      blob_purple_mid: "#581c87"
+      blob_purple_dark: "#4c1d95"
+      waveform_dark: "#5b3a8a"
+      waveform_mid: "#9ca3af"
+      waveform_light: "#d1d5db"
+      text: "#ffffff"
+  - name: gradient-arctic
+    file: templates/gradient-arctic.svg
+    colors:
+      background: "#0c4a6e"
+      blob_cyan: "#67e8f9"
+      blob_light_cyan: "#a5f3fc"
+      blob_sky: "#7dd3fc"
+      blob_ice: "#e0f2fe"
+      blob_teal: "#22d3ee"
+      text: "#ffffff"
+  - name: gradient-aurora
+    file: templates/gradient-aurora.svg
+    colors:
+      background: "#1e1b4b"
+      blob_violet: "#7c3aed"
+      blob_pink: "#ec4899"
+      blob_orange: "#f97316"
+      blob_yellow: "#fbbf24"
+      blob_blue: "#3b82f6"
+      text: "#ffffff"
+  - name: gradient-berry
+    file: templates/gradient-berry.svg
+    colors:
+      background: "#450a0a"
+      blob_rose: "#be123c"
+      blob_crimson: "#9f1239"
+      blob_red: "#e11d48"
+      blob_wine: "#881337"
+      blob_pink: "#fb7185"
+      text: "#ffffff"
+  - name: gradient-candy
+    file: templates/gradient-candy.svg
+    colors:
+      background: "#581c87"
+      blob_pink: "#f472b6"
+      blob_fuchsia: "#e879f9"
+      blob_purple: "#c084fc"
+      blob_rose: "#fb7185"
+      blob_light_pink: "#f0abfc"
+      text: "#ffffff"
+  - name: gradient-copper
+    file: templates/gradient-copper.svg
+    colors:
+      background: "#1c1917"
+      blob_amber: "#b45309"
+      blob_orange: "#d97706"
+      blob_yellow: "#ca8a04"
+      blob_gold: "#fbbf24"
+      blob_brown: "#78350f"
+      text: "#ffffff"
+  - name: gradient-ember
+    file: templates/gradient-ember.svg
+    colors:
+      background: "#0a0a0a"
+      blob_red: "#dc2626"
+      blob_orange: "#ea580c"
+      blob_flame: "#f97316"
+      blob_yellow: "#fbbf24"
+      blob_dark_red: "#991b1b"
+      text: "#ffffff"
+  - name: gradient-forest
+    file: templates/gradient-forest.svg
+    colors:
+      background: "#052e16"
+      blob_green: "#22c55e"
+      blob_emerald: "#10b981"
+      blob_teal: "#14b8a6"
+      blob_lime: "#84cc16"
+      blob_light_lime: "#a3e635"
+      text: "#ffffff"
+  - name: gradient-galaxy
+    file: templates/gradient-galaxy.svg
+    colors:
+      background: "#030712"
+      blob_indigo: "#6366f1"
+      blob_violet: "#8b5cf6"
+      blob_purple: "#a855f7"
+      blob_blue: "#3b82f6"
+      blob_pink: "#ec4899"
+      blob_light_pink: "#f472b6"
+      text: "#ffffff"
+  - name: gradient-lavender
+    file: templates/gradient-lavender.svg
+    colors:
+      background: "#2e1065"
+      blob_violet: "#a78bfa"
+      blob_light_violet: "#c4b5fd"
+      blob_pale_violet: "#ddd6fe"
+      blob_pink: "#f5d0fe"
+      blob_lavender: "#e9d5ff"
+      text: "#ffffff"
+  - name: gradient-midnight
+    file: templates/gradient-midnight.svg
+    colors:
+      background: "#020617"
+      blob_navy: "#1e3a8a"
+      blob_indigo: "#3730a3"
+      blob_violet: "#4f46e5"
+      blob_light_indigo: "#6366f1"
+      blob_periwinkle: "#818cf8"
+      text: "#ffffff"
+  - name: gradient-mint
+    file: templates/gradient-mint.svg
+    colors:
+      background: "#134e4a"
+      blob_aqua: "#5eead4"
+      blob_teal: "#2dd4bf"
+      blob_light_teal: "#99f6e4"
+      blob_green: "#a7f3d0"
+      blob_emerald: "#6ee7b7"
+      text: "#ffffff"
+  - name: gradient-moss
+    file: templates/gradient-moss.svg
+    colors:
+      background: "#1a2e1a"
+      blob_olive: "#4d7c0f"
+      blob_lime: "#65a30d"
+      blob_stone: "#78716c"
+      blob_green: "#84cc16"
+      blob_gray: "#a3a3a3"
+      text: "#ffffff"
+  - name: gradient-neon
+    file: templates/gradient-neon.svg
+    colors:
+      background: "#09090b"
+      blob_cyan: "#06b6d4"
+      blob_fuchsia: "#d946ef"
+      blob_light_cyan: "#22d3ee"
+      blob_purple: "#a855f7"
+      blob_pink: "#f0abfc"
+      text: "#ffffff"
+  - name: gradient-ocean
+    file: templates/gradient-ocean.svg
+    colors:
+      background: "#0c1929"
+      blob_sky: "#0ea5e9"
+      blob_cyan: "#06b6d4"
+      blob_teal: "#14b8a6"
+      blob_light_cyan: "#22d3ee"
+      blob_aqua: "#67e8f9"
+      text: "#ffffff"
+  - name: gradient-peach
+    file: templates/gradient-peach.svg
+    colors:
+      background: "#7c2d12"
+      blob_peach: "#fdba74"
+      blob_light_peach: "#fed7aa"
+      blob_yellow: "#fbbf24"
+      blob_orange: "#fb923c"
+      blob_cream: "#ffedd5"
+      text: "#ffffff"
+  - name: gradient-storm
+    file: templates/gradient-storm.svg
+    colors:
+      background: "#1e293b"
+      blob_slate: "#475569"
+      blob_gray: "#64748b"
+      blob_dark_slate: "#334155"
+      blob_light_gray: "#94a3b8"
+      blob_silver: "#cbd5e1"
+      text: "#ffffff"
+  - name: gradient-sunset
+    file: templates/gradient-sunset.svg
+    colors:
+      background: "#1e1b4b"
+      blob_yellow: "#fbbf24"
+      blob_orange: "#f97316"
+      blob_red: "#ef4444"
+      blob_pink: "#ec4899"
+      blob_rose: "#be185d"
+      text: "#ffffff"
