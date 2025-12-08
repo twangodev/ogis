@@ -80,7 +80,7 @@
 			</div>
 
 			<!-- URL Bar -->
-			<div class="pt-12">
+			<div class="pt-12 mt-16">
 				<URLBar {url} showLabel={true} />
 			</div>
 		</div>

@@ -72,7 +72,7 @@
 </script>
 
 {#if url}
-	<div class="mt-16">
+	<div>
 		{#if showLabel}
 			<div class="relative z-10 -mb-5">
 				<img src={Simple} alt="it's this simple" width="200" />
