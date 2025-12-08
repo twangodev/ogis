@@ -53,8 +53,8 @@ Check out the full supported templates at [ogis.dev/templates](https://ogis.dev/
       <br/><strong>stripe</strong>
     </td>
     <td align="center">
-      <img src="https://img.ogis.dev/?template=gradient&title=Make%20It%20Pop!&subtitle=Endless%20Possibilities&description=Beautiful%20images%20in%20milliseconds&logo=https://ogis.dev/logo-light.png" alt="Gradient" width="100%"/>
-      <br/><strong>gradient</strong>
+      <img src="https://img.ogis.dev/?template=gradient-aurora&title=Make%20It%20Pop!&subtitle=Endless%20Possibilities&description=Beautiful%20images%20in%20milliseconds&logo=https://ogis.dev/logo-light.png" alt="Gradient Aurora" width="100%"/>
+      <br/><strong>gradient-aurora</strong>
     </td>
     <td align="center">
       <img src="https://img.ogis.dev/?template=hero&title=Dramatic%20Impact&subtitle=Full%20Background&description=Photo-heavy%20content%20with%20overlay&logo=https://ogis.dev/logo-light.png" alt="Hero" width="100%"/>
