@@ -15,10 +15,7 @@ const mdsvexOptions = {
 	layout: {
 		_: resolve(__dirname, './src/lib/layouts/mdsvex.svelte')
 	},
-	rehypePlugins: [
-		rehypeSlug,
-		[rehypeAutolinkHeadings, { behavior: 'wrap' }]
-	]
+	rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]]
 };
 
 /** @type {import('@sveltejs/kit').Config} */

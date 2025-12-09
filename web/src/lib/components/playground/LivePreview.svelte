@@ -32,7 +32,7 @@
 	}
 </script>
 
-<div class="relative rounded-lg overflow-hidden border border-border">
+<div class="relative overflow-hidden rounded-lg border border-border">
 	<ImagePreview
 		src={previewUrl}
 		alt="Open Graph preview"
@@ -42,12 +42,12 @@
 
 	{#if imageError}
 		<div
-			class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground bg-muted"
+			class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted text-muted-foreground"
 		>
 			<AlertCircleIcon class="size-8" />
 			<p class="text-sm">Failed to generate preview</p>
 			<Button variant="outline" size="sm" onclick={retry}>
-				<RefreshCwIcon class="size-4 mr-2" />
+				<RefreshCwIcon class="mr-2 size-4" />
 				Retry
 			</Button>
 		</div>

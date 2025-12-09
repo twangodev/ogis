@@ -16,10 +16,8 @@
 		label?: string;
 	};
 
-	let {
-		logos = DEFAULT_LOGOS,
-		label = 'Powering open source, enterprise, and more.',
-	}: Props = $props();
+	let { logos = DEFAULT_LOGOS, label = 'Powering open source, enterprise, and more.' }: Props =
+		$props();
 </script>
 
 <section class="bg-background pb-16 md:pb-32">
@@ -48,12 +46,12 @@
 				<div class="absolute inset-y-0 right-0 w-20 bg-linear-to-l from-background"></div>
 
 				<ProgressiveBlur
-					class="pointer-events-none absolute left-0 top-0 h-full w-20"
+					class="pointer-events-none absolute top-0 left-0 h-full w-20"
 					direction="left"
 					blurIntensity={1}
 				/>
 				<ProgressiveBlur
-					class="pointer-events-none absolute right-0 top-0 h-full w-20"
+					class="pointer-events-none absolute top-0 right-0 h-full w-20"
 					direction="right"
 					blurIntensity={1}
 				/>

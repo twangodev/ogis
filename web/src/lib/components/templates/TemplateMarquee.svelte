@@ -11,12 +11,7 @@
 		gradients: TemplateInfo[];
 	}
 
-	let {
-		title = 'Templates',
-		description,
-		base,
-		gradients
-	}: Props = $props();
+	let { title = 'Templates', description, base, gradients }: Props = $props();
 
 	// Split gradients into two halves
 	const gradientsMid = Math.ceil(gradients.length / 2);
@@ -26,10 +21,10 @@
 
 <section class="pt-4 pb-16">
 	<!-- Header -->
-	<div class="max-w-7xl mx-auto px-6 mb-8">
+	<div class="mx-auto mb-8 max-w-7xl px-6">
 		<h2 class="text-3xl font-semibold md:text-4xl">{title}</h2>
 		{#if description}
-			<p class="text-muted-foreground mt-4 text-lg">{description}</p>
+			<p class="mt-4 text-lg text-muted-foreground">{description}</p>
 		{/if}
 	</div>
 
@@ -40,10 +35,7 @@
 			<Marquee pauseOnHover repeat={4} class="[--duration:60s] [--gap:1rem]">
 				{#each base as template (template.name)}
 					<div class="w-[220px] flex-none">
-						<TemplateCard
-							name={template.name}
-							label={template.label}
-						/>
+						<TemplateCard name={template.name} label={template.label} />
 					</div>
 				{/each}
 			</Marquee>
@@ -54,10 +46,7 @@
 			<Marquee pauseOnHover repeat={3} reverse class="[--duration:90s] [--gap:1rem]">
 				{#each gradientsRow1 as template (template.name)}
 					<div class="w-[220px] flex-none">
-						<TemplateCard
-							name={template.name}
-							label={template.label}
-						/>
+						<TemplateCard name={template.name} label={template.label} />
 					</div>
 				{/each}
 			</Marquee>
@@ -67,22 +56,19 @@
 		<Marquee pauseOnHover repeat={3} class="[--duration:100s] [--gap:1rem]">
 			{#each gradientsRow2 as template (template.name)}
 				<div class="w-[220px] flex-none">
-					<TemplateCard
-						name={template.name}
-						label={template.label}
-					/>
+					<TemplateCard name={template.name} label={template.label} />
 				</div>
 			{/each}
 		</Marquee>
 
 		<!-- Fade edges -->
 		<ProgressiveBlur
-			class="pointer-events-none absolute left-0 top-0 h-full w-24"
+			class="pointer-events-none absolute top-0 left-0 h-full w-24"
 			direction="left"
 			blurIntensity={1}
 		/>
 		<ProgressiveBlur
-			class="pointer-events-none absolute right-0 top-0 h-full w-24"
+			class="pointer-events-none absolute top-0 right-0 h-full w-24"
 			direction="right"
 			blurIntensity={1}
 		/>

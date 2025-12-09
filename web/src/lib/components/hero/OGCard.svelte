@@ -84,7 +84,7 @@
 </script>
 
 <div
-	class="absolute w-full aspect-[1.91] rounded-xl overflow-hidden cursor-pointer transition-all ease-out top-1/2 left-1/2"
+	class="absolute top-1/2 left-1/2 aspect-[1.91] w-full cursor-pointer overflow-hidden rounded-xl transition-all ease-out"
 	class:duration-200={isHovered || isDimmed}
 	class:duration-700={!isHovered && !isDimmed}
 	class:shadow-lg={!isHovered}
@@ -96,5 +96,5 @@
 	role="button"
 	tabindex={index}
 >
-	<img src={imageUrl} alt={title} class="w-full h-full object-cover block" />
+	<img src={imageUrl} alt={title} class="block h-full w-full object-cover" />
 </div>

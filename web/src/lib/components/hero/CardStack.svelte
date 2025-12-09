@@ -100,11 +100,11 @@
 </script>
 
 <div
-	class="relative w-full max-w-[500px] h-[350px] flex items-center justify-center"
+	class="relative flex h-[350px] w-full max-w-[500px] items-center justify-center"
 	style="perspective: 1000px;"
 	role="region"
 	aria-label="Open Graph image examples"
-	onmouseenter={() => isPaused = true}
+	onmouseenter={() => (isPaused = true)}
 	onmouseleave={() => {
 		isPaused = false;
 		hoveredCard = null;
@@ -120,9 +120,9 @@
 			totalCards={3}
 			isHovered={hoveredCard === i}
 			isDimmed={hoveredCard !== null && hoveredCard !== i}
-			verticalOffset={verticalOffset}
-			onHover={() => hoveredCard = i}
-			onLeave={() => hoveredCard = null}
+			{verticalOffset}
+			onHover={() => (hoveredCard = i)}
+			onLeave={() => (hoveredCard = null)}
 		/>
 	{/each}
 </div>

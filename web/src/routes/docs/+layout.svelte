@@ -32,7 +32,7 @@
 
 <div class="container mx-auto">
 	<div class="flex gap-10 pt-12 pb-10">
-		<aside class="hidden md:block w-64 shrink-0">
+		<aside class="hidden w-64 shrink-0 md:block">
 			<div class="sticky top-20">
 				<ScrollArea.Root class="h-[calc(100vh-8rem)] pr-6">
 					<div class="space-y-6">
@@ -48,8 +48,8 @@
 												class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors {isActive(
 													item.href
 												)
-													? 'bg-secondary text-secondary-foreground font-medium'
-													: 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'}"
+													? 'bg-secondary font-medium text-secondary-foreground'
+													: 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}"
 											>
 												{#if item.icon}
 													<item.icon size={16} />
@@ -63,8 +63,8 @@
 														class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors {isActive(
 															subItem.href
 														)
-															? 'bg-secondary text-secondary-foreground font-medium'
-															: 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'}"
+															? 'bg-secondary font-medium text-secondary-foreground'
+															: 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}"
 													>
 														{#if subItem.icon}
 															<subItem.icon size={16} />
@@ -80,8 +80,8 @@
 											class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors {isActive(
 												item.href
 											)
-												? 'bg-secondary text-secondary-foreground font-medium'
-												: 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'}"
+												? 'bg-secondary font-medium text-secondary-foreground'
+												: 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'}"
 										>
 											{#if item.icon}
 												<item.icon size={16} />
@@ -97,7 +97,7 @@
 			</div>
 		</aside>
 
-		<main class="flex-1 min-w-0">
+		<main class="min-w-0 flex-1">
 			{@render children?.()}
 		</main>
 	</div>

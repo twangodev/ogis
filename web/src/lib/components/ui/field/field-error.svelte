@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { cn } from "$lib/utils.js";
-	import type { HTMLAttributes } from "svelte/elements";
-	import type { Snippet } from "svelte";
+	import { cn } from '$lib/utils.js';
+	import type { HTMLAttributes } from 'svelte/elements';
+	import type { Snippet } from 'svelte';
 
 	let {
 		class: className,
@@ -36,7 +36,7 @@
 	<div
 		role="alert"
 		data-slot="field-error"
-		class={cn("text-destructive text-sm font-normal", className)}
+		class={cn('text-sm font-normal text-destructive', className)}
 		{...restProps}
 	>
 		{#if children}

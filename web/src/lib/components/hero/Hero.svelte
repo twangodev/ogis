@@ -20,7 +20,9 @@
 	<TemplateMarquee
 		base={templates.base}
 		gradients={templates.gradients}
-		description="{templates.base.length + templates.gradients.length} designs, fully customizable. Adjust colors, text, images, and more, or design your own template."
+		description="{templates.base.length +
+			templates.gradients
+				.length} designs, fully customizable. Adjust colors, text, images, and more, or design your own template."
 	/>
 	<PerformanceChart />
 	<LogoMarquee />

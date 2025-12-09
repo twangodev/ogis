@@ -45,7 +45,7 @@ function createPlaygroundState() {
 	// Initialize state from URL params
 	function initFromUrl(searchParams: URLSearchParams) {
 		const urlTemplate = searchParams.get('template');
-		if (urlTemplate && templates.some(t => t.name === urlTemplate)) {
+		if (urlTemplate && templates.some((t) => t.name === urlTemplate)) {
 			template = urlTemplate;
 		}
 
@@ -65,7 +65,7 @@ function createPlaygroundState() {
 		if (urlImage) media.image = urlImage;
 
 		// Parse color overrides
-		const templateColors = templates.find(t => t.name === template)?.colors ?? [];
+		const templateColors = templates.find((t) => t.name === template)?.colors ?? [];
 		for (const colorKey of templateColors) {
 			const colorValue = searchParams.get(colorKey);
 			if (colorValue && /^[0-9a-fA-F]{6}$/.test(colorValue)) {
@@ -96,7 +96,10 @@ function createPlaygroundState() {
 			if (content.subtitle && content.subtitle !== 'Open Graph Images') {
 				params.set('subtitle', content.subtitle);
 			}
-			if (content.description && content.description !== 'Generate beautiful OG images in real-time') {
+			if (
+				content.description &&
+				content.description !== 'Generate beautiful OG images in real-time'
+			) {
 				params.set('description', content.description);
 			}
 			if (media.logo) {
@@ -121,13 +124,17 @@ function createPlaygroundState() {
 	}
 
 	return {
-		get templates() { return templates; },
+		get templates() {
+			return templates;
+		},
 		setTemplates,
 		shuffleTemplates() {
 			templates = shuffle(templates);
 		},
 
-		get template() { return template; },
+		get template() {
+			return template;
+		},
 		set template(value: string) {
 			template = value;
 			// Reset colors when template changes
@@ -135,7 +142,9 @@ function createPlaygroundState() {
 			syncToUrl();
 		},
 
-		get content() { return content; },
+		get content() {
+			return content;
+		},
 		set content(value: PlaygroundContent) {
 			content = value;
 			syncToUrl();
@@ -145,7 +154,9 @@ function createPlaygroundState() {
 			syncToUrl();
 		},
 
-		get media() { return media; },
+		get media() {
+			return media;
+		},
 		set media(value: PlaygroundMedia) {
 			media = value;
 			syncToUrl();
@@ -155,7 +166,9 @@ function createPlaygroundState() {
 			syncToUrl();
 		},
 
-		get colors() { return colors; },
+		get colors() {
+			return colors;
+		},
 		set colors(value: Record<string, string>) {
 			colors = value;
 			syncToUrl();
@@ -194,7 +207,7 @@ function createPlaygroundState() {
 
 		// Get current template info
 		get currentTemplate() {
-			return templates.find(t => t.name === template);
+			return templates.find((t) => t.name === template);
 		}
 	};
 }

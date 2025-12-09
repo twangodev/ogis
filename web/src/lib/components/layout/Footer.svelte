@@ -51,7 +51,6 @@
 		],
 		socialLinks = []
 	}: Props = $props();
-
 </script>
 
 <footer class="border-t bg-background">
@@ -86,9 +85,7 @@
 		</div>
 
 		<!-- Bottom Bar -->
-		<div
-			class="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row"
-		>
+		<div class="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row">
 			<p class="text-sm text-muted-foreground">
 				Made by <Link href="https://twango.dev" external>James Ding</Link>. Licensed under{' '}
 				<Link href="https://www.gnu.org/licenses/agpl-3.0.en.html" external variant="muted"

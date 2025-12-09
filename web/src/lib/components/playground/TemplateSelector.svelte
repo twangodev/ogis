@@ -46,12 +46,14 @@
 			<span>Show more</span>
 			<ChevronRightIcon class="size-4" />
 		</Dialog.Trigger>
-		<Dialog.Content class="sm:max-w-7xl max-h-[85vh] overflow-y-auto">
+		<Dialog.Content class="max-h-[85vh] overflow-y-auto sm:max-w-7xl">
 			<Dialog.Header>
 				<div class="flex items-center justify-between pr-8">
 					<div>
 						<Dialog.Title>All Templates</Dialog.Title>
-						<Dialog.Description>Choose from {playground.templates.length} available templates</Dialog.Description>
+						<Dialog.Description
+							>Choose from {playground.templates.length} available templates</Dialog.Description
+						>
 					</div>
 					<Button variant="ghost" size="icon" onclick={() => playground.shuffleTemplates()}>
 						<ShuffleIcon class="size-4" />
@@ -59,16 +61,14 @@
 				</div>
 			</Dialog.Header>
 			<div class="relative mt-4">
-				<SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-				<Input
-					type="text"
-					placeholder="Search templates..."
-					class="pl-9"
-					bind:value={search}
-				/>
+				<SearchIcon class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+				<Input type="text" placeholder="Search templates..." class="pl-9" bind:value={search} />
 			</div>
 			{#if filteredTemplates.length > 0}
-				<div use:autoAnimate={{ duration: 300, easing: 'ease-in-out' }} class="grid grid-cols-5 gap-4 mt-4 overflow-hidden">
+				<div
+					use:autoAnimate={{ duration: 300, easing: 'ease-in-out' }}
+					class="mt-4 grid grid-cols-5 gap-4 overflow-hidden"
+				>
 					{#each filteredTemplates as template (template.name)}
 						<TemplateCard
 							name={template.name}
@@ -83,7 +83,7 @@
 				</div>
 			{:else}
 				<div class="flex flex-col items-center justify-center py-12 text-muted-foreground">
-					<FrownIcon class="size-8 mb-2 opacity-50" />
+					<FrownIcon class="mb-2 size-8 opacity-50" />
 					<p>No templates found</p>
 				</div>
 			{/if}

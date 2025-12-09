@@ -72,28 +72,28 @@
 	}
 </script>
 
-<div class="flex flex-wrap items-center gap-3 p-4 bg-muted/50 rounded-lg border border-border">
+<div class="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/50 p-4">
 	<Button onclick={downloadImage} disabled={downloading}>
-		<DownloadIcon class="size-4 mr-2" />
+		<DownloadIcon class="mr-2 size-4" />
 		{downloading ? 'Downloading...' : 'Download PNG'}
 	</Button>
 
 	<Button variant="outline" onclick={copyUrl}>
 		{#if copiedUrl}
-			<CheckIcon class="size-4 mr-2 text-green-500" />
+			<CheckIcon class="mr-2 size-4 text-green-500" />
 			Copied!
 		{:else}
-			<CopyIcon class="size-4 mr-2" />
+			<CopyIcon class="mr-2 size-4" />
 			Copy URL
 		{/if}
 	</Button>
 
 	<Button variant="outline" onclick={copyMetaTags}>
 		{#if copiedMeta}
-			<CheckIcon class="size-4 mr-2 text-green-500" />
+			<CheckIcon class="mr-2 size-4 text-green-500" />
 			Copied!
 		{:else}
-			<CodeIcon class="size-4 mr-2" />
+			<CodeIcon class="mr-2 size-4" />
 			Copy Meta Tags
 		{/if}
 	</Button>

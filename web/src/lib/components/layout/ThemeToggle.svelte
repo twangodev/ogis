@@ -4,13 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 </script>
 
-<Button
-	onclick={toggleMode}
-	variant="ghost"
-	size="icon"
-	aria-label="Toggle theme"
-	class="relative"
->
+<Button onclick={toggleMode} variant="ghost" size="icon" aria-label="Toggle theme" class="relative">
 	<Sun class={['size-5 duration-200', mode.current === 'dark' && 'scale-0 rotate-90 opacity-0']} />
 	<Moon
 		class={[

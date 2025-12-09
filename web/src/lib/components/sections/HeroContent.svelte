@@ -52,9 +52,7 @@
 			<div class="lg:grid lg:grid-cols-2 lg:items-center">
 				<!-- Left side: Hero content -->
 				<div class="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
-					<h1
-						class="mt-8 text-4xl font-medium text-balance md:text-5xl lg:mt-16 xl:text-6xl"
-					>
+					<h1 class="mt-8 text-4xl font-medium text-balance md:text-5xl lg:mt-16 xl:text-6xl">
 						{title}
 					</h1>
 					<p class="mt-8 max-w-xl text-lg text-pretty">
@@ -74,13 +72,13 @@
 				</div>
 
 				<!-- Right side: 3D Card Stack -->
-				<div class="flex justify-center items-center">
+				<div class="flex items-center justify-center">
 					<CardStack bind:activeCard />
 				</div>
 			</div>
 
 			<!-- URL Bar -->
-			<div class="pt-12 mt-16">
+			<div class="mt-16 pt-12">
 				<URLBar {url} showLabel={true} />
 			</div>
 		</div>

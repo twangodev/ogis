@@ -78,12 +78,16 @@
 				<img src={Simple} alt="it's this simple" width="200" />
 			</div>
 		{/if}
-		<div class="relative w-full rounded-2xl bg-muted/50 backdrop-blur-md border border-border px-6 shadow-lg overflow-hidden">
+		<div
+			class="relative w-full overflow-hidden rounded-2xl border border-border bg-muted/50 px-6 shadow-lg backdrop-blur-md"
+		>
 			<!-- Simple Text Above -->
 
 			<div class="flex items-center justify-between gap-4">
 				<!-- URL Display - Single Line -->
-				<div class="flex-1 min-w-0 font-mono text-sm py-4 flex items-center gap-1 overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
+				<div
+					class="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-4 font-mono text-sm"
+				>
 					<!-- Base URL -->
 					<span class="text-muted-foreground select-text">{parsedUrl.base}</span>
 					{#if Object.keys(parsedUrl.params).length > 0}
@@ -94,15 +98,18 @@
 					{#each Object.entries(parsedUrl.params) as [key, value], i (key)}
 						<div class="flex items-center gap-1">
 							<!-- Parameter Key -->
-							<span class="text-blue-600 dark:text-blue-400 select-text">{key}</span>
+							<span class="text-blue-600 select-text dark:text-blue-400">{key}</span>
 							<span class="text-muted-foreground">=</span>
 
 							<!-- Editable Parameter Value with Fly -->
 							{#key value}
-								<span class="relative inline-block" style="min-width: {(editableParams[key] || value).length}ch;">
+								<span
+									class="relative inline-block"
+									style="min-width: {(editableParams[key] || value).length}ch;"
+								>
 									<span
 										in:fly={{ x: -10, duration: 300 }}
-										class="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 inline-block whitespace-nowrap"
+										class="inline-block bg-emerald-500/10 whitespace-nowrap text-emerald-700 dark:text-emerald-300"
 									>
 										{value}
 									</span>
@@ -111,7 +118,7 @@
 										value={editableParams[key] || value}
 										size={(editableParams[key] || value).length}
 										oninput={(e) => handleInput(key, e)}
-										class="absolute inset-0 bg-transparent text-emerald-700 dark:text-emerald-300 focus:outline-none focus:bg-emerald-500/20 transition-colors p-0 m-0 border-0 opacity-0 focus:opacity-100 whitespace-nowrap"
+										class="absolute inset-0 m-0 border-0 bg-transparent p-0 whitespace-nowrap text-emerald-700 opacity-0 transition-colors focus:bg-emerald-500/20 focus:opacity-100 focus:outline-none dark:text-emerald-300"
 										placeholder="Enter value..."
 									/>
 								</span>
@@ -128,13 +135,13 @@
 				<div class="flex-shrink-0">
 					<button
 						onclick={copyUrl}
-						class="p-2 rounded-lg hover:bg-accent transition-all duration-200"
+						class="rounded-lg p-2 transition-all duration-200 hover:bg-accent"
 						aria-label="Copy URL"
 					>
 						{#if copied}
-							<Check class="w-5 h-5 text-green-600 dark:text-green-400" />
+							<Check class="h-5 w-5 text-green-600 dark:text-green-400" />
 						{:else}
-							<Copy class="w-5 h-5 text-muted-foreground" />
+							<Copy class="h-5 w-5 text-muted-foreground" />
 						{/if}
 					</button>
 				</div>

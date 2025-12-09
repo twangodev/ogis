@@ -30,6 +30,6 @@
 >
 	<CircleSlash2 class={iconSizes[size]} />
 	{#if showText}
-		<span class="{textSizes[size]} font-semibold -translate-y-px">{site.name}</span>
+		<span class="{textSizes[size]} -translate-y-px font-semibold">{site.name}</span>
 	{/if}
 </a>

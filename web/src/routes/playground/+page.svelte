@@ -30,14 +30,19 @@
 	</div>
 
 	<!-- Main Layout: Side-by-side on desktop, stacked on mobile -->
-	<div class="flex flex-col lg:flex-row gap-8">
+	<div class="flex flex-col gap-8 lg:flex-row">
 		<!-- Controls Panel (Left Side) -->
-		<div class="w-full lg:w-[400px] lg:shrink-0 space-y-6">
+		<div class="w-full space-y-6 lg:w-[400px] lg:shrink-0">
 			<!-- Template Selector -->
 			<section>
-				<div class="flex items-center justify-between mb-3">
+				<div class="mb-3 flex items-center justify-between">
 					<h2 class="text-sm font-medium">Template</h2>
-					<Button variant="ghost" size="icon" class="size-7" onclick={() => playground.shuffleTemplates()}>
+					<Button
+						variant="ghost"
+						size="icon"
+						class="size-7"
+						onclick={() => playground.shuffleTemplates()}
+					>
 						<ShuffleIcon class="size-4" />
 					</Button>
 				</div>
@@ -46,25 +51,25 @@
 
 			<!-- Content Editor -->
 			<section>
-				<h2 class="text-sm font-medium mb-3">Content</h2>
+				<h2 class="mb-3 text-sm font-medium">Content</h2>
 				<ContentEditor />
 			</section>
 
 			<!-- Media Inputs -->
 			<section>
-				<h2 class="text-sm font-medium mb-3">Media</h2>
+				<h2 class="mb-3 text-sm font-medium">Media</h2>
 				<MediaInputs />
 			</section>
 
 			<!-- Color Customizer -->
 			<section>
-				<h2 class="text-sm font-medium mb-3">Colors</h2>
+				<h2 class="mb-3 text-sm font-medium">Colors</h2>
 				<ColorCustomizer />
 			</section>
 		</div>
 
 		<!-- Preview Panel (Right Side) -->
-		<div class="flex-1 min-w-0">
+		<div class="min-w-0 flex-1">
 			<PreviewPanel />
 		</div>
 	</div>

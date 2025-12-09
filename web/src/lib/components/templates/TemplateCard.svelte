@@ -10,13 +10,7 @@
 		class?: string;
 	}
 
-	let {
-		name,
-		label,
-		description = '',
-		size = 'md',
-		class: className = ''
-	}: Props = $props();
+	let { name, label, description = '', size = 'md', class: className = '' }: Props = $props();
 
 	const apiUrl = `https://img.ogis.dev/?template=${name}&title=${encodeURIComponent(label)}&subtitle=Open%20Graph%20Template&description=Beautiful%20images%20for%20your%20links`;
 
@@ -36,7 +30,7 @@
 
 <a
 	href="/playground?template={name}"
-	class="group/card block rounded-lg overflow-hidden bg-card border border-border transition-all duration-200 hover:border-foreground/20 hover:shadow-md {className}"
+	class="group/card block overflow-hidden rounded-lg border border-border bg-card transition-all duration-200 hover:border-foreground/20 hover:shadow-md {className}"
 	onmouseenter={() => (isHovered = true)}
 	onmouseleave={() => (isHovered = false)}
 >
@@ -45,7 +39,7 @@
 		<img
 			src={apiUrl}
 			alt="{label} template preview"
-			class="absolute inset-0 w-full h-full object-cover transition-all duration-300 {imageLoaded
+			class="absolute inset-0 h-full w-full object-cover transition-all duration-300 {imageLoaded
 				? 'opacity-100'
 				: 'opacity-0'} {isHovered ? 'scale-[1.02]' : 'scale-100'}"
 			onload={handleLoad}
@@ -59,10 +53,10 @@
 
 		<!-- Hover Overlay -->
 		<div
-			class="absolute inset-0 bg-black/0 group-hover/card:bg-black/40 transition-colors duration-200 flex items-center justify-center"
+			class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover/card:bg-black/40"
 		>
 			<span
-				class="text-white text-sm font-medium opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center gap-1"
+				class="flex items-center gap-1 text-sm font-medium text-white opacity-0 transition-opacity group-hover/card:opacity-100"
 			>
 				Try it <ArrowRightIcon class="size-4" />
 			</span>
@@ -70,10 +64,10 @@
 	</div>
 
 	<!-- Label -->
-	<div class="px-3 py-2.5 border-t border-border">
-		<h3 class="font-medium text-sm">{label}</h3>
+	<div class="border-t border-border px-3 py-2.5">
+		<h3 class="text-sm font-medium">{label}</h3>
 		{#if description}
-			<p class="text-xs text-muted-foreground mt-0.5 line-clamp-1">{description}</p>
+			<p class="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{description}</p>
 		{/if}
 	</div>
 </a>

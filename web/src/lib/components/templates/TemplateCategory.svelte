@@ -36,17 +36,17 @@
 
 <section class="py-16">
 	<!-- Header -->
-	<div class="max-w-6xl mx-auto px-6 mb-6">
+	<div class="mx-auto mb-6 max-w-6xl px-6">
 		<div class="flex items-end justify-between">
 			<div>
 				<h2 class="text-2xl font-medium">{title}</h2>
 				{#if description}
-					<p class="text-muted-foreground mt-1">{description}</p>
+					<p class="mt-1 text-muted-foreground">{description}</p>
 				{/if}
 			</div>
 
 			{#if layout === 'scroll'}
-				<div class="hidden md:flex items-center gap-1">
+				<div class="hidden items-center gap-1 md:flex">
 					<Button
 						variant="ghost"
 						size="icon"
@@ -73,34 +73,28 @@
 		<div
 			bind:this={scrollContainer}
 			onscroll={updateScrollState}
-			class="flex gap-4 overflow-x-auto px-6 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))] pb-4 scrollbar-hide"
+			class="scrollbar-hide flex gap-4 overflow-x-auto px-6 pb-4 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))]"
 		>
 			{#each templates as template (template.name)}
-				<div class="flex-none w-[300px]">
-					<TemplateCard
-						name={template.name}
-						label={template.label}
-					/>
+				<div class="w-[300px] flex-none">
+					<TemplateCard name={template.name} label={template.label} />
 				</div>
 			{/each}
 		</div>
 	{:else if layout === 'grid'}
-		<div class="max-w-6xl mx-auto px-6">
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+		<div class="mx-auto max-w-6xl px-6">
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each templates as template (template.name)}
-					<TemplateCard
-						name={template.name}
-						label={template.label}
-					/>
+					<TemplateCard name={template.name} label={template.label} />
 				{/each}
 			</div>
 		</div>
 	{:else if layout === 'bento'}
-		<div class="max-w-6xl mx-auto px-6">
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+		<div class="mx-auto max-w-6xl px-6">
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each templates as template, i (template.name)}
 					{@const isLarge = i === 0}
-					<div class="{isLarge ? 'sm:col-span-2' : ''}">
+					<div class={isLarge ? 'sm:col-span-2' : ''}>
 						<TemplateCard
 							name={template.name}
 							label={template.label}

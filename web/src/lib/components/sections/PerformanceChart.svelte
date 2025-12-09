@@ -44,7 +44,7 @@
 			<div class="mb-12 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
 				<div class="text-left">
 					<h2 class="text-3xl font-semibold md:text-4xl">Blazingly Fast Performance</h2>
-					<p class="text-muted-foreground mt-4 text-lg">
+					<p class="mt-4 text-lg text-muted-foreground">
 						Up to 220x faster than traditional approaches, 54x faster than{' '}
 						<Link
 							href="https://vercel.com/docs/functions/og-image-generation"
@@ -84,8 +84,7 @@
 						bars: {
 							stroke: 'none'
 						},
-						labels: {
-						}
+						labels: {}
 					}}
 				>
 					{#snippet tooltip()}

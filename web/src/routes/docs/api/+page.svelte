@@ -54,9 +54,7 @@
 <div class="space-y-6">
 	<div>
 		<h1 class="text-4xl font-bold tracking-tight">API Reference</h1>
-		<p class="text-muted-foreground mt-2">
-			Complete OpenAPI specification for the OGIS service
-		</p>
+		<p class="mt-2 text-muted-foreground">Complete OpenAPI specification for the OGIS service</p>
 	</div>
 
 	{#if swaggerError}

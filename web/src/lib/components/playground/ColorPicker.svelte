@@ -41,25 +41,25 @@
 		<!-- Color preview/picker -->
 		<label class="relative">
 			<div
-				class="size-8 rounded-md border border-border cursor-pointer overflow-hidden"
+				class="size-8 cursor-pointer overflow-hidden rounded-md border border-border"
 				style="background-color: {cssColor}"
 			>
 				<input
 					type="color"
 					value={cssColor}
 					oninput={handleColorPickerChange}
-					class="absolute inset-0 opacity-0 cursor-pointer"
+					class="absolute inset-0 cursor-pointer opacity-0"
 				/>
 			</div>
 		</label>
 
 		<!-- Hex input -->
-		<div class="flex-1 relative">
-			<span class="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">#</span>
+		<div class="relative flex-1">
+			<span class="absolute top-1/2 left-2 -translate-y-1/2 text-sm text-muted-foreground">#</span>
 			<Input
 				type="text"
 				placeholder="FF0000"
-				value={value}
+				{value}
 				oninput={handleInput}
 				maxlength={6}
 				class="pl-5 font-mono text-xs uppercase {!isValid ? 'border-destructive' : ''}"

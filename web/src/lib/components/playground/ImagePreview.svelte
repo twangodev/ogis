@@ -33,14 +33,14 @@
 	}
 </script>
 
-<div class="{aspectRatio} bg-muted relative overflow-hidden {className}">
+<div class="{aspectRatio} relative overflow-hidden bg-muted {className}">
 	{#key src}
 		<img
 			{src}
 			{alt}
-			class="absolute inset-0 w-full h-full object-cover transition-all duration-500 {imageLoaded
+			class="absolute inset-0 h-full w-full object-cover transition-all duration-500 {imageLoaded
 				? 'blur-0 scale-100'
-				: 'blur-md scale-105'}"
+				: 'scale-105 blur-md'}"
 			onload={handleLoad}
 		/>
 	{/key}
@@ -49,7 +49,7 @@
 		<div class="absolute inset-0 flex items-center justify-center">
 			{#if showLabel}
 				<div
-					class="flex items-center gap-2 text-foreground bg-background/90 px-4 py-2 rounded-full shadow-lg border border-border"
+					class="flex items-center gap-2 rounded-full border border-border bg-background/90 px-4 py-2 text-foreground shadow-lg"
 				>
 					<RefreshCwIcon class="size-4 animate-spin" />
 					<span class="text-sm font-medium">{labelText}</span>

@@ -7,14 +7,10 @@
 	let expanded = $state(false);
 
 	// Get available colors for current template
-	const templateColors = $derived(
-		playground.currentTemplate?.colors ?? []
-	);
+	const templateColors = $derived(playground.currentTemplate?.colors ?? []);
 
 	// Check if any colors are customized
-	const hasCustomColors = $derived(
-		Object.values(playground.colors).some((v) => v && v.length > 0)
-	);
+	const hasCustomColors = $derived(Object.values(playground.colors).some((v) => v && v.length > 0));
 
 	function handleColorChange(key: string, value: string) {
 		playground.updateColor(key, value);
@@ -36,7 +32,7 @@
 <div class="space-y-3">
 	<button
 		type="button"
-		class="flex items-center justify-between w-full text-left"
+		class="flex w-full items-center justify-between text-left"
 		onclick={() => (expanded = !expanded)}
 	>
 		<span class="text-sm text-muted-foreground">
@@ -56,7 +52,7 @@
 		<div class="space-y-3 pt-2">
 			{#if hasCustomColors}
 				<Button variant="outline" size="sm" class="w-full" onclick={resetColors}>
-					<RotateCcwIcon class="size-4 mr-2" />
+					<RotateCcwIcon class="mr-2 size-4" />
 					Reset to defaults
 				</Button>
 			{/if}
