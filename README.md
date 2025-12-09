@@ -29,7 +29,7 @@ GET https://img.ogis.dev/?title=OpenGraph&description=MadeEasy
 ## Examples
 
 ogis comes with a variety of built-in templates to get you started quickly. 
-Check out the full supported templates at [ogis.dev/templates](https://ogis.dev/templates).
+Check out the full supported templates at [ogis.dev/playground](https://ogis.dev/playground).
 
 <table>
   <tbody>
