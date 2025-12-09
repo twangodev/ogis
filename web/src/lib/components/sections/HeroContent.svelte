@@ -13,7 +13,9 @@
 		title: string;
 		description: string;
 		subtitle?: string;
+		logo?: string;
 		image?: string;
+		template?: string;
 	};
 
 	type Props = {
@@ -37,9 +39,11 @@
 		if (!activeCard) return '';
 
 		const params = new URLSearchParams();
+		if (activeCard.template) params.set('template', activeCard.template);
 		params.set('title', activeCard.title);
 		params.set('description', activeCard.description);
 		if (activeCard.subtitle) params.set('subtitle', activeCard.subtitle);
+		if (activeCard.logo) params.set('logo', activeCard.logo);
 		if (activeCard.image) params.set('image', activeCard.image);
 
 		return `https://img.ogis.dev?${params.toString()}`;

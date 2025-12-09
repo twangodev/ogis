@@ -8,6 +8,8 @@
 		description: string;
 		subtitle?: string;
 		logo?: string;
+		image?: string;
+		template?: string;
 	};
 
 	type Props = {
@@ -20,39 +22,50 @@
 		{
 			id: 1,
 			title: 'Open Graph Images',
-			description: 'ogis is a fast, free, and beautiful platform for open graph image generation.',
+			description: 'Fast, free, and beautiful image generation powered by Rust',
 			subtitle: 'Open Source • Always Free',
-			logo: 'https://ogis.dev/logo-light.png'
+			logo: 'https://ogis.dev/logo-light.png',
+			template: 'twilight'
 		},
 		{
 			id: 2,
-			title: 'Blog Post',
-			description: 'How to build scalable web applications with modern frameworks',
-			subtitle: 'Engineering • 12 min read'
+			title: 'Ship Faster with Vercel',
+			description: 'Deploy web apps instantly with zero configuration',
+			subtitle: 'Frontend Cloud Platform',
+			logo: 'https://ogis.dev/demo/vercel.png',
+			template: 'gradient-noir'
 		},
 		{
 			id: 3,
-			title: 'Documentation',
-			description: 'Complete API reference and integration guides for developers',
-			subtitle: 'Developer Docs • v2.0'
+			title: 'Build with Svelte',
+			description: 'Runes, fine-grained reactivity, and next-gen performance',
+			subtitle: 'Framework Release',
+			logo: 'https://ogis.dev/demo/svelte.png',
+			template: 'gradient-ember'
 		},
 		{
 			id: 4,
-			title: 'Product Launch',
-			description: 'Introducing our newest feature with enhanced performance',
-			subtitle: 'Product Updates'
+			title: 'Tropical Paradise',
+			description: 'Discover crystal clear waters and pristine beaches',
+			subtitle: 'Travel Collection',
+			image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&fm=png',
+			template: 'gradient-tropics'
 		},
 		{
 			id: 5,
-			title: 'Tech Conference',
-			description: 'Join developers worldwide for talks, workshops, and networking',
-			subtitle: 'March 15-16 • Virtual'
+			title: 'GitHub Copilot',
+			description: 'Your AI pair programmer for faster, smarter coding',
+			subtitle: 'AI-Powered Development',
+			logo: 'https://ogis.dev/demo/github.png',
+			template: 'gradient-midnight'
 		},
 		{
 			id: 6,
-			title: 'Weekly Newsletter',
-			description: 'The latest in web development, frameworks, and best practices',
-			subtitle: 'Issue #47 • Feb 2025'
+			title: 'Discord Communities',
+			description: 'Connect with developers, gamers, and creators',
+			subtitle: 'Chat & Collaborate',
+			logo: 'https://ogis.dev/demo/discord.png',
+			template: 'gradient-cobalt'
 		}
 	];
 
@@ -116,6 +129,8 @@
 			description={card.description}
 			subtitle={card.subtitle}
 			logo={card.logo}
+			image={card.image}
+			template={card.template}
 			index={i}
 			totalCards={3}
 			isHovered={hoveredCard === i}

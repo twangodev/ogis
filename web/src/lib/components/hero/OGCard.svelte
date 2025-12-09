@@ -6,6 +6,8 @@
 		description: string;
 		subtitle?: string;
 		logo?: string;
+		image?: string;
+		template?: string;
 		index: number;
 		totalCards: number;
 		isHovered: boolean;
@@ -20,6 +22,8 @@
 		description,
 		subtitle,
 		logo,
+		image,
+		template,
 		index,
 		totalCards,
 		isHovered,
@@ -36,6 +40,8 @@
 		params.set('description', description);
 		if (subtitle) params.set('subtitle', subtitle);
 		if (logo) params.set('logo', logo);
+		if (image) params.set('image', image);
+		if (template) params.set('template', template);
 		return `https://img.ogis.dev?${params.toString()}`;
 	});
 
