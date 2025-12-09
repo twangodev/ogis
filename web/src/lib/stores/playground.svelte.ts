@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation';
+import { shuffle } from '$lib/utils/shuffle';
 
 export interface TemplateDefinition {
 	name: string;
@@ -122,6 +123,9 @@ function createPlaygroundState() {
 	return {
 		get templates() { return templates; },
 		setTemplates,
+		shuffleTemplates() {
+			templates = shuffle(templates);
+		},
 
 		get template() { return template; },
 		set template(value: string) {

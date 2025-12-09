@@ -7,6 +7,8 @@
 	import MediaInputs from '$lib/components/playground/MediaInputs.svelte';
 	import ColorCustomizer from '$lib/components/playground/ColorCustomizer.svelte';
 	import PreviewPanel from '$lib/components/playground/PreviewPanel.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import ShuffleIcon from '@lucide/svelte/icons/shuffle';
 
 	let { data } = $props();
 
@@ -33,7 +35,12 @@
 		<div class="w-full lg:w-[400px] lg:shrink-0 space-y-6">
 			<!-- Template Selector -->
 			<section>
-				<h2 class="text-sm font-medium mb-3">Template</h2>
+				<div class="flex items-center justify-between mb-3">
+					<h2 class="text-sm font-medium">Template</h2>
+					<Button variant="ghost" size="icon" class="size-7" onclick={() => playground.shuffleTemplates()}>
+						<ShuffleIcon class="size-4" />
+					</Button>
+				</div>
 				<TemplateSelector />
 			</section>
 

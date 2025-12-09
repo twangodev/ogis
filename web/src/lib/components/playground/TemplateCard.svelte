@@ -41,7 +41,7 @@
 <button
 	bind:this={containerRef}
 	type="button"
-	class="relative rounded-lg overflow-hidden border-2 transition-all duration-200 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {selected
+	class="relative w-full rounded-lg overflow-hidden border-2 transition-all duration-200 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {selected
 		? 'border-primary ring-2 ring-primary/20'
 		: 'border-border'}"
 	{onclick}
