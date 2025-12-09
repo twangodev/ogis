@@ -1,14 +1,28 @@
 <script lang="ts">
-	import { flip } from 'svelte/animate';
-	import { cubicInOut } from 'svelte/easing';
+	import autoAnimate from '@formkit/auto-animate';
+	import fuzzysort from 'fuzzysort';
 	import { playground } from '$lib/stores/playground.svelte';
 	import TemplateCard from './TemplateCard.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import ShuffleIcon from '@lucide/svelte/icons/shuffle';
+	import SearchIcon from '@lucide/svelte/icons/search';
+	import FrownIcon from '@lucide/svelte/icons/frown';
 
 	let dialogOpen = $state(false);
+	let search = $state('');
+
+	const filteredTemplates = $derived(
+		search.trim()
+			? fuzzysort.go(search, playground.templates, { keys: ['label', 'name'] }).map((r) => r.obj)
+			: playground.templates
+	);
+
+	$effect(() => {
+		if (!dialogOpen) search = '';
+	});
 </script>
 
 <!-- First 5 rows (15 templates) always visible -->
@@ -44,9 +58,18 @@
 					</Button>
 				</div>
 			</Dialog.Header>
-			<div class="grid grid-cols-5 gap-4 mt-4">
-				{#each playground.templates as template (template.name)}
-					<div animate:flip={{ duration: 500, easing: cubicInOut }} class="min-w-0">
+			<div class="relative mt-4">
+				<SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+				<Input
+					type="text"
+					placeholder="Search templates..."
+					class="pl-9"
+					bind:value={search}
+				/>
+			</div>
+			{#if filteredTemplates.length > 0}
+				<div use:autoAnimate={{ duration: 300, easing: 'ease-in-out' }} class="grid grid-cols-5 gap-4 mt-4 overflow-hidden">
+					{#each filteredTemplates as template (template.name)}
 						<TemplateCard
 							name={template.name}
 							label={template.label}
@@ -56,9 +79,14 @@
 								dialogOpen = false;
 							}}
 						/>
-					</div>
-				{/each}
-			</div>
+					{/each}
+				</div>
+			{:else}
+				<div class="flex flex-col items-center justify-center py-12 text-muted-foreground">
+					<FrownIcon class="size-8 mb-2 opacity-50" />
+					<p>No templates found</p>
+				</div>
+			{/if}
 		</Dialog.Content>
 	</Dialog.Root>
 {/if}
