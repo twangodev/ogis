@@ -37,6 +37,10 @@ function createPlaygroundState() {
 	// Debounce timer for URL updates
 	let urlUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
 
+	// Debounced API URL for preview components
+	let debouncedApiUrl = $state('');
+	let apiUrlDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 	// Set templates from layout data
 	function setTemplates(newTemplates: TemplateDefinition[]) {
 		templates = newTemplates;
@@ -74,11 +78,49 @@ function createPlaygroundState() {
 		}
 
 		urlSyncEnabled = true;
+
+		// Initialize debounced URL immediately
+		debouncedApiUrl = buildApiUrl();
+	}
+
+	// Build the current API URL (not debounced)
+	function buildApiUrl(): string {
+		const params = new URLSearchParams();
+		params.set('template', template);
+
+		if (content.title) params.set('title', content.title);
+		if (content.subtitle) params.set('subtitle', content.subtitle);
+		if (content.description) params.set('description', content.description);
+		if (media.logo) params.set('logo', media.logo);
+		if (media.image) params.set('image', media.image);
+
+		// Add color overrides
+		for (const [key, value] of Object.entries(colors)) {
+			if (value) {
+				params.set(key, value);
+			}
+		}
+
+		return `https://img.ogis.dev/?${params.toString()}`;
+	}
+
+	// Update debounced API URL
+	function updateDebouncedApiUrl() {
+		if (apiUrlDebounceTimer) {
+			clearTimeout(apiUrlDebounceTimer);
+		}
+
+		apiUrlDebounceTimer = setTimeout(() => {
+			debouncedApiUrl = buildApiUrl();
+		}, 500);
 	}
 
 	// Update URL with current state (debounced)
 	function syncToUrl() {
 		if (!urlSyncEnabled) return;
+
+		// Also update debounced API URL for previews
+		updateDebouncedApiUrl();
 
 		if (urlUpdateTimeout) {
 			clearTimeout(urlUpdateTimeout);
@@ -184,25 +226,14 @@ function createPlaygroundState() {
 
 		initFromUrl,
 
-		// Generate the API URL for the current state
+		// Generate the API URL for the current state (not debounced - updates immediately)
 		get apiUrl() {
-			const params = new URLSearchParams();
-			params.set('template', template);
+			return buildApiUrl();
+		},
 
-			if (content.title) params.set('title', content.title);
-			if (content.subtitle) params.set('subtitle', content.subtitle);
-			if (content.description) params.set('description', content.description);
-			if (media.logo) params.set('logo', media.logo);
-			if (media.image) params.set('image', media.image);
-
-			// Add color overrides
-			for (const [key, value] of Object.entries(colors)) {
-				if (value) {
-					params.set(key, value);
-				}
-			}
-
-			return `https://img.ogis.dev/?${params.toString()}`;
+		// Debounced API URL for preview components (waits 500ms after last change)
+		get previewUrl() {
+			return debouncedApiUrl;
 		},
 
 		// Get current template info

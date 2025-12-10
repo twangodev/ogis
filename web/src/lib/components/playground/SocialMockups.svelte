@@ -17,7 +17,7 @@
 	<div class="flex flex-col gap-2">
 		<span class="text-xs font-medium text-muted-foreground">Twitter / X</span>
 		<div class="flex-1 overflow-hidden rounded-xl border border-border bg-card">
-			<ImagePreview src={playground.apiUrl} alt="Twitter card preview" />
+			<ImagePreview src={playground.previewUrl} alt="Twitter card preview" />
 			<div class="border-t border-border p-3">
 				<p class="text-xs text-muted-foreground">ogis.dev</p>
 				<p class="truncate text-sm font-medium">{truncate(title, 70)}</p>
@@ -29,7 +29,7 @@
 	<div class="flex flex-col gap-2">
 		<span class="text-xs font-medium text-muted-foreground">Facebook</span>
 		<div class="flex-1 overflow-hidden rounded-lg border border-border bg-card">
-			<ImagePreview src={playground.apiUrl} alt="Facebook card preview" />
+			<ImagePreview src={playground.previewUrl} alt="Facebook card preview" />
 			<div class="bg-muted/50 p-3">
 				<p class="text-xs tracking-wide text-muted-foreground uppercase">ogis.dev</p>
 				<p class="mt-1 line-clamp-2 text-sm font-semibold">{truncate(title, 100)}</p>
@@ -42,7 +42,7 @@
 	<div class="flex flex-col gap-2">
 		<span class="text-xs font-medium text-muted-foreground">LinkedIn</span>
 		<div class="flex-1 overflow-hidden rounded-lg border border-border bg-card">
-			<ImagePreview src={playground.apiUrl} alt="LinkedIn card preview" />
+			<ImagePreview src={playground.previewUrl} alt="LinkedIn card preview" />
 			<div class="p-3">
 				<p class="line-clamp-2 text-sm font-semibold">{truncate(title, 150)}</p>
 				<p class="mt-1 text-xs text-muted-foreground">ogis.dev</p>
@@ -66,7 +66,7 @@
 					{truncate(description, 150)}
 				</p>
 				<div class="mt-auto overflow-hidden rounded pt-2">
-					<ImagePreview src={playground.apiUrl} alt="Discord embed preview" />
+					<ImagePreview src={playground.previewUrl} alt="Discord embed preview" />
 				</div>
 			</div>
 		</div>
@@ -94,7 +94,7 @@
 					{truncate(description, 150)}
 				</p>
 				<div class="mt-auto overflow-hidden rounded pt-2">
-					<ImagePreview src={playground.apiUrl} alt="Slack preview" />
+					<ImagePreview src={playground.previewUrl} alt="Slack preview" />
 				</div>
 			</div>
 		</div>
@@ -105,7 +105,7 @@
 		<div class="flex-1 overflow-hidden rounded-lg bg-[#202C33]">
 			<div class="h-full p-2">
 				<div class="flex h-full flex-col overflow-hidden rounded-lg bg-[#025144]">
-					<ImagePreview src={playground.apiUrl} alt="WhatsApp preview" />
+					<ImagePreview src={playground.previewUrl} alt="WhatsApp preview" />
 					<div class="flex-1 bg-[#025144] p-2">
 						<p class="text-xs text-[#8696A0] uppercase">ogis.dev</p>
 						<p class="mt-0.5 line-clamp-2 text-sm font-medium text-white">

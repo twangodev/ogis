@@ -6,35 +6,20 @@
 
 	let imageError = $state(false);
 
-	// Debounce the preview URL updates
-	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-	let previewUrl = $state(playground.apiUrl);
-	let lastApiUrl = $state(playground.apiUrl);
-
+	// Reset error state when preview URL changes
 	$effect(() => {
-		const newUrl = playground.apiUrl;
-
-		if (newUrl !== lastApiUrl) {
-			lastApiUrl = newUrl;
-
-			if (debounceTimer) clearTimeout(debounceTimer);
-
-			debounceTimer = setTimeout(() => {
-				previewUrl = newUrl;
-				imageError = false;
-			}, 300);
-		}
+		playground.previewUrl;
+		imageError = false;
 	});
 
 	function retry() {
 		imageError = false;
-		previewUrl = `${playground.apiUrl}&_t=${Date.now()}`;
 	}
 </script>
 
 <div class="relative overflow-hidden rounded-lg border border-border">
 	<ImagePreview
-		src={previewUrl}
+		src={playground.previewUrl}
 		alt="Open Graph preview"
 		showLabel={true}
 		labelText="Generating..."
