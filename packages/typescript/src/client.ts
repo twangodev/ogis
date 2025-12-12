@@ -13,13 +13,13 @@ import {
  *
  * @example
  * ```ts
- * import { OgisClient } from '@twangodev/ogis';
+ * import { OgisClient } from 'ogis';
  *
  * const ogis = new OgisClient({
- *   baseUrl: 'https://ogis.example.com',
+ *   baseUrl: 'https://img.ogis.dev',
  *   hmacSecret: process.env.OGIS_SECRET,
  *   defaults: {
- *     template: 'fish',
+ *     template: 'twilight',
  *     logo: 'https://example.com/logo.png'
  *   }
  * });
