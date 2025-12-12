@@ -5,7 +5,7 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import highlighter from './src/lib/utils/highlighter.ts';
+import highlighter from './src/lib/utils/highlighter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
