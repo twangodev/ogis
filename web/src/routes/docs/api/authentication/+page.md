@@ -5,4 +5,220 @@ description: HMAC-based authentication for OGIS
 
 # Authentication
 
-Coming soon.
+Secure your OGIS instance with HMAC-SHA256 signature validation. When enabled, all requests must include a valid signature parameter.
+
+## When to Use Authentication
+
+- **Private instances** — Prevent unauthorized usage of your self-hosted OGIS
+- **Rate limiting** — Control who can generate images
+- **Usage tracking** — Identify requests by signature
+
+The public hosted service at `img.ogis.dev` does not require authentication.
+
+## Enabling Authentication
+
+Set the `OGIS_HMAC_SECRET` environment variable on your server:
+
+```bash
+# Docker
+docker run -d \
+  -p 3000:3000 \
+  -e OGIS_HMAC_SECRET=your-secret-key-here \
+  twango/ogis:latest
+```
+
+```bash
+# CLI
+ogis --hmac-secret your-secret-key-here
+```
+
+Choose a strong, random secret (32+ characters recommended):
+
+```bash
+# Generate a secure secret
+openssl rand -hex 32
+```
+
+## How It Works
+
+1. Client constructs query parameters (e.g., `title=Hello&template=twilight`)
+2. Parameters are sorted alphabetically and concatenated
+3. HMAC-SHA256 signature is computed using the secret
+4. Signature is appended to the URL as `&signature=...`
+5. Server verifies the signature before generating the image
+
+## Using the SDK
+
+The SDK handles signing automatically when you provide `hmacSecret`:
+
+```typescript
+import { OgisClient } from 'ogis';
+
+const ogis = new OgisClient({
+  baseUrl: 'https://ogis.example.com',
+  hmacSecret: process.env.OGIS_SECRET  // Keep this secret!
+});
+
+// URLs are automatically signed
+const url = ogis.generateUrl({
+  title: 'My Secure Image',
+  template: 'twilight'
+});
+
+// => https://ogis.example.com/?template=twilight&title=My+Secure+Image&signature=a1b2c3...
+```
+
+## Manual Signing
+
+If you're not using the SDK, compute the signature manually:
+
+### Algorithm
+
+1. Collect all query parameters except `signature`
+2. Sort parameters alphabetically by key
+3. URL-encode and concatenate as `key=value&key=value`
+4. Compute HMAC-SHA256 of the string using your secret
+5. Hex-encode the result
+
+### Node.js Example
+
+```typescript
+import crypto from 'crypto';
+
+function signOgisUrl(params: Record<string, string>, secret: string): string {
+  // Sort parameters alphabetically
+  const sortedKeys = Object.keys(params).sort();
+
+  // Build canonical query string
+  const canonical = sortedKeys
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+    .join('&');
+
+  // Compute HMAC-SHA256
+  const signature = crypto
+    .createHmac('sha256', secret)
+    .update(canonical)
+    .digest('hex');
+
+  return signature;
+}
+
+// Usage
+const params = { title: 'Hello', template: 'twilight' };
+const signature = signOgisUrl(params, 'your-secret');
+const url = `https://ogis.example.com/?title=Hello&template=twilight&signature=${signature}`;
+```
+
+### Python Example
+
+```python
+import hmac
+import hashlib
+from urllib.parse import urlencode
+
+def sign_ogis_url(params: dict, secret: str) -> str:
+    # Sort and encode parameters
+    sorted_params = sorted(params.items())
+    canonical = urlencode(sorted_params)
+
+    # Compute HMAC-SHA256
+    signature = hmac.new(
+        secret.encode(),
+        canonical.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+    return signature
+
+# Usage
+params = {'title': 'Hello', 'template': 'twilight'}
+signature = sign_ogis_url(params, 'your-secret')
+```
+
+### Go Example
+
+```go
+package main
+
+import (
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/hex"
+    "net/url"
+    "sort"
+)
+
+func signOgisURL(params map[string]string, secret string) string {
+    // Sort keys
+    keys := make([]string, 0, len(params))
+    for k := range params {
+        keys = append(keys, k)
+    }
+    sort.Strings(keys)
+
+    // Build canonical string
+    values := url.Values{}
+    for _, k := range keys {
+        values.Set(k, params[k])
+    }
+    canonical := values.Encode()
+
+    // Compute HMAC-SHA256
+    h := hmac.New(sha256.New, []byte(secret))
+    h.Write([]byte(canonical))
+    return hex.EncodeToString(h.Sum(nil))
+}
+```
+
+## Error Responses
+
+When authentication is enabled, invalid requests return:
+
+| Status | Reason |
+|--------|--------|
+| `401 Unauthorized` | Missing `signature` parameter |
+| `401 Unauthorized` | Invalid signature |
+
+## Security Best Practices
+
+1. **Keep your secret safe** — Never expose it in client-side code or version control
+2. **Use environment variables** — Store secrets in `OGIS_SECRET` or similar
+3. **Rotate secrets periodically** — Update your secret and redeploy
+4. **Use HTTPS** — Always serve your OGIS instance over HTTPS to prevent signature interception
+
+## Server-Side Only
+
+Generate signed URLs on your server, not in the browser:
+
+```typescript
+// pages/api/og-image.ts (Next.js API route)
+import { OgisClient } from 'ogis';
+
+const ogis = new OgisClient({
+  baseUrl: process.env.OGIS_URL!,
+  hmacSecret: process.env.OGIS_SECRET!
+});
+
+export default function handler(req, res) {
+  const { title } = req.query;
+  const url = ogis.generateUrl({ title, template: 'twilight' });
+  res.json({ url });
+}
+```
+
+```typescript
+// +page.server.ts (SvelteKit)
+import { OgisClient } from 'ogis';
+import { OGIS_SECRET } from '$env/static/private';
+
+const ogis = new OgisClient({
+  baseUrl: 'https://ogis.example.com',
+  hmacSecret: OGIS_SECRET
+});
+
+export function load({ params }) {
+  return {
+    ogImage: ogis.generateUrl({ title: params.title })
+  };
+}
+```
