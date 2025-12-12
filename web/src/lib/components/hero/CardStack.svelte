@@ -33,7 +33,7 @@
 			description: 'Deploy web apps instantly with zero configuration',
 			subtitle: 'Frontend Cloud Platform',
 			logo: 'https://ogis.dev/demo/vercel.png',
-			template: 'gradient-noir'
+			template: 'gradient-storm'
 		},
 		{
 			id: 3,
