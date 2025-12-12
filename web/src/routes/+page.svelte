@@ -4,4 +4,4 @@
 	let { data } = $props();
 </script>
 
-<Hero templates={data.templates} />
+<Hero templates={data.templates} stats={data.stats} />

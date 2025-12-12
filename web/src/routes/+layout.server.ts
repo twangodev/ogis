@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
 import { resolve } from 'path';
+import { fetchCloudflareStats } from '$lib/cloudflare';
 
 interface TemplateConfig {
 	name: string;
@@ -13,7 +14,7 @@ interface TemplatesYaml {
 	templates: TemplateConfig[];
 }
 
-export function load() {
+export async function load() {
 	// Read templates.yaml from repo root (one level up from web/)
 	const yamlPath = resolve(process.cwd(), '..', 'templates.yaml');
 	const yamlContent = readFileSync(yamlPath, 'utf-8');
@@ -33,12 +34,16 @@ export function load() {
 		colors: Object.keys(t.colors)
 	});
 
+	// Fetch Cloudflare stats at build time
+	const stats = await fetchCloudflareStats();
+
 	return {
 		templates: {
 			all: data.templates.map(formatTemplate),
 			base: base.map(formatTemplate),
 			gradients: gradients.map(formatTemplate),
 			default: data.default
-		}
+		},
+		stats
 	};
 }

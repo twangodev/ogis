@@ -2,6 +2,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import CardStack from '$lib/components/hero/CardStack.svelte';
 	import URLBar from '$lib/components/hero/URLBar.svelte';
+	import type { CloudflareStats } from '$lib/cloudflare';
+	import NumberFlow from '@number-flow/svelte';
+	import { onMount } from 'svelte';
 
 	type CTA = {
 		text: string;
@@ -23,16 +26,29 @@
 		description?: string;
 		primaryCta?: CTA;
 		secondaryCta?: CTA;
+		stats: CloudflareStats;
 	};
 
 	let {
 		title = 'Open Graph Images for Everyone',
 		description = 'Blazingly fast Open Graph images, powered by Rust. Free to use, fully customizable, and easy to integrate with any framework.',
 		primaryCta = { text: 'Quick Start', href: '#' },
-		secondaryCta = { text: 'Deploy Your Own', href: '#' }
+		secondaryCta = { text: 'Deploy Your Own', href: '#' },
+		stats
 	}: Props = $props();
 
 	let activeCard = $state<Card | undefined>();
+
+	// Animated stats - start at 0, then animate to actual values
+	let displayedRequests = $state(0);
+	let displayedBytesInGb = $state(0);
+
+	onMount(() => {
+		setTimeout(() => {
+			displayedRequests = stats.requests;
+			displayedBytesInGb = stats.bytes / 1024 ** 3; // Convert to GB
+		}, 100);
+	});
 
 	// Build URL from active card with all available parameters
 	const url = $derived.by(() => {
@@ -72,6 +88,32 @@
 						<Button size="lg" variant="ghost" class="px-5 text-base" href={secondaryCta.href}>
 							<span class="text-nowrap">{secondaryCta.text}</span>
 						</Button>
+					</div>
+
+					<!-- Stats -->
+					<div
+						class="mt-8 flex flex-col items-center gap-6 text-sm text-muted-foreground sm:flex-row lg:justify-start"
+					>
+						<div class="flex items-center gap-2">
+							<span class="font-semibold text-foreground">
+								<NumberFlow
+									value={displayedRequests}
+									format={{ notation: 'compact', maximumFractionDigits: 1 }}
+								/>
+							</span>
+							<span>images generated</span>
+						</div>
+						<div class="hidden h-4 w-px bg-border sm:block"></div>
+						<div class="flex items-center gap-2">
+							<span class="font-semibold text-foreground">
+								<NumberFlow
+									value={displayedBytesInGb}
+									format={{ maximumFractionDigits: 2 }}
+									suffix=" GB"
+								/>
+							</span>
+							<span>data served</span>
+						</div>
 					</div>
 				</div>
 

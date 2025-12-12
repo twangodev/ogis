@@ -4,19 +4,21 @@
 	import PerformanceChart from '$lib/components/sections/PerformanceChart.svelte';
 	import { TemplateMarquee } from '$lib/components/templates';
 	import type { TemplateInfo } from '$lib/components/templates';
+	import type { CloudflareStats } from '$lib/cloudflare';
 
 	interface Props {
 		templates: {
 			base: TemplateInfo[];
 			gradients: TemplateInfo[];
 		};
+		stats: CloudflareStats;
 	}
 
-	let { templates }: Props = $props();
+	let { templates, stats }: Props = $props();
 </script>
 
 <div class="overflow-x-hidden">
-	<HeroContent />
+	<HeroContent {stats} />
 	<TemplateMarquee
 		base={templates.base}
 		gradients={templates.gradients}
