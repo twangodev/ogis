@@ -120,3 +120,23 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+/* Shiki syntax highlighting - dual theme support */
+.shiki,
+.shiki span {
+	color: var(--shiki-light);
+	background-color: var(--shiki-light-bg);
+}
+
+.dark .shiki,
+.dark .shiki span {
+	color: var(--shiki-dark);
+	background-color: var(--shiki-dark-bg);
+}
+
+.shiki {
+	padding: 1rem;
+	border-radius: var(--radius);
+	overflow-x: auto;
+	tab-index: 0;
+}
