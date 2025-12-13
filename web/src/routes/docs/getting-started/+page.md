@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Quick start guide for using OGIS
+description: Quick start guide for using ogis
 ---
 
 # Getting Started
@@ -25,12 +25,12 @@ const ogis = new OgisClient({ baseUrl: 'https://img.ogis.dev' });
 // Generate an image URL
 const imageUrl = ogis.generateUrl({
   title: 'My Blog Post',
-  description: 'An introduction to OGIS',
+  description: 'An introduction to ogis',
   template: 'twilight'
 });
 
 console.log(imageUrl);
-// => https://img.ogis.dev/?title=My+Blog+Post&description=An+introduction+to+OGIS&template=twilight
+// => https://img.ogis.dev/?title=My+Blog+Post&description=An+introduction+to+ogis&template=twilight
 ```
 
 ## Framework Integration

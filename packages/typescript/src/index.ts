@@ -1,5 +1,5 @@
 /**
- * ogis - TypeScript client for OGIS OpenGraph image generation
+ * ogis - TypeScript client for ogis OpenGraph image generation
  *
  * @example
  * ```ts

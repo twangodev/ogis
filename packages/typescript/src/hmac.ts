@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto';
 
 /**
- * Generate HMAC-SHA256 signature for OGIS request
+ * Generate HMAC-SHA256 signature for ogis request
  *
  * Algorithm (matches Rust implementation):
  * 1. Sort parameters alphabetically by key

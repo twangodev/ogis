@@ -1,11 +1,11 @@
 ---
 title: Self Hosting
-description: Deploy OGIS on your own infrastructure
+description: Deploy ogis on your own infrastructure
 ---
 
 # Self Hosting
 
-Run your own OGIS instance for full control over your image generation.
+Run your own ogis instance for full control over your image generation.
 
 ## One-Click Deploy
 
@@ -14,7 +14,7 @@ Run your own OGIS instance for full control over your image generation.
 
 ## Docker
 
-The recommended way to run OGIS:
+The recommended way to run ogis:
 
 ```bash
 docker run -d -p 3000:3000 twango/ogis:latest
@@ -64,7 +64,7 @@ cargo build --release
 
 ## Configuration
 
-Configure OGIS via environment variables (prefixed with `OGIS_`) or CLI arguments.
+Configure ogis via environment variables (prefixed with `OGIS_`) or CLI arguments.
 
 ### Server Options
 
@@ -78,7 +78,7 @@ Configure OGIS via environment variables (prefixed with `OGIS_`) or CLI argument
 | Environment Variable | CLI Argument | Default | Description |
 |---------------------|--------------|---------|-------------|
 | `OGIS_DEFAULT_TEMPLATE` | `--default-template` | `twilight` | Default template when not specified |
-| `OGIS_DEFAULT_TITLE` | `--default-title` | `OGIS` | Default title text |
+| `OGIS_DEFAULT_TITLE` | `--default-title` | `ogis` | Default title text |
 | `OGIS_DEFAULT_DESCRIPTION` | `--default-description` | - | Default description text |
 | `OGIS_MAX_INPUT_LENGTH` | `--max-input-length` | `500` | Maximum text length |
 
@@ -106,7 +106,7 @@ Run `ogis --help` for the complete list of options.
 
 ## Health Checks
 
-OGIS exposes a health endpoint for container orchestration:
+ogis exposes a health endpoint for container orchestration:
 
 ```bash
 curl http://localhost:3000/health

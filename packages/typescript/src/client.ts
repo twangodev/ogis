@@ -9,7 +9,7 @@ import {
 } from './utils.js';
 
 /**
- * OGIS client for generating OpenGraph image URLs
+ * ogis client for generating OpenGraph image URLs
  *
  * @example
  * ```ts
@@ -37,7 +37,7 @@ export class OgisClient {
   private readonly defaults?: Partial<OgisParams>;
 
   /**
-   * Create a new OGIS client
+   * Create a new ogis client
    *
    * @param options - Client configuration options
    * @throws {Error} If baseUrl is invalid

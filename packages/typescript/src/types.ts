@@ -1,9 +1,9 @@
 /**
- * Configuration options for the OGIS client
+ * Configuration options for the ogis client
  */
 export interface OgisClientOptions {
   /**
-   * Base URL of the OGIS service (e.g., 'https://ogis.example.com')
+   * Base URL of the ogis service (e.g., 'https://ogis.example.com')
    */
   baseUrl: string;
 
@@ -77,7 +77,7 @@ export interface MetaTag {
 }
 
 /**
- * Standard OpenGraph image dimensions used by OGIS
+ * Standard OpenGraph image dimensions used by ogis
  */
 export const OG_IMAGE_DIMENSIONS = {
   width: 1200,

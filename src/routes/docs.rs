@@ -8,7 +8,7 @@ use utoipa::OpenApi;
     ),
     components(schemas(crate::params::OgParams)),
     info(
-        title = "OGIS - Open Graph Image as a Service",
+        title = "ogis: Open Graph Images as a Service",
         version = "0.1.0",
         description = "Generate Open Graph images dynamically via URL parameters"
     ),

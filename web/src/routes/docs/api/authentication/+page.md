@@ -1,15 +1,15 @@
 ---
 title: Authentication
-description: HMAC-based authentication for OGIS
+description: HMAC-based authentication for ogis
 ---
 
 # Authentication
 
-Secure your OGIS instance with HMAC-SHA256 signature validation. When enabled, all requests must include a valid signature parameter.
+Secure your ogis instance with HMAC-SHA256 signature validation. When enabled, all requests must include a valid signature parameter.
 
 ## When to Use Authentication
 
-- **Private instances** — Prevent unauthorized usage of your self-hosted OGIS
+- **Private instances** — Prevent unauthorized usage of your self-hosted ogis
 - **Rate limiting** — Control who can generate images
 - **Usage tracking** — Identify requests by signature
 
@@ -184,7 +184,7 @@ When authentication is enabled, invalid requests return:
 1. **Keep your secret safe** — Never expose it in client-side code or version control
 2. **Use environment variables** — Store secrets in `OGIS_SECRET` or similar
 3. **Rotate secrets periodically** — Update your secret and redeploy
-4. **Use HTTPS** — Always serve your OGIS instance over HTTPS to prevent signature interception
+4. **Use HTTPS** — Always serve your ogis instance over HTTPS to prevent signature interception
 
 ## Server-Side Only
 
