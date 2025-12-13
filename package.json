@@ -5,7 +5,8 @@
   "description": "OGIS - OpenGraph Image Service monorepo",
   "workspaces": [
     "packages/*",
-    "web"
+    "web",
+    "docs"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
