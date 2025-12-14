@@ -8,6 +8,7 @@
 	type MenuItem = {
 		name: string;
 		href: string;
+		external?: boolean;
 	};
 
 	type Props = {
@@ -19,7 +20,7 @@
 		menuItems = [
 			{ name: 'Home', href: '/' },
 			{ name: 'Playground', href: '/playground' },
-			{ name: 'Docs', href: '/docs' }
+			{ name: 'Docs', href: 'https://docs.ogis.dev', external: true }
 		],
 		logoHref = '/'
 	}: Props = $props();
@@ -44,6 +45,7 @@
 								<a
 									href={item.href}
 									class="text-muted-foreground duration-150 hover:text-accent-foreground"
+									target={item.external ? '_blank' : undefined}
 								>
 									{item.name}
 								</a>
@@ -93,6 +95,7 @@
 							<a
 								href={item.href}
 								class="block text-muted-foreground duration-150 hover:text-accent-foreground"
+								target={item.external ? '_blank' : undefined}
 							>
 								{item.name}
 							</a>

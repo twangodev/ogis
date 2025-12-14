@@ -98,7 +98,7 @@
 							<span class="font-semibold text-foreground">
 								<NumberFlow
 									value={displayedRequests}
-									format={{ notation: 'compact', maximumFractionDigits: 1 }}
+									format={{ notation: 'compact', maximumFractionDigits: 3 }}
 								/>
 							</span>
 							<span>images generated</span>
