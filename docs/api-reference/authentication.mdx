@@ -3,6 +3,8 @@ title: "Authentication"
 description: "HMAC-based authentication for ogis"
 ---
 
+import { SecretGenerator } from "/snippets/secret-generator.jsx";
+
 Secure your ogis instance with HMAC-SHA256 signature validation. When enabled, all requests must include a valid signature parameter.
 
 ## When to Use Authentication
@@ -37,10 +39,16 @@ Set the `OGIS_HMAC_SECRET` environment variable on your server:
 
 Choose a strong, random secret (32+ characters recommended):
 
-```bash
-# Generate a secure secret
-openssl rand -hex 32
-```
+<Tabs>
+  <Tab title="Generator">
+    <SecretGenerator />
+  </Tab>
+  <Tab title="CLI">
+    ```bash
+    openssl rand -hex 32
+    ```
+  </Tab>
+</Tabs>
 
 ## How It Works
 
