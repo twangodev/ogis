@@ -25,7 +25,7 @@
       },
       {
         "group": "API Reference",
-        "openapi": "https://img.ogis.dev/docs/openapi.json",
+        "openapi": "/openapi.json",
         "pages": [
           "api-reference/overview",
           "api-reference/authentication",
