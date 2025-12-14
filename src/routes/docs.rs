@@ -12,6 +12,9 @@ use utoipa::OpenApi;
         version = "0.1.0",
         description = "Generate Open Graph images dynamically via URL parameters"
     ),
+    servers(
+        (url = "https://img.ogis.dev")
+    ),
     tags(
         (name = "image", description = "Image generation endpoints"),
         (name = "monitoring", description = "Service monitoring and health checks")
