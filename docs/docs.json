@@ -23,6 +23,7 @@
     "groups": [
       {
         "group": "Get Started",
+        "icon": "rocket",
         "pages": [
           "index",
           "getting-started"
@@ -30,12 +31,14 @@
       },
       {
         "group": "Deployment",
+        "icon": "server",
         "pages": [
           "self-hosting"
         ]
       },
       {
         "group": "API Reference",
+        "icon": "code",
         "openapi": "/openapi.json",
         "pages": [
           "api-reference/overview",
