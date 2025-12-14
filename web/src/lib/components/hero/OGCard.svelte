@@ -8,6 +8,7 @@
 		logo?: string;
 		image?: string;
 		template?: string;
+		params?: Record<string, string>;
 		index: number;
 		totalCards: number;
 		isHovered: boolean;
@@ -24,6 +25,7 @@
 		logo,
 		image,
 		template,
+		params,
 		index,
 		totalCards,
 		isHovered,
@@ -35,14 +37,19 @@
 
 	// Build imageUrl from all available parameters
 	const imageUrl = $derived.by(() => {
-		const params = new SvelteURLSearchParams();
-		params.set('title', title);
-		params.set('description', description);
-		if (subtitle) params.set('subtitle', subtitle);
-		if (logo) params.set('logo', logo);
-		if (image) params.set('image', image);
-		if (template) params.set('template', template);
-		return `https://img.ogis.dev?${params.toString()}`;
+		const searchParams = new SvelteURLSearchParams();
+		searchParams.set('title', title);
+		searchParams.set('description', description);
+		if (subtitle) searchParams.set('subtitle', subtitle);
+		if (logo) searchParams.set('logo', logo);
+		if (image) searchParams.set('image', image);
+		if (template) searchParams.set('template', template);
+		if (params) {
+			for (const [key, value] of Object.entries(params)) {
+				searchParams.set(key, value);
+			}
+		}
+		return `https://img.ogis.dev?${searchParams.toString()}`;
 	});
 
 	function getTransform() {

@@ -10,6 +10,7 @@
 		logo?: string;
 		image?: string;
 		template?: string;
+		params?: Record<string, string>;
 	};
 
 	type Props = {
@@ -33,7 +34,15 @@
 			description: 'Get instant answers, find creative inspiration, and learn something new',
 			subtitle: 'OpenAI',
 			logo: 'https://ogis.dev/demo/openai.png',
-			template: 'gradient-noir'
+			template: 'gradient-storm',
+			params: {
+				background: '171212',
+				blob_slate: '000000',
+				blob_dark_slate: '383838',
+				blob_gray: '1f1f1f',
+				blob_light_gray: '292929',
+				blob_silver: '1c1c1c'
+			}
 		},
 		{
 			id: 3,
@@ -163,6 +172,7 @@
 			logo={card.logo}
 			image={card.image}
 			template={card.template}
+			params={card.params}
 			index={i}
 			totalCards={3}
 			isHovered={hoveredCard === i}
