@@ -42,7 +42,13 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
 
       - name: Build
-        run: cargo build --verbose
+        run: cargo build --release
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ogis-ubuntu
+          path: target/release/ogis
 
   coverage:
     name: Code Coverage
@@ -135,3 +141,35 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ vars.DOCKERHUB_USERNAME }}/ogis
           short-description: ${{ github.event.repository.description }}
+
+  openapi-sync:
+    name: Sync OpenAPI Spec
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download binary
+        uses: actions/download-artifact@v5
+        with:
+          name: ogis-ubuntu
+
+      - name: Extract OpenAPI spec
+        run: |
+          chmod +x ogis
+          ./ogis --export-openapi > docs/openapi.json
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: docs/openapi.json
+          commit-message: "chore: sync openapi.json"
+          title: "chore: sync openapi.json"
+          body: "Auto-generated PR to sync OpenAPI spec from Rust source."
+          branch: chore/sync-openapi
+          delete-branch: true

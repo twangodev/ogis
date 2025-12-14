@@ -145,6 +145,10 @@ impl DocsSettings {
 #[command(version)]
 #[command(about = "Open Graph Image Service - Generate OG images dynamically")]
 pub struct Config {
+    /// Export OpenAPI spec as JSON and exit
+    #[arg(long)]
+    pub export_openapi: bool,
+
     /// Address to bind the server to
     #[arg(short, long, default_value = "0.0.0.0:3000", env = "OGIS_ADDR")]
     pub addr: String,

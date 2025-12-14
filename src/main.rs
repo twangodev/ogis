@@ -33,11 +33,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load .env file if it exists
     dotenvy::dotenv().ok();
 
-    // Initialize tracing
-    tracing_subscriber::fmt::init();
-
     // Parse CLI arguments
     let config = config::Config::parse();
+
+    // Export OpenAPI spec and exit if requested
+    if config.export_openapi {
+        use utoipa::OpenApi;
+        let spec = routes::docs::ApiDoc::openapi().to_pretty_json()?;
+        println!("{spec}");
+        return Ok(());
+    }
+
+    // Initialize tracing
+    tracing_subscriber::fmt::init();
 
     // Load fonts
     let fontdb = fonts::load_fonts();
