@@ -29,14 +29,54 @@
 		},
 		{
 			id: 2,
+			title: 'Introducing ChatGPT',
+			description: 'Get instant answers, find creative inspiration, and learn something new',
+			subtitle: 'OpenAI',
+			logo: 'https://ogis.dev/demo/openai.png',
+			template: 'gradient-noir'
+		},
+		{
+			id: 3,
+			title: 'Claude by Anthropic',
+			description: 'AI assistant built to be helpful, harmless, and honest',
+			subtitle: 'Next-Gen AI',
+			logo: 'https://ogis.dev/demo/anthropic.png',
+			template: 'gradient-peach'
+		},
+		{
+			id: 4,
+			title: 'Stripe Payments',
+			description: 'Financial infrastructure for the internet economy',
+			subtitle: 'Developer-First APIs',
+			logo: 'https://ogis.dev/demo/stripe.png',
+			template: 'gradient-galaxy'
+		},
+		{
+			id: 5,
+			title: 'Build with Supabase',
+			description: 'The open source Firebase alternative with Postgres',
+			subtitle: 'Backend Platform',
+			logo: 'https://ogis.dev/demo/supabase.png',
+			template: 'gradient-jade'
+		},
+		{
+			id: 7,
+			title: 'Tailwind CSS',
+			description: 'Rapidly build modern websites without leaving your HTML',
+			subtitle: 'Utility-First CSS',
+			logo: 'https://ogis.dev/demo/tailwind.png',
+			template: 'gradient-sapphire'
+		},
+		{
+			id: 9,
 			title: 'Ship Faster with Vercel',
 			description: 'Deploy web apps instantly with zero configuration',
-			subtitle: 'Frontend Cloud Platform',
+			subtitle: 'Frontend Cloud',
 			logo: 'https://ogis.dev/demo/vercel.png',
 			template: 'gradient-storm'
 		},
 		{
-			id: 3,
+			id: 10,
 			title: 'Build with Svelte',
 			description: 'Runes, fine-grained reactivity, and next-gen performance',
 			subtitle: 'Framework Release',
@@ -44,15 +84,7 @@
 			template: 'gradient-ember'
 		},
 		{
-			id: 4,
-			title: 'Tropical Paradise',
-			description: 'Discover crystal clear waters and pristine beaches',
-			subtitle: 'Travel Collection',
-			image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&fm=png',
-			template: 'gradient-tropics'
-		},
-		{
-			id: 5,
+			id: 11,
 			title: 'GitHub Copilot',
 			description: 'Your AI pair programmer for faster, smarter coding',
 			subtitle: 'AI-Powered Development',
@@ -60,7 +92,7 @@
 			template: 'gradient-midnight'
 		},
 		{
-			id: 6,
+			id: 12,
 			title: 'Discord Communities',
 			description: 'Connect with developers, gamers, and creators',
 			subtitle: 'Chat & Collaborate',
