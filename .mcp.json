@@ -8,6 +8,10 @@
         "@sveltejs/mcp"
       ],
       "env": {}
+    },
+    "Mintlify": {
+      "type": "http",
+      "url": "https://mintlify.com/docs/mcp"
     }
   }
 }

@@ -1,97 +1,77 @@
 ---
 title: "Introduction"
-description: "Welcome to the new home for your documentation"
+description: "Generate beautiful Open Graph images via URL. No design skills required."
 ---
 
-## Setting up
+<img
+  src="https://img.ogis.dev/?template=gradient-storm&title=Open%20Graph%20Images&subtitle=Made%20Simple&description=Generate%20beautiful%20social%20images%20in%20milliseconds&logo=https://ogis.dev/logo-light.png"
+  alt="OGIS Example"
+/>
 
-Get your documentation site up and running in minutes.
+## What is ogis?
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+ogis is a high-performance Rust service that generates [Open Graph images](https://ogp.me/) by rendering SVG templates to PNG via HTTP API.
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/getting-started">
+    Generate your first image in under a minute
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="API Reference" icon="code" href="/api-reference/overview">
+    Explore the API endpoints
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Self-Hosting" icon="server" href="/self-hosting">
+    Deploy your own instance
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Playground" icon="palette" href="https://ogis.dev/playground">
+    Browse and customize templates
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Features
 
-Everything you need to create world-class documentation.
+- **High Performance** — Built in Rust for speed and reliability
+- **SVG Templates** — Customizable templates with placeholder support
+- **Image Caching** — In-memory caching for fast response times
+- **SSRF Protection** — Blocks private IP addresses for security
+- **HMAC Authentication** — Optional signature-based authentication
+- **Docker Ready** — Easy deployment with Docker
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## Templates
 
-## Need inspiration?
+Browse all templates at the [Playground](https://ogis.dev/playground).
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<CardGroup cols={3}>
+  <Card title="twilight">
+    <img src="https://img.ogis.dev/?template=twilight&title=Dark%20%26%20Bold&subtitle=Default%20Template&description=Perfect%20for%20tech%20content" alt="Twilight" />
+  </Card>
+  <Card title="daybreak">
+    <img src="https://img.ogis.dev/?template=daybreak&title=Light%20%26%20Fresh&subtitle=Morning%20Vibes&description=Clean%20and%20professional" alt="Daybreak" />
+  </Card>
+  <Card title="minimal">
+    <img src="https://img.ogis.dev/?template=minimal&title=Simple%20%26%20Clean&subtitle=Minimalist&description=Ultra-clean%20layout" alt="Minimal" />
+  </Card>
+</CardGroup>
+
+## Quick Example
+
+No SDK needed — just construct a URL:
+
+```html
+<meta property="og:image" content="https://img.ogis.dev/?title=Hello%20World&template=twilight" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+```
+
+Or use the TypeScript SDK:
+
+```typescript
+import { OgisClient } from 'ogis';
+
+const ogis = new OgisClient({ baseUrl: 'https://img.ogis.dev' });
+
+const imageUrl = ogis.generateUrl({
+  title: 'My Blog Post',
+  description: 'An introduction to ogis',
+  template: 'twilight'
+});
+```

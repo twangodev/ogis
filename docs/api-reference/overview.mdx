@@ -1,0 +1,95 @@
+---
+title: "API Overview"
+description: "Complete API documentation for ogis"
+---
+
+The ogis API is a simple HTTP endpoint that generates Open Graph images from query parameters.
+
+## Base URL
+
+| Environment | URL |
+|-------------|-----|
+| Public Hosted | `https://img.ogis.dev` |
+| Self-Hosted | Your instance URL |
+
+## Generate Image
+
+<Card title="GET /" icon="image">
+  Generate an Open Graph image
+</Card>
+
+### Query Parameters
+
+| Parameter     | Type   | Required | Description                          |
+|---------------|--------|----------|--------------------------------------|
+| `title`       | string | No       | Main heading text                    |
+| `description` | string | No       | Secondary text below title           |
+| `subtitle`    | string | No       | Small text above title               |
+| `template`    | string | No       | Template name (default: `twilight`)  |
+| `logo`        | string | No       | URL to logo image                    |
+| `image`       | string | No       | URL to background/hero image         |
+| `signature`   | string | No*      | HMAC signature (required if auth enabled) |
+
+### Response
+
+Returns a PNG image with dimensions 1200x630 pixels.
+
+- **Content-Type**: `image/png`
+- **Status**: `200 OK`
+
+### Example Request
+
+```bash
+curl "https://img.ogis.dev/?title=Hello%20World&template=twilight" \
+  --output og-image.png
+```
+
+### Example with SDK
+
+```typescript
+import { OgisClient } from 'ogis';
+
+const ogis = new OgisClient({ baseUrl: 'https://img.ogis.dev' });
+
+const url = ogis.generateUrl({
+  title: 'Hello World',
+  description: 'My first Open Graph image',
+  template: 'twilight'
+});
+```
+
+## OpenAPI Specification
+
+The full OpenAPI specification is available at:
+
+```
+https://img.ogis.dev/docs/openapi.json
+```
+
+## Health Check
+
+<Card title="GET /health" icon="heart-pulse">
+  Check service health
+</Card>
+
+### Response
+
+- **Status**: `200 OK` — Service is healthy
+- **Status**: `503 Service Unavailable` — Service is not ready
+
+```bash
+curl https://img.ogis.dev/health
+```
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400 Bad Request` | Invalid parameters |
+| `401 Unauthorized` | Missing or invalid signature (when auth enabled) |
+| `413 Payload Too Large` | Text exceeds maximum length |
+| `500 Internal Server Error` | Image generation failed |
+
+## Rate Limiting
+
+The public hosted service at `img.ogis.dev` has rate limiting enabled. For high-volume usage, consider [self-hosting](/self-hosting).
