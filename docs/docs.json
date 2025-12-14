@@ -65,6 +65,18 @@
       "href": "https://ogis.dev/playground"
     }
   },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
   "footer": {
     "socials": {
       "github": "https://github.com/twangodev/ogis"
