@@ -3,9 +3,15 @@
   "theme": "maple",
   "name": "ogis",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#000000",
+    "light": "#FFFFFF",
+    "dark": "#000000"
+  },
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#000000"
+    }
   },
   "favicon": "/favicon.ico",
   "api": {
@@ -42,6 +48,11 @@
     "global": {
       "anchors": [
         {
+          "anchor": "Home",
+          "href": "https://ogis.dev",
+          "icon": "house"
+        },
+        {
           "anchor": "Playground",
           "href": "https://ogis.dev/playground",
           "icon": "palette"
@@ -57,13 +68,6 @@
   "logo": {
     "light": "/logo-dark.svg",
     "dark": "/logo-light.svg"
-  },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Playground",
-      "href": "https://ogis.dev/playground"
-    }
   },
   "contextual": {
     "options": [
