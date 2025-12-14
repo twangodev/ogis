@@ -83,6 +83,7 @@
   },
   "footer": {
     "socials": {
+      "website": "https://ogis.dev",
       "github": "https://github.com/twangodev/ogis"
     }
   }
