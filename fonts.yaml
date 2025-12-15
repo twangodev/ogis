@@ -3,6 +3,8 @@ sans-serif:
   - "fonts/NotoSans/NotoSans-Medium.ttf"
   - "fonts/NotoSansCJK/NotoSansCJK-Medium.ttc"
   - "fonts/NotoSansArabic/NotoSansArabic-Medium.ttf"
+  - "fonts/NotoSansThai/NotoSansThai-Medium.ttf"
+  - "fonts/NotoSansHebrew/NotoSansHebrew-Medium.ttf"
 
 serif:
   - "fonts/NotoSerif.ttf"
