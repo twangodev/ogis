@@ -20,7 +20,7 @@
 		$props();
 </script>
 
-<section class="bg-background pb-16 md:pb-32">
+<section class="bg-background py-12 md:py-16">
 	<div class="group relative m-auto max-w-6xl px-6">
 		<div class="flex flex-col items-center md:flex-row">
 			<div class="md:max-w-44 md:border-r md:pr-6">
