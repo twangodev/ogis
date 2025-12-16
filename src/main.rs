@@ -9,6 +9,7 @@ mod templates;
 mod yaml_loader;
 
 use std::sync::Arc;
+use tokio::sync::Semaphore;
 
 /// Runtime image state
 #[derive(Clone)]
@@ -26,6 +27,7 @@ pub struct AppState {
     pub image: ImageState,
     pub hmac_validator: Option<Arc<auth::HmacValidator>>,
     pub docs: config::DocsSettings,
+    pub render_semaphore: Arc<Semaphore>,
 }
 
 #[tokio::main]
@@ -77,6 +79,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None
     };
 
+    // Create render semaphore sized to CPU cores
+    let render_concurrency = std::thread::available_parallelism()
+        .map(|n| n.get())
+        .unwrap_or(4);
+    tracing::info!("Render concurrency: {}", render_concurrency);
+
     let state = AppState {
         fontdb: Arc::new(fontdb),
         templates: Arc::new(templates),
@@ -88,6 +96,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         hmac_validator,
         docs: config.docs,
+        render_semaphore: Arc::new(Semaphore::new(render_concurrency)),
     };
 
     let app = routes::create_router(state);
