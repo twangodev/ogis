@@ -143,10 +143,15 @@ jobs:
           short-description: ${{ github.event.repository.description }}
 
   benchmark:
-    name: Benchmark
+    name: Benchmark (${{ matrix.test }}/${{ matrix.mode }})
     runs-on: ubuntu-latest
     needs: [docker]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    strategy:
+      matrix:
+        test: [ogis]
+        mode: [sequential, concurrent]
 
     services:
       ogis:
@@ -160,18 +165,25 @@ jobs:
       - name: Install k6
         uses: grafana/setup-k6-action@v1
 
+      - name: Create results directory
+        run: mkdir -p k6/results
+
       - name: Run benchmark
-        run: k6 run k6/ogis.js
+        run: k6 run k6/${{ matrix.test }}.js
+        env:
+          MODE: ${{ matrix.mode }}
 
       - name: Add summary
         if: always()
-        run: cat k6/results/summary.md >> $GITHUB_STEP_SUMMARY || true
+        run: |
+          echo "## ${{ matrix.test }} (${{ matrix.mode }})" >> $GITHUB_STEP_SUMMARY
+          cat k6/results/summary.md >> $GITHUB_STEP_SUMMARY || true
 
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-${{ github.sha }}
+          name: benchmark-${{ matrix.test }}-${{ matrix.mode }}-${{ github.sha }}
           path: k6/results/
 
   openapi-sync:
