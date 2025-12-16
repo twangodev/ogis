@@ -168,35 +168,31 @@ pub async fn generate(
 
     // Wait for a render slot with timeout (defers response, only 503 if truly overloaded)
     const RENDER_TIMEOUT: Duration = Duration::from_secs(5);
-    let _render_permit = match tokio::time::timeout(
-        RENDER_TIMEOUT,
-        state.render_semaphore.acquire(),
-    )
-    .await
-    {
-        Ok(Ok(permit)) => permit,
-        Ok(Err(_)) => {
-            // Semaphore closed (shouldn't happen)
-            log.status = StatusCode::INTERNAL_SERVER_ERROR;
-            log.error = Some("Render semaphore closed".to_string());
-            log.log();
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Service unavailable".to_string(),
-            )
-                .into_response();
-        }
-        Err(_) => {
-            log.status = StatusCode::SERVICE_UNAVAILABLE;
-            log.error = Some("Render timeout".to_string());
-            log.log();
-            return (
-                StatusCode::SERVICE_UNAVAILABLE,
-                "Server overloaded, try again later".to_string(),
-            )
-                .into_response();
-        }
-    };
+    let _render_permit =
+        match tokio::time::timeout(RENDER_TIMEOUT, state.render_semaphore.acquire()).await {
+            Ok(Ok(permit)) => permit,
+            Ok(Err(_)) => {
+                // Semaphore closed (shouldn't happen)
+                log.status = StatusCode::INTERNAL_SERVER_ERROR;
+                log.error = Some("Render semaphore closed".to_string());
+                log.log();
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "Service unavailable".to_string(),
+                )
+                    .into_response();
+            }
+            Err(_) => {
+                log.status = StatusCode::SERVICE_UNAVAILABLE;
+                log.error = Some("Render timeout".to_string());
+                log.log();
+                return (
+                    StatusCode::SERVICE_UNAVAILABLE,
+                    "Server overloaded, try again later".to_string(),
+                )
+                    .into_response();
+            }
+        };
 
     let images = Images { logo, image };
     let template_name_owned = template_name.to_string();
