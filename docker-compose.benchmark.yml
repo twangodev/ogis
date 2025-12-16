@@ -1,0 +1,10 @@
+services:
+  ogis:
+    image: twango/ogis:latest
+    ports:
+      - "3000:3000"
+
+  vercel-og:
+    build: ./comparisons/vercel-og
+    ports:
+      - "3001:3000"

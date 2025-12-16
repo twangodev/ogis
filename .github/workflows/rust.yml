@@ -142,6 +142,55 @@ jobs:
           repository: ${{ vars.DOCKERHUB_USERNAME }}/ogis
           short-description: ${{ github.event.repository.description }}
 
+  benchmark:
+    name: Benchmark (${{ matrix.test }}/${{ matrix.mode }})
+    runs-on: ubuntu-latest
+    needs: [docker]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    strategy:
+      matrix:
+        test: [ogis, vercel-og]
+        mode: [sequential, baseline, concurrent]
+        include:
+          - test: ogis
+            port: 3000
+          - test: vercel-og
+            port: 3001
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Start services
+        uses: hoverkraft-tech/compose-action@v2
+        with:
+          compose-file: docker-compose.benchmark.yml
+
+      - name: Install k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Create results directory
+        run: mkdir -p k6/results
+
+      - name: Run benchmark
+        run: k6 run k6/${{ matrix.test }}.js
+        env:
+          MODE: ${{ matrix.mode }}
+          BASE_URL: http://localhost:${{ matrix.port }}
+
+      - name: Add summary
+        if: always()
+        run: |
+          echo "## ${{ matrix.test }} (${{ matrix.mode }})" >> $GITHUB_STEP_SUMMARY
+          cat k6/results/summary.md >> $GITHUB_STEP_SUMMARY || true
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-${{ matrix.test }}-${{ matrix.mode }}-${{ github.sha }}
+          path: k6/results/
+
   openapi-sync:
     name: Sync OpenAPI Spec
     runs-on: ubuntu-latest

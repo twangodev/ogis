@@ -8,7 +8,7 @@ use axum::{
     http::{StatusCode, header},
     response::IntoResponse,
 };
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 /// Metadata collector for single-log-per-request pattern
 struct RequestLog {
@@ -166,38 +166,61 @@ pub async fn generate(
         }
     };
 
-    // Generate SVG
-    let text = TextContent {
-        title: &title,
-        description: &description,
-        subtitle: &subtitle,
-    };
+    // Wait for a render slot with timeout (defers response, only 503 if truly overloaded)
+    const RENDER_TIMEOUT: Duration = Duration::from_secs(5);
+    let _render_permit =
+        match tokio::time::timeout(RENDER_TIMEOUT, state.render_semaphore.acquire()).await {
+            Ok(Ok(permit)) => permit,
+            Ok(Err(_)) => {
+                // Semaphore closed (shouldn't happen)
+                log.status = StatusCode::INTERNAL_SERVER_ERROR;
+                log.error = Some("Render semaphore closed".to_string());
+                log.log();
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "Service unavailable".to_string(),
+                )
+                    .into_response();
+            }
+            Err(_) => {
+                log.status = StatusCode::SERVICE_UNAVAILABLE;
+                log.error = Some("Render timeout".to_string());
+                log.log();
+                return (
+                    StatusCode::SERVICE_UNAVAILABLE,
+                    "Server overloaded, try again later".to_string(),
+                )
+                    .into_response();
+            }
+        };
+
     let images = Images { logo, image };
+    let template_name_owned = template_name.to_string();
+    let templates = state.templates.clone();
+    let fontdb = state.fontdb.clone();
 
-    let svg_data = match generator::generate_svg(
-        text,
-        images,
-        template_name,
-        &state.templates,
-        &color_overrides,
-        &state.fontdb,
-    ) {
-        Ok(data) => data,
-        Err(err) => {
-            log.status = StatusCode::INTERNAL_SERVER_ERROR;
-            log.error = Some(format!("SVG generation: {}", err));
-            log.log();
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to generate SVG: {}", err),
-            )
-                .into_response();
-        }
-    };
+    let render_result = tokio::task::spawn_blocking(move || {
+        let text = TextContent {
+            title: &title,
+            description: &description,
+            subtitle: &subtitle,
+        };
 
-    // Render SVG to PNG
-    match generator::render_to_png(&svg_data, &state.fontdb) {
-        Ok(png_data) => {
+        let svg_data = generator::generate_svg(
+            text,
+            images,
+            &template_name_owned,
+            &templates,
+            &color_overrides,
+            &fontdb,
+        )?;
+
+        generator::render_to_png(&svg_data, &fontdb)
+    })
+    .await;
+
+    match render_result {
+        Ok(Ok(png_data)) => {
             log.log();
             (
                 StatusCode::OK,
@@ -206,13 +229,23 @@ pub async fn generate(
             )
                 .into_response()
         }
-        Err(err) => {
+        Ok(Err(err)) => {
             log.status = StatusCode::INTERNAL_SERVER_ERROR;
-            log.error = Some(format!("PNG render: {}", err));
+            log.error = Some(format!("Render: {}", err));
             log.log();
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to render PNG: {}", err),
+                format!("Failed to render image: {}", err),
+            )
+                .into_response()
+        }
+        Err(join_err) => {
+            log.status = StatusCode::INTERNAL_SERVER_ERROR;
+            log.error = Some(format!("Task join: {}", join_err));
+            log.log();
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Rendering task failed".to_string(),
             )
                 .into_response()
         }
