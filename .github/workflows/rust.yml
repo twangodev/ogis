@@ -150,17 +150,21 @@ jobs:
 
     strategy:
       matrix:
-        test: [ogis]
-        mode: [sequential, concurrent]
-
-    services:
-      ogis:
-        image: ${{ vars.DOCKERHUB_USERNAME }}/ogis:latest
-        ports:
-          - 3000:3000
+        test: [ogis, vercel-og]
+        mode: [sequential, baseline, concurrent]
+        include:
+          - test: ogis
+            port: 3000
+          - test: vercel-og
+            port: 3001
 
     steps:
       - uses: actions/checkout@v6
+
+      - name: Start services
+        uses: hoverkraft-tech/compose-action@v2
+        with:
+          compose-file: docker-compose.benchmark.yml
 
       - name: Install k6
         uses: grafana/setup-k6-action@v1
@@ -172,6 +176,7 @@ jobs:
         run: k6 run k6/${{ matrix.test }}.js
         env:
           MODE: ${{ matrix.mode }}
+          BASE_URL: http://localhost:${{ matrix.port }}
 
       - name: Add summary
         if: always()

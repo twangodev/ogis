@@ -1,5 +1,5 @@
-import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import { sanitize } from './templates.js';
+import { extractMetrics, formatMs, generateOverallTable, generateDefaultTable, generateOutputFiles } from './summary.js';
 
 const WORDS = [
   'cloud', 'stream', 'pixel', 'graph', 'node', 'data', 'sync', 'mesh',
@@ -55,9 +55,7 @@ export function randomDescription() {
 export function buildHandleSummary(templates) {
   return function handleSummary(data) {
     const m = data.metrics;
-    const reqDuration = m.http_req_duration?.values || {};
-    const httpReqs = m.http_reqs?.values || {};
-    const httpFailed = m.http_req_failed?.values || {};
+    const metrics = extractMetrics(data);
 
     const templateRows = templates
       .map((t) => {
@@ -70,20 +68,15 @@ export function buildHandleSummary(templates) {
       .map((t) => `| ${t.name} | ${t.med?.toFixed(0) || '-'} | ${t.p95?.toFixed(0) || '-'} |`)
       .join('\n');
 
-    const fmtMs = (v) => (v !== undefined ? `${v.toFixed(0)}ms` : 'N/A');
+    const defaultTable = generateDefaultTable(data);
 
     const markdown = `## OGIS Benchmark Results
 
 ### Overall
 
-| Metric | Value |
-|--------|-------|
-| Total Requests | ${httpReqs.count?.toFixed(0) || 'N/A'} |
-| Requests/sec | ${httpReqs.rate?.toFixed(2) || 'N/A'} |
-| Median Latency | ${fmtMs(reqDuration.med)} |
-| P95 Latency | ${fmtMs(reqDuration['p(95)'])} |
-| P99 Latency | ${fmtMs(reqDuration['p(99)'])} |
-| Failed | ${((httpFailed.rate || 0) * 100).toFixed(2)}% |
+${generateOverallTable(metrics)}
+
+${defaultTable}
 
 ### Per Template
 
@@ -92,11 +85,6 @@ export function buildHandleSummary(templates) {
 ${templateRows}
 `;
 
-    return {
-      stdout: JSON.stringify(data, null, 2),
-      'k6/results/summary.md': markdown,
-      'k6/results/summary.html': htmlReport(data),
-      'k6/results/results.json': JSON.stringify(data, null, 2),
-    };
+    return generateOutputFiles(data, markdown);
   };
 }

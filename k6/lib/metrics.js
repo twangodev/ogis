@@ -11,3 +11,15 @@ export function createTemplateMetrics(templates) {
   }
   return metrics;
 }
+
+/**
+ * Create default template metrics (for head-to-head comparison)
+ */
+export function createDefaultMetrics() {
+  const trend = new Trend('template_default', true);
+  return {
+    add(duration) {
+      trend.add(duration);
+    },
+  };
+}
