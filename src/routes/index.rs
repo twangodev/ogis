@@ -3,12 +3,14 @@ use crate::{
     AppState,
     generator::{self, Images, TextContent},
     params::OgParams,
+    telemetry,
 };
 use axum::{
     extract::{Query, State},
     http::{StatusCode, header},
     response::IntoResponse,
 };
+use opentelemetry::KeyValue;
 use std::time::{Duration, Instant};
 
 /// Result from the blocking render task
@@ -16,73 +18,6 @@ struct RenderResult {
     png_data: Vec<u8>,
     template_time: Duration,
     render_time: Duration,
-}
-
-/// Metadata collector for single-log-per-request pattern
-struct RequestLog {
-    start: Instant,
-    status: StatusCode,
-    template: Option<String>,
-    logo_domain: Option<String>,
-    logo_cached: bool,
-    image_domain: Option<String>,
-    image_cached: bool,
-    title_len: usize,
-    desc_len: usize,
-    subtitle_len: usize,
-    error: Option<String>,
-}
-
-impl RequestLog {
-    fn new() -> Self {
-        Self {
-            start: Instant::now(),
-            status: StatusCode::OK,
-            template: None,
-            logo_domain: None,
-            logo_cached: false,
-            image_domain: None,
-            image_cached: false,
-            title_len: 0,
-            desc_len: 0,
-            subtitle_len: 0,
-            error: None,
-        }
-    }
-
-    fn set_params(&mut self, params: &OgParams) {
-        self.title_len = params.title.as_ref().map(|s| s.len()).unwrap_or(0);
-        self.desc_len = params.description.as_ref().map(|s| s.len()).unwrap_or(0);
-        self.subtitle_len = params.subtitle.as_ref().map(|s| s.len()).unwrap_or(0);
-        self.template = params.template.clone();
-
-        // Extract domains from URLs
-        if let Some(url) = &params.logo {
-            self.logo_domain = extract_domain(url);
-        }
-        if let Some(url) = &params.image {
-            self.image_domain = extract_domain(url);
-        }
-    }
-
-    fn log(self) {
-        let duration_ms = self.start.elapsed().as_millis();
-
-        tracing::info!(
-            status = %self.status.as_u16(),
-            duration_ms = duration_ms,
-            template = self.template.as_deref().unwrap_or("default"),
-            logo = self.logo_domain.as_deref().unwrap_or("-"),
-            logo_cached = self.logo_cached,
-            image = self.image_domain.as_deref().unwrap_or("-"),
-            image_cached = self.image_cached,
-            title_len = self.title_len,
-            desc_len = self.desc_len,
-            subtitle_len = self.subtitle_len,
-            error = self.error.as_deref().unwrap_or("-"),
-            "request completed"
-        );
-    }
 }
 
 /// Extract domain from URL (no path or query params)
@@ -104,19 +39,54 @@ fn extract_domain(url: &str) -> Option<String> {
     ),
     tag = "image"
 )]
+#[tracing::instrument(
+    name = "generate_og_image",
+    skip_all,
+    fields(
+        template,
+        ogis.has_logo,
+        ogis.has_image,
+        ogis.logo_domain,
+        ogis.image_domain,
+        http.response.status_code,
+    )
+)]
 pub async fn generate(
     State(state): State<AppState>,
     Query(params): Query<OgParams>,
 ) -> impl IntoResponse {
-    let mut log = RequestLog::new();
+    let start = Instant::now();
+    let span = tracing::Span::current();
     let mut timing = ServerTiming::new();
-    log.set_params(&params);
+
+    // Record initial span attributes
+    let template_name = params
+        .template
+        .as_deref()
+        .unwrap_or(&state.templates.default);
+    span.record("template", template_name);
+    span.record("ogis.has_logo", params.logo.is_some());
+    span.record("ogis.has_image", params.image.is_some());
+
+    let is_params_empty = params.title.is_none()
+        && params.description.is_none()
+        && params.subtitle.is_none()
+        && params.logo.is_none()
+        && params.image.is_none();
+    let effective_logo_url = if is_params_empty {
+        Some(&state.defaults.logo)
+    } else {
+        params.logo.as_ref()
+    };
+    let logo_domain = effective_logo_url.and_then(|u| extract_domain(u));
+    let image_domain = params.image.as_ref().and_then(|u| extract_domain(u));
+    span.record("ogis.logo_domain", logo_domain.as_deref().unwrap_or("-"));
+    span.record("ogis.image_domain", image_domain.as_deref().unwrap_or("-"));
 
     // Validate input lengths
     if let Err(err) = params.validate(state.max_input_length) {
-        log.status = StatusCode::BAD_REQUEST;
-        log.error = Some(format!("Validation: {}", err));
-        log.log();
+        span.record("http.response.status_code", 400_i64);
+        tracing::warn!(error = %err, "Validation failed");
         return (StatusCode::BAD_REQUEST, format!("Invalid input: {}", err)).into_response();
     }
 
@@ -126,20 +96,24 @@ pub async fn generate(
     let logo = match params.fetch_logo(&state).await {
         Ok(img) => {
             if let Some(ref validated) = img {
-                log.logo_cached = validated.cached;
                 timing.logo = Some(CacheableDuration::new(
                     logo_start.elapsed(),
                     validated.cached,
                 ));
+                record_image_metrics(
+                    "logo",
+                    &logo_domain,
+                    validated.cached,
+                    validated.bytes.len(),
+                );
             } else if has_logo_url {
                 timing.logo = Some(CacheableDuration::miss_since(logo_start));
             }
             img
         }
         Err(response) => {
-            log.status = StatusCode::INTERNAL_SERVER_ERROR;
-            log.error = Some("Logo fetch failed".to_string());
-            log.log();
+            span.record("http.response.status_code", 500_i64);
+            tracing::error!("Logo fetch failed");
             return response;
         }
     };
@@ -150,21 +124,24 @@ pub async fn generate(
     let image = match params.fetch_image(&state).await {
         Ok(img) => {
             if let Some(ref validated) = img {
-                log.image_cached = validated.cached;
                 timing.image = Some(CacheableDuration::new(
                     image_start.elapsed(),
                     validated.cached,
                 ));
+                record_image_metrics(
+                    "image",
+                    &image_domain,
+                    validated.cached,
+                    validated.bytes.len(),
+                );
             } else if has_image_url {
-                // Image URL was provided but fetch failed (Skip mode)
                 timing.image = Some(CacheableDuration::miss_since(image_start));
             }
             img
         }
         Err(response) => {
-            log.status = StatusCode::INTERNAL_SERVER_ERROR;
-            log.error = Some("Image fetch failed".to_string());
-            log.log();
+            span.record("http.response.status_code", 500_i64);
+            tracing::error!("Image fetch failed");
             return response;
         }
     };
@@ -172,18 +149,11 @@ pub async fn generate(
     // Apply defaults for missing params
     let (title, description, subtitle) = params.with_defaults(&state);
 
-    // Determine template name for color validation
-    let template_name = params
-        .template
-        .as_deref()
-        .unwrap_or(&state.templates.default);
-
     let color_overrides = match params.extract_colors(template_name, &state) {
         Ok(colors) => colors,
         Err(err) => {
-            log.status = StatusCode::BAD_REQUEST;
-            log.error = Some(format!("Color validation: {}", err));
-            log.log();
+            span.record("http.response.status_code", 400_i64);
+            tracing::warn!(error = %err, "Color validation failed");
             return (
                 StatusCode::BAD_REQUEST,
                 format!("Invalid color parameter: {}", err),
@@ -192,20 +162,23 @@ pub async fn generate(
         }
     };
 
-    // Wait for a render slot with timeout (defers response, only 503 if truly overloaded)
+    // Wait for a render slot with timeout
     const RENDER_TIMEOUT: Duration = Duration::from_secs(5);
     let queue_start = Instant::now();
     let _render_permit =
         match tokio::time::timeout(RENDER_TIMEOUT, state.render_semaphore.acquire()).await {
             Ok(Ok(permit)) => {
-                timing.queue = Some(queue_start.elapsed());
+                let queue_wait = queue_start.elapsed();
+                timing.queue = Some(queue_wait);
+                // Record queue wait metric
+                if let Some(m) = telemetry::get_metrics() {
+                    m.render_queue_wait.record(queue_wait.as_secs_f64(), &[]);
+                }
                 permit
             }
             Ok(Err(_)) => {
-                // Semaphore closed (shouldn't happen)
-                log.status = StatusCode::INTERNAL_SERVER_ERROR;
-                log.error = Some("Render semaphore closed".to_string());
-                log.log();
+                span.record("http.response.status_code", 500_i64);
+                tracing::error!("Render semaphore closed");
                 return (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     "Service unavailable".to_string(),
@@ -213,9 +186,8 @@ pub async fn generate(
                     .into_response();
             }
             Err(_) => {
-                log.status = StatusCode::SERVICE_UNAVAILABLE;
-                log.error = Some("Render timeout".to_string());
-                log.log();
+                span.record("http.response.status_code", 503_i64);
+                tracing::warn!("Render queue timeout");
                 return (
                     StatusCode::SERVICE_UNAVAILABLE,
                     "Server overloaded, try again later".to_string(),
@@ -263,7 +235,24 @@ pub async fn generate(
         Ok(Ok(result)) => {
             timing.template = Some(result.template_time);
             timing.render = Some(result.render_time);
-            log.log();
+            span.record("http.response.status_code", 200_i64);
+
+            // Record metrics
+            if let Some(m) = telemetry::get_metrics() {
+                let duration = start.elapsed().as_secs_f64();
+                let attrs = [
+                    KeyValue::new("http.request.method", "GET"),
+                    KeyValue::new("http.response.status_code", 200_i64),
+                    KeyValue::new("http.route", "/"),
+                ];
+                m.request_duration.record(duration, &attrs);
+                m.response_size.record(result.png_data.len() as u64, &attrs);
+                m.render_duration.record(
+                    (result.template_time + result.render_time).as_secs_f64(),
+                    &[KeyValue::new("template", template_name.to_string())],
+                );
+            }
+
             (
                 StatusCode::OK,
                 [
@@ -281,9 +270,8 @@ pub async fn generate(
                 .into_response()
         }
         Ok(Err(err)) => {
-            log.status = StatusCode::INTERNAL_SERVER_ERROR;
-            log.error = Some(format!("Render: {}", err));
-            log.log();
+            span.record("http.response.status_code", 500_i64);
+            tracing::error!(error = %err, "Render failed");
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to render image: {}", err),
@@ -291,14 +279,33 @@ pub async fn generate(
                 .into_response()
         }
         Err(join_err) => {
-            log.status = StatusCode::INTERNAL_SERVER_ERROR;
-            log.error = Some(format!("Task join: {}", join_err));
-            log.log();
+            span.record("http.response.status_code", 500_i64);
+            tracing::error!(error = %join_err, "Render task join failed");
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Rendering task failed".to_string(),
             )
                 .into_response()
         }
+    }
+}
+
+/// Record image fetch metrics
+fn record_image_metrics(image_type: &str, domain: &Option<String>, cached: bool, size: usize) {
+    if let Some(m) = telemetry::get_metrics() {
+        let domain_str = domain.as_deref().unwrap_or("unknown");
+        let attrs = [
+            KeyValue::new("type", image_type.to_string()),
+            KeyValue::new("domain", domain_str.to_string()),
+            KeyValue::new("cached", cached),
+        ];
+        m.image_fetch.add(1, &attrs);
+        m.image_size.record(
+            size as u64,
+            &[
+                KeyValue::new("type", image_type.to_string()),
+                KeyValue::new("domain", domain_str.to_string()),
+            ],
+        );
     }
 }

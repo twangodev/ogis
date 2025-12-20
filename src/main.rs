@@ -5,11 +5,13 @@ mod generator;
 mod image;
 mod params;
 mod routes;
+mod telemetry;
 mod templates;
 mod yaml_loader;
 
 use std::sync::Arc;
 use tokio::sync::Semaphore;
+use tokio_shutdown::Shutdown;
 
 /// Runtime image state
 #[derive(Clone)]
@@ -30,8 +32,7 @@ pub struct AppState {
     pub render_semaphore: Arc<Semaphore>,
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load .env file if it exists
     dotenvy::dotenv().ok();
 
@@ -46,9 +47,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
 
-    // Initialize tracing
-    tracing_subscriber::fmt::init();
+    // Initialize telemetry BEFORE tokio runtime starts
+    // (blocking reqwest client can't be created inside async context)
+    let _telemetry_guard = telemetry::init(&config.otel)?;
 
+    // Build and run the tokio runtime
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()?
+        .block_on(run_server(config))
+}
+
+async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Error>> {
     // Load fonts
     let fontdb = fonts::load_fonts();
 
@@ -101,9 +111,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = routes::create_router(state);
 
+    let shutdown = Shutdown::new()?;
+
     let listener = tokio::net::TcpListener::bind(&config.addr).await?;
     tracing::info!("ogis server listening on http://{}", config.addr);
     tracing::info!("Swagger UI available at http://{}/docs", config.addr);
-    axum::serve(listener, app).await?;
+
+    axum::serve(listener, app)
+        .with_graceful_shutdown(async move {
+            shutdown.handle().await;
+            tracing::info!("Shutdown signal received, draining connections...");
+        })
+        .await?;
+
+    tracing::info!("Server shutdown complete");
     Ok(())
 }
