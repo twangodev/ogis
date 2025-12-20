@@ -16,17 +16,18 @@ pub struct TelemetryGuard {
     meter_provider: Option<SdkMeterProvider>,
 }
 
-
 impl Drop for TelemetryGuard {
     fn drop(&mut self) {
         if let Some(tp) = self.tracer_provider.take()
-            && let Err(e) = tp.shutdown() {
-                eprintln!("Error shutting down tracer provider: {:?}", e);
-            }
+            && let Err(e) = tp.shutdown()
+        {
+            eprintln!("Error shutting down tracer provider: {:?}", e);
+        }
         if let Some(mp) = self.meter_provider.take()
-            && let Err(e) = mp.shutdown() {
-                eprintln!("Error shutting down meter provider: {:?}", e);
-            }
+            && let Err(e) = mp.shutdown()
+        {
+            eprintln!("Error shutting down meter provider: {:?}", e);
+        }
     }
 }
 
