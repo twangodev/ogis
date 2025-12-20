@@ -1,3 +1,4 @@
+use axum::http::HeaderValue;
 use std::time::{Duration, Instant};
 
 /// Duration with cache hit/miss status for Server-Timing header
@@ -39,7 +40,11 @@ impl ServerTiming {
     }
 
     /// Format as Server-Timing header value
-    pub fn to_header_value(&self) -> String {
+    ///
+    /// Returns a valid HeaderValue. The format only produces ASCII characters
+    /// (digits, letters, semicolons, quotes, periods, commas, spaces), so this
+    /// conversion is infallible in practice.
+    pub fn to_header_value(&self) -> HeaderValue {
         let mut parts = Vec::new();
 
         if let Some(cd) = self.logo {
@@ -70,7 +75,9 @@ impl ServerTiming {
             parts.push(format!("render;dur={:.1}", dur.as_secs_f64() * 1000.0));
         }
 
-        parts.join(", ")
+        let value = parts.join(", ");
+        // Safe: format only produces ASCII (digits, letters, semicolons, quotes, dots, commas, spaces)
+        HeaderValue::try_from(value).unwrap_or_else(|_| HeaderValue::from_static(""))
     }
 }
 
@@ -107,14 +114,17 @@ mod tests {
     #[test]
     fn test_server_timing_empty() {
         let timing = ServerTiming::new();
-        assert_eq!(timing.to_header_value(), "");
+        assert_eq!(timing.to_header_value().to_str().unwrap(), "");
     }
 
     #[test]
     fn test_server_timing_logo_cache_hit() {
         let mut timing = ServerTiming::new();
         timing.logo = Some(CacheableDuration::new(Duration::from_millis(5), true));
-        assert_eq!(timing.to_header_value(), "logo;dur=5.0;desc=\"cache.hit\"");
+        assert_eq!(
+            timing.to_header_value().to_str().unwrap(),
+            "logo;dur=5.0;desc=\"cache.hit\""
+        );
     }
 
     #[test]
@@ -122,7 +132,7 @@ mod tests {
         let mut timing = ServerTiming::new();
         timing.logo = Some(CacheableDuration::new(Duration::from_millis(150), false));
         assert_eq!(
-            timing.to_header_value(),
+            timing.to_header_value().to_str().unwrap(),
             "logo;dur=150.0;desc=\"cache.miss\""
         );
     }
@@ -134,7 +144,7 @@ mod tests {
         timing.template = Some(Duration::from_millis(10));
         timing.render = Some(Duration::from_millis(50));
         assert_eq!(
-            timing.to_header_value(),
+            timing.to_header_value().to_str().unwrap(),
             "queue;dur=0.1, template;dur=10.0, render;dur=50.0"
         );
     }
@@ -148,7 +158,7 @@ mod tests {
         timing.template = Some(Duration::from_millis(8));
         timing.render = Some(Duration::from_millis(45));
         assert_eq!(
-            timing.to_header_value(),
+            timing.to_header_value().to_str().unwrap(),
             "logo;dur=2.0;desc=\"cache.hit\", image;dur=200.0;desc=\"cache.miss\", queue;dur=0.0, template;dur=8.0, render;dur=45.0"
         );
     }

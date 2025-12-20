@@ -264,13 +264,20 @@ pub async fn generate(
             timing.template = Some(result.template_time);
             timing.render = Some(result.render_time);
             log.log();
-            let timing_value = timing.to_header_value();
-            axum::http::Response::builder()
-                .status(StatusCode::OK)
-                .header(header::CONTENT_TYPE, "image/png")
-                .header("server-timing", &timing_value)
-                .body(axum::body::Body::from(result.png_data))
-                .expect("valid response")
+            (
+                StatusCode::OK,
+                [
+                    (
+                        header::CONTENT_TYPE,
+                        header::HeaderValue::from_static("image/png"),
+                    ),
+                    (
+                        header::HeaderName::from_static("server-timing"),
+                        timing.to_header_value(),
+                    ),
+                ],
+                result.png_data,
+            )
                 .into_response()
         }
         Ok(Err(err)) => {
