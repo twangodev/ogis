@@ -198,7 +198,6 @@ pub async fn generate(
 
     let images = Images { logo, image };
     let template_name_owned = template_name.to_string();
-    let template_name_for_metrics = template_name_owned.clone();
     let templates = state.templates.clone();
     let fontdb = state.fontdb.clone();
 
@@ -250,7 +249,7 @@ pub async fn generate(
                 m.response_size.record(result.png_data.len() as u64, &attrs);
                 m.render_duration.record(
                     (result.template_time + result.render_time).as_secs_f64(),
-                    &[KeyValue::new("template", template_name_for_metrics.clone())],
+                    &[KeyValue::new("template", template_name.to_string())],
                 );
             }
 
