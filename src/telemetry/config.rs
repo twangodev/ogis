@@ -13,7 +13,7 @@ pub struct OtelSettings {
     pub protocol: String,
 
     /// Service name for telemetry
-    #[arg(long, default_value = "ogis", env = "OTEL_SERVICE_NAME")]
+    #[arg(long, default_value = "ogis", env = "OGIS_OTEL_SERVICE_NAME")]
     pub service_name: String,
 
     /// Trace sampling ratio (0.0 to 1.0)
