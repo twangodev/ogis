@@ -19,7 +19,10 @@ fn create_http_client() -> reqwest::blocking::Client {
 pub fn create_tracer_provider(
     settings: &OtelSettings,
 ) -> Result<SdkTracerProvider, Box<dyn std::error::Error>> {
-    let endpoint = settings.endpoint.as_ref().unwrap();
+    let endpoint = settings
+        .endpoint
+        .as_ref()
+        .ok_or("OTEL endpoint not configured")?;
     let headers = settings.headers();
     let client = create_http_client();
 
@@ -60,7 +63,10 @@ pub fn create_tracer_provider(
 pub fn create_meter_provider(
     settings: &OtelSettings,
 ) -> Result<SdkMeterProvider, Box<dyn std::error::Error>> {
-    let endpoint = settings.endpoint.as_ref().unwrap();
+    let endpoint = settings
+        .endpoint
+        .as_ref()
+        .ok_or("OTEL endpoint not configured")?;
     let headers = settings.headers();
     let client = create_http_client();
 
@@ -76,7 +82,7 @@ pub fn create_meter_provider(
     let exporter = builder.build()?;
 
     let reader = PeriodicReader::builder(exporter)
-        .with_interval(Duration::from_secs(30))
+        .with_interval(Duration::from_secs(settings.metrics_interval_secs))
         .build();
 
     let resource = Resource::builder()

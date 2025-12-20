@@ -20,6 +20,10 @@ pub struct OtelSettings {
     #[arg(long, default_value = "1.0", env = "OGIS_OTEL_SAMPLE_RATIO")]
     pub sample_ratio: f64,
 
+    /// Metrics export interval in seconds
+    #[arg(long, default_value = "30", env = "OGIS_OTEL_METRICS_INTERVAL")]
+    pub metrics_interval_secs: u64,
+
     /// Authorization header value for OTLP endpoint (e.g., "Basic <base64>")
     /// For Grafana Cloud: base64 encode "instance_id:api_token"
     #[arg(long, env = "OGIS_OTEL_AUTH")]
