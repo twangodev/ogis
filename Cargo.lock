@@ -1481,6 +1481,7 @@ dependencies = [
  "thiserror",
  "tiny-skia",
  "tokio",
+ "tokio-shutdown",
  "tower-http",
  "tracing",
  "tracing-opentelemetry",
@@ -2632,6 +2633,16 @@ checksum = "1729aa945f29d91ba541258c8df89027d5792d85a8841fb65e8bf0f4ede4ef61"
 dependencies = [
  "rustls",
  "tokio",
+]
+
+[[package]]
+name = "tokio-shutdown"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d12a69e6b9c26d07555489cae0e9015a218899bae97db50a6837fbc67cf54dc7"
+dependencies = [
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

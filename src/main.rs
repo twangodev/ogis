@@ -11,6 +11,7 @@ mod yaml_loader;
 
 use std::sync::Arc;
 use tokio::sync::Semaphore;
+use tokio_shutdown::Shutdown;
 
 /// Runtime image state
 #[derive(Clone)]
@@ -110,40 +111,19 @@ async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Er
 
     let app = routes::create_router(state);
 
+    let shutdown = Shutdown::new()?;
+
     let listener = tokio::net::TcpListener::bind(&config.addr).await?;
     tracing::info!("ogis server listening on http://{}", config.addr);
     tracing::info!("Swagger UI available at http://{}/docs", config.addr);
 
     axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal())
+        .with_graceful_shutdown(async move {
+            shutdown.handle().await;
+            tracing::info!("Shutdown signal received, draining connections...");
+        })
         .await?;
 
     tracing::info!("Server shutdown complete");
     Ok(())
-}
-
-async fn shutdown_signal() {
-    let ctrl_c = async {
-        tokio::signal::ctrl_c()
-            .await
-            .expect("Failed to install Ctrl+C handler");
-    };
-
-    #[cfg(unix)]
-    let terminate = async {
-        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
-            .expect("Failed to install SIGTERM handler")
-            .recv()
-            .await;
-    };
-
-    #[cfg(not(unix))]
-    let terminate = std::future::pending::<()>();
-
-    tokio::select! {
-        _ = ctrl_c => {},
-        _ = terminate => {},
-    }
-
-    tracing::info!("Shutdown signal received, draining connections...");
 }
