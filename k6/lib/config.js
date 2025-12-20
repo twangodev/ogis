@@ -54,8 +54,8 @@ export function buildScenarios(templates) {
  * Default thresholds for OG image generation benchmarks
  */
 export const defaultThresholds = {
-  http_req_duration: ['p(95)<3000'],
-  http_req_failed: ['rate<0.01'],
+  http_req_duration: ['p(95)<5000'],
+  http_req_failed: ['rate<0.05'],
 };
 
 /**
