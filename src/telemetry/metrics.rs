@@ -47,7 +47,7 @@ impl OgisMetrics {
                 .build(),
             render_duration: meter
                 .f64_histogram("ogis.render.duration")
-                .with_description("Duration of SVG to PNG rendering")
+                .with_description("Duration of template generation and PNG rendering")
                 .with_unit("s")
                 .build(),
             render_queue_wait: meter

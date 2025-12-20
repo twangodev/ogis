@@ -56,7 +56,7 @@ pub fn init(settings: &OtelSettings) -> Result<TelemetryGuard, Box<dyn std::erro
             .init();
 
         tracing::info!(
-            endpoint = %settings.endpoint.as_ref().unwrap(),
+            endpoint = %settings.endpoint.as_ref().expect("endpoint must be set when OTEL is enabled"),
             service = %settings.service_name,
             "OpenTelemetry enabled"
         );
