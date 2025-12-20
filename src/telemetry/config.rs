@@ -4,13 +4,9 @@ use std::collections::HashMap;
 /// OpenTelemetry configuration settings
 #[derive(Clone, Debug, Args)]
 pub struct OtelSettings {
-    /// OTLP endpoint (e.g., http://localhost:4318). Enables OTEL when set.
+    /// OTLP HTTP endpoint (e.g., http://localhost:4318). Enables OTEL when set.
     #[arg(long, env = "OGIS_OTEL_ENDPOINT")]
     pub endpoint: Option<String>,
-
-    /// OTLP protocol: "http" or "grpc"
-    #[arg(long, default_value = "http", env = "OGIS_OTEL_PROTOCOL")]
-    pub protocol: String,
 
     /// Service name for telemetry
     #[arg(long, default_value = "ogis", env = "OGIS_OTEL_SERVICE_NAME")]
