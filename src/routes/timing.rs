@@ -79,3 +79,87 @@ impl Default for ServerTiming {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cacheable_duration_new() {
+        let cd = CacheableDuration::new(Duration::from_millis(100), true);
+        assert_eq!(cd.duration, Duration::from_millis(100));
+        assert!(cd.cached);
+
+        let cd = CacheableDuration::new(Duration::from_millis(200), false);
+        assert_eq!(cd.duration, Duration::from_millis(200));
+        assert!(!cd.cached);
+    }
+
+    #[test]
+    fn test_cacheable_duration_miss_since() {
+        let start = Instant::now();
+        std::thread::sleep(Duration::from_millis(1));
+        let cd = CacheableDuration::miss_since(start);
+        assert!(!cd.cached);
+        assert!(cd.duration >= Duration::from_millis(1));
+    }
+
+    #[test]
+    fn test_server_timing_empty() {
+        let timing = ServerTiming::new();
+        assert_eq!(timing.to_header_value(), "");
+    }
+
+    #[test]
+    fn test_server_timing_logo_cache_hit() {
+        let mut timing = ServerTiming::new();
+        timing.logo = Some(CacheableDuration::new(Duration::from_millis(5), true));
+        assert_eq!(timing.to_header_value(), "logo;dur=5.0;desc=\"cache.hit\"");
+    }
+
+    #[test]
+    fn test_server_timing_logo_cache_miss() {
+        let mut timing = ServerTiming::new();
+        timing.logo = Some(CacheableDuration::new(Duration::from_millis(150), false));
+        assert_eq!(
+            timing.to_header_value(),
+            "logo;dur=150.0;desc=\"cache.miss\""
+        );
+    }
+
+    #[test]
+    fn test_server_timing_simple_durations() {
+        let mut timing = ServerTiming::new();
+        timing.queue = Some(Duration::from_micros(100)); // 0.1ms
+        timing.template = Some(Duration::from_millis(10));
+        timing.render = Some(Duration::from_millis(50));
+        assert_eq!(
+            timing.to_header_value(),
+            "queue;dur=0.1, template;dur=10.0, render;dur=50.0"
+        );
+    }
+
+    #[test]
+    fn test_server_timing_full() {
+        let mut timing = ServerTiming::new();
+        timing.logo = Some(CacheableDuration::new(Duration::from_millis(2), true));
+        timing.image = Some(CacheableDuration::new(Duration::from_millis(200), false));
+        timing.queue = Some(Duration::from_millis(0));
+        timing.template = Some(Duration::from_millis(8));
+        timing.render = Some(Duration::from_millis(45));
+        assert_eq!(
+            timing.to_header_value(),
+            "logo;dur=2.0;desc=\"cache.hit\", image;dur=200.0;desc=\"cache.miss\", queue;dur=0.0, template;dur=8.0, render;dur=45.0"
+        );
+    }
+
+    #[test]
+    fn test_server_timing_default() {
+        let timing = ServerTiming::default();
+        assert!(timing.logo.is_none());
+        assert!(timing.image.is_none());
+        assert!(timing.queue.is_none());
+        assert!(timing.template.is_none());
+        assert!(timing.render.is_none());
+    }
+}
