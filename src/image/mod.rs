@@ -83,11 +83,10 @@ impl ImageFetcher {
         let span = tracing::Span::current();
 
         // Record domain from URL
-        if let Ok(parsed_url) = url::Url::parse(url) {
-            if let Some(domain) = parsed_url.host_str() {
+        if let Ok(parsed_url) = url::Url::parse(url)
+            && let Some(domain) = parsed_url.host_str() {
                 span.record("ogis.domain", domain);
             }
-        }
 
         // Stage 0: Check cache first
         if let Some(cached_bytes) = self.cache.get(url).await {

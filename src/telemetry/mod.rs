@@ -10,32 +10,23 @@ use opentelemetry_sdk::{metrics::SdkMeterProvider, trace::SdkTracerProvider};
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Guard that ensures OTEL providers are properly shut down
+#[derive(Default)]
 pub struct TelemetryGuard {
     tracer_provider: Option<SdkTracerProvider>,
     meter_provider: Option<SdkMeterProvider>,
 }
 
-impl Default for TelemetryGuard {
-    fn default() -> Self {
-        Self {
-            tracer_provider: None,
-            meter_provider: None,
-        }
-    }
-}
 
 impl Drop for TelemetryGuard {
     fn drop(&mut self) {
-        if let Some(tp) = self.tracer_provider.take() {
-            if let Err(e) = tp.shutdown() {
+        if let Some(tp) = self.tracer_provider.take()
+            && let Err(e) = tp.shutdown() {
                 eprintln!("Error shutting down tracer provider: {:?}", e);
             }
-        }
-        if let Some(mp) = self.meter_provider.take() {
-            if let Err(e) = mp.shutdown() {
+        if let Some(mp) = self.meter_provider.take()
+            && let Err(e) = mp.shutdown() {
                 eprintln!("Error shutting down meter provider: {:?}", e);
             }
-        }
     }
 }
 
