@@ -12,7 +12,11 @@ use super::config::OtelSettings;
 /// The batch processor runs in a separate thread without Tokio runtime,
 /// so we must use the blocking client.
 fn create_http_client() -> reqwest::blocking::Client {
-    reqwest::blocking::Client::new()
+    reqwest::blocking::Client::builder()
+        .connect_timeout(Duration::from_secs(10))
+        .timeout(Duration::from_secs(30))
+        .build()
+        .expect("failed to build OTLP HTTP client")
 }
 
 /// Create the TracerProvider for distributed tracing
