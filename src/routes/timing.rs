@@ -39,6 +39,15 @@ impl ServerTiming {
         }
     }
 
+    fn format_cacheable(name: &str, cd: CacheableDuration) -> String {
+        format!(
+            "{};dur={:.1};desc=\"{}\"",
+            name,
+            cd.duration.as_secs_f64() * 1000.0,
+            if cd.cached { "cache.hit" } else { "cache.miss" }
+        )
+    }
+
     /// Format as Server-Timing header value
     ///
     /// Returns a valid HeaderValue. The format only produces ASCII characters
@@ -48,19 +57,11 @@ impl ServerTiming {
         let mut parts = Vec::new();
 
         if let Some(cd) = self.logo {
-            parts.push(format!(
-                "logo;dur={:.1};desc=\"{}\"",
-                cd.duration.as_secs_f64() * 1000.0,
-                if cd.cached { "cache.hit" } else { "cache.miss" }
-            ));
+            parts.push(Self::format_cacheable("logo", cd));
         }
 
         if let Some(cd) = self.image {
-            parts.push(format!(
-                "image;dur={:.1};desc=\"{}\"",
-                cd.duration.as_secs_f64() * 1000.0,
-                if cd.cached { "cache.hit" } else { "cache.miss" }
-            ));
+            parts.push(Self::format_cacheable("image", cd));
         }
 
         if let Some(dur) = self.queue {
