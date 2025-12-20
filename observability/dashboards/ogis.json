@@ -41,7 +41,7 @@
       "type": "stat",
       "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
       "targets": [{
-        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m])) / sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) * 100",
+        "expr": "(sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m])) / sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) * 100) or vector(0)",
         "legendFormat": "hit %"
       }],
       "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 50}, {"color": "green", "value": 80}] } } }
