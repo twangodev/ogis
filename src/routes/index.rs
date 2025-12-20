@@ -1,3 +1,4 @@
+use super::timing::{CacheableDuration, ServerTiming};
 use crate::{
     AppState,
     generator::{self, Images, TextContent},
@@ -9,6 +10,13 @@ use axum::{
     response::IntoResponse,
 };
 use std::time::{Duration, Instant};
+
+/// Result from the blocking render task
+struct RenderResult {
+    png_data: Vec<u8>,
+    template_time: Duration,
+    render_time: Duration,
+}
 
 /// Metadata collector for single-log-per-request pattern
 struct RequestLog {
@@ -101,6 +109,7 @@ pub async fn generate(
     Query(params): Query<OgParams>,
 ) -> impl IntoResponse {
     let mut log = RequestLog::new();
+    let mut timing = ServerTiming::new();
     log.set_params(&params);
 
     // Validate input lengths
@@ -112,10 +121,18 @@ pub async fn generate(
     }
 
     // Fetch logo image if URL provided
+    let has_logo_url = params.logo.is_some();
+    let logo_start = Instant::now();
     let logo = match params.fetch_logo(&state).await {
         Ok(img) => {
             if let Some(ref validated) = img {
                 log.logo_cached = validated.cached;
+                timing.logo = Some(CacheableDuration::new(
+                    logo_start.elapsed(),
+                    validated.cached,
+                ));
+            } else if has_logo_url {
+                timing.logo = Some(CacheableDuration::miss_since(logo_start));
             }
             img
         }
@@ -128,10 +145,19 @@ pub async fn generate(
     };
 
     // Fetch custom image if URL provided
+    let has_image_url = params.image.is_some();
+    let image_start = Instant::now();
     let image = match params.fetch_image(&state).await {
         Ok(img) => {
             if let Some(ref validated) = img {
                 log.image_cached = validated.cached;
+                timing.image = Some(CacheableDuration::new(
+                    image_start.elapsed(),
+                    validated.cached,
+                ));
+            } else if has_image_url {
+                // Image URL was provided but fetch failed (Skip mode)
+                timing.image = Some(CacheableDuration::miss_since(image_start));
             }
             img
         }
@@ -168,9 +194,13 @@ pub async fn generate(
 
     // Wait for a render slot with timeout (defers response, only 503 if truly overloaded)
     const RENDER_TIMEOUT: Duration = Duration::from_secs(5);
+    let queue_start = Instant::now();
     let _render_permit =
         match tokio::time::timeout(RENDER_TIMEOUT, state.render_semaphore.acquire()).await {
-            Ok(Ok(permit)) => permit,
+            Ok(Ok(permit)) => {
+                timing.queue = Some(queue_start.elapsed());
+                permit
+            }
             Ok(Err(_)) => {
                 // Semaphore closed (shouldn't happen)
                 log.status = StatusCode::INTERNAL_SERVER_ERROR;
@@ -206,6 +236,7 @@ pub async fn generate(
             subtitle: &subtitle,
         };
 
+        let template_start = Instant::now();
         let svg_data = generator::generate_svg(
             text,
             images,
@@ -214,18 +245,38 @@ pub async fn generate(
             &color_overrides,
             &fontdb,
         )?;
+        let template_time = template_start.elapsed();
 
-        generator::render_to_png(&svg_data, &fontdb)
+        let render_start = Instant::now();
+        let png_data = generator::render_to_png(&svg_data, &fontdb)?;
+        let render_time = render_start.elapsed();
+
+        Ok::<_, String>(RenderResult {
+            png_data,
+            template_time,
+            render_time,
+        })
     })
     .await;
 
     match render_result {
-        Ok(Ok(png_data)) => {
+        Ok(Ok(result)) => {
+            timing.template = Some(result.template_time);
+            timing.render = Some(result.render_time);
             log.log();
             (
                 StatusCode::OK,
-                [(header::CONTENT_TYPE, "image/png")],
-                png_data,
+                [
+                    (
+                        header::CONTENT_TYPE,
+                        header::HeaderValue::from_static("image/png"),
+                    ),
+                    (
+                        header::HeaderName::from_static("server-timing"),
+                        timing.to_header_value(),
+                    ),
+                ],
+                result.png_data,
             )
                 .into_response()
         }

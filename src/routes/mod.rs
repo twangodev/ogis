@@ -1,6 +1,7 @@
 pub mod docs;
 pub mod health;
 pub mod index;
+pub mod timing;
 
 use crate::AppState;
 use crate::auth::hmac_auth_middleware;
