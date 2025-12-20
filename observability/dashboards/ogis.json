@@ -10,11 +10,11 @@
       "type": "stat",
       "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
       "targets": [{
-        "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m]))",
-        "legendFormat": "req/s"
+        "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m])) * 60",
+        "legendFormat": "req/min"
       }],
       "options": { "colorMode": "value" },
-      "fieldConfig": { "defaults": { "unit": "reqps" } }
+      "fieldConfig": { "defaults": { "unit": "none", "decimals": 1 } }
     },
     {
       "title": "P50 Latency",
@@ -72,20 +72,20 @@
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
       "targets": [{
-        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain)",
+        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain) * 60",
         "legendFormat": "{{ domain }}"
       }],
-      "fieldConfig": { "defaults": { "unit": "reqps" } }
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     },
     {
       "title": "Image Fetches: Cache Hit vs Miss",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
       "targets": [
-        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m]))", "legendFormat": "Cache Hit" },
-        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"false\"}[5m]))", "legendFormat": "Cache Miss" }
+        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m])) * 60", "legendFormat": "Cache Hit" },
+        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"false\"}[5m])) * 60", "legendFormat": "Cache Miss" }
       ],
-      "fieldConfig": { "defaults": { "unit": "reqps" } }
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     },
     {
       "title": "Image Size Distribution",
@@ -122,10 +122,10 @@
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
       "targets": [{
-        "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m])) by (http_response_status_code)",
+        "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m])) by (http_response_status_code) * 60",
         "legendFormat": "{{ http_response_status_code }}"
       }],
-      "fieldConfig": { "defaults": { "unit": "reqps" } }
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     }
   ]
 }
