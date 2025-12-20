@@ -3,6 +3,12 @@ use std::sync::OnceLock;
 
 static METRICS: OnceLock<OgisMetrics> = OnceLock::new();
 
+/// Histogram buckets for duration metrics (in seconds)
+/// Covers 5ms to 10s with good granularity for typical render times
+const DURATION_BUCKETS: &[f64] = &[
+    0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0,
+];
+
 /// OGIS-specific metrics following OTEL semantic conventions
 pub struct OgisMetrics {
     // Standard HTTP metrics
@@ -30,6 +36,7 @@ impl OgisMetrics {
                 .f64_histogram("http.server.request.duration")
                 .with_description("Duration of HTTP server requests")
                 .with_unit("s")
+                .with_boundaries(DURATION_BUCKETS.to_vec())
                 .build(),
             response_size: meter
                 .u64_histogram("http.server.response.body.size")
@@ -49,11 +56,13 @@ impl OgisMetrics {
                 .f64_histogram("ogis.render.duration")
                 .with_description("Duration of template generation and PNG rendering")
                 .with_unit("s")
+                .with_boundaries(DURATION_BUCKETS.to_vec())
                 .build(),
             render_queue_wait: meter
                 .f64_histogram("ogis.render.queue_wait")
                 .with_description("Time waiting for render slot")
                 .with_unit("s")
+                .with_boundaries(DURATION_BUCKETS.to_vec())
                 .build(),
         }
     }
