@@ -1,0 +1,131 @@
+{
+  "title": "ogis - Open Graph Images as a Service",
+  "uid": "ogis-overview",
+  "tags": ["ogis", "otel"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "title": "Request Rate",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m]))",
+        "legendFormat": "req/s"
+      }],
+      "options": { "colorMode": "value" },
+      "fieldConfig": { "defaults": { "unit": "reqps" } }
+    },
+    {
+      "title": "P50 Latency",
+      "type": "stat",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))",
+        "legendFormat": "p50"
+      }],
+      "fieldConfig": { "defaults": { "unit": "s", "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "red", "value": 1}] } } }
+    },
+    {
+      "title": "P99 Latency",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))",
+        "legendFormat": "p99"
+      }],
+      "fieldConfig": { "defaults": { "unit": "s", "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 2}] } } }
+    },
+    {
+      "title": "Cache Hit Rate",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m])) / sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) * 100",
+        "legendFormat": "hit %"
+      }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 50}, {"color": "green", "value": 80}] } } }
+    },
+    {
+      "title": "Request Latency Distribution",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.90, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p90" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p99" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Render Duration by Template",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.90, sum(rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le, template))",
+        "legendFormat": "{{ template }}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Image Fetches by Domain",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain)",
+        "legendFormat": "{{ domain }}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "reqps" } }
+    },
+    {
+      "title": "Image Fetches: Cache Hit vs Miss",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m]))", "legendFormat": "Cache Hit" },
+        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"false\"}[5m]))", "legendFormat": "Cache Miss" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" } }
+    },
+    {
+      "title": "Image Size Distribution",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.90, sum(rate(ogis_image_size_bytes_bucket{service_name=\"ogis\"}[5m])) by (le, type))",
+        "legendFormat": "{{ type }} p90"
+      }],
+      "fieldConfig": { "defaults": { "unit": "bytes" } }
+    },
+    {
+      "title": "Render Queue Wait Time",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(ogis_render_queue_wait_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.99, sum(rate(ogis_render_queue_wait_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p99" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Response Size",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 28, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.90, sum(rate(http_server_response_body_size_bytes_bucket{service_name=\"ogis\"}[5m])) by (le))",
+        "legendFormat": "p90"
+      }],
+      "fieldConfig": { "defaults": { "unit": "bytes" } }
+    },
+    {
+      "title": "Requests by Status Code",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m])) by (http_response_status_code)",
+        "legendFormat": "{{ http_response_status_code }}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "reqps" } }
+    }
+  ]
+}

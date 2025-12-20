@@ -168,6 +168,9 @@ pub struct Config {
 
     #[command(flatten)]
     pub docs: DocsSettings,
+
+    #[command(flatten)]
+    pub otel: crate::telemetry::OtelSettings,
 }
 
 impl Config {
