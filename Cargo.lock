@@ -1466,6 +1466,7 @@ dependencies = [
  "hex",
  "hickory-resolver",
  "hmac",
+ "http-body-util",
  "infer",
  "ip_rfc",
  "moka",

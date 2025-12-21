@@ -55,7 +55,6 @@ pub async fn generate(
     State(state): State<AppState>,
     Query(params): Query<OgParams>,
 ) -> impl IntoResponse {
-    let start = Instant::now();
     let span = tracing::Span::current();
     let mut timing = ServerTiming::new();
 
@@ -237,16 +236,8 @@ pub async fn generate(
             timing.render = Some(result.render_time);
             span.record("http.response.status_code", 200_i64);
 
-            // Record metrics
+            // Record render duration metric (request metrics handled by middleware)
             if let Some(m) = telemetry::get_metrics() {
-                let duration = start.elapsed().as_secs_f64();
-                let attrs = [
-                    KeyValue::new("http.request.method", "GET"),
-                    KeyValue::new("http.response.status_code", 200_i64),
-                    KeyValue::new("http.route", "/"),
-                ];
-                m.request_duration.record(duration, &attrs);
-                m.response_size.record(result.png_data.len() as u64, &attrs);
                 m.render_duration.record(
                     (result.template_time + result.render_time).as_secs_f64(),
                     &[KeyValue::new("template", template_name.to_string())],

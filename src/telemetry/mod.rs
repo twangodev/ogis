@@ -1,9 +1,11 @@
 mod config;
 mod metrics;
+mod middleware;
 mod provider;
 
 pub use config::OtelSettings;
 pub use metrics::get_metrics;
+pub use middleware::metrics_middleware;
 
 use opentelemetry::{metrics::MeterProvider, trace::TracerProvider};
 use opentelemetry_sdk::{metrics::SdkMeterProvider, trace::SdkTracerProvider};

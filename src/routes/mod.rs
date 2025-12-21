@@ -5,6 +5,7 @@ pub mod timing;
 
 use crate::AppState;
 use crate::auth::hmac_auth_middleware;
+use crate::telemetry::metrics_middleware;
 use axum::{Router, middleware, routing::get};
 use tower_http::cors::{Any, CorsLayer};
 use utoipa::OpenApi;
@@ -25,6 +26,7 @@ pub fn create_router(state: AppState) -> Router {
             state.clone(),
             hmac_auth_middleware, // Apply HMAC middleware to routes above
         ))
+        .route_layer(middleware::from_fn(metrics_middleware))
         .route("/health", get(health::health_check))
         .merge(docs_router)
         .layer(cors)
