@@ -6,9 +6,20 @@
   "schemaVersion": 39,
   "panels": [
     {
+      "title": "Total Requests",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "targets": [{
+        "expr": "histogram_count(sum(increase(http_server_request_duration_seconds{service_name=\"ogis\"}[$__range])))",
+        "legendFormat": "total"
+      }],
+      "options": { "colorMode": "value" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 } }
+    },
+    {
       "title": "Request Rate",
       "type": "stat",
-      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "gridPos": { "x": 4, "y": 0, "w": 5, "h": 4 },
       "targets": [{
         "expr": "histogram_count(sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m]))) * 60",
         "legendFormat": "req/min"
@@ -19,7 +30,7 @@
     {
       "title": "P50 Latency",
       "type": "stat",
-      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "gridPos": { "x": 9, "y": 0, "w": 5, "h": 4 },
       "targets": [{
         "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m])))",
         "legendFormat": "p50"
@@ -29,7 +40,7 @@
     {
       "title": "P99 Latency",
       "type": "stat",
-      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "gridPos": { "x": 14, "y": 0, "w": 5, "h": 4 },
       "targets": [{
         "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m])))",
         "legendFormat": "p99"
@@ -39,7 +50,7 @@
     {
       "title": "Cache Hit Rate",
       "type": "stat",
-      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "gridPos": { "x": 19, "y": 0, "w": 5, "h": 4 },
       "targets": [{
         "expr": "(sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m])) / sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) * 100) or vector(0)",
         "legendFormat": "hit %"
