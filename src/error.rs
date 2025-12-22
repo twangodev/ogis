@@ -376,3 +376,433 @@ impl From<GeneratorError> for ApiError {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_validation_field_too_long_status() {
+        let err = ApiError::validation_field_too_long("Title", 1000);
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationFieldTooLong));
+        assert_eq!(err.field, Some("title".to_string()));
+    }
+
+    #[test]
+    fn test_validation_invalid_url_status() {
+        let err = ApiError::validation_invalid_url("logo", "parse error");
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidUrl));
+        assert_eq!(err.field, Some("logo".to_string()));
+        assert_eq!(err.details, Some("parse error".to_string()));
+    }
+
+    #[test]
+    fn test_validation_invalid_hex_color_status() {
+        let err = ApiError::validation_invalid_hex_color("background", "XYZ123");
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidHexColor));
+        assert_eq!(err.field, Some("background".to_string()));
+    }
+
+    #[test]
+    fn test_auth_missing_signature_status() {
+        let err = ApiError::auth_missing_signature();
+        assert_eq!(err.status_code(), StatusCode::UNAUTHORIZED);
+        assert!(matches!(err.code, ErrorCode::AuthMissingSignature));
+        assert_eq!(err.field, Some("signature".to_string()));
+    }
+
+    #[test]
+    fn test_auth_invalid_signature_status() {
+        let err = ApiError::auth_invalid_signature();
+        assert_eq!(err.status_code(), StatusCode::FORBIDDEN);
+        assert!(matches!(err.code, ErrorCode::AuthInvalidSignature));
+    }
+
+    #[test]
+    fn test_auth_invalid_signature_format_status() {
+        let err = ApiError::auth_invalid_signature_format();
+        assert_eq!(err.status_code(), StatusCode::FORBIDDEN);
+        assert!(matches!(err.code, ErrorCode::AuthInvalidSignatureFormat));
+        assert_eq!(err.field, Some("signature".to_string()));
+    }
+
+    #[test]
+    fn test_ssrf_blocked_status() {
+        let err = ApiError::ssrf_blocked("192.168.1.1");
+        assert_eq!(err.status_code(), StatusCode::FORBIDDEN);
+        assert!(matches!(err.code, ErrorCode::SsrfPrivateIpBlocked));
+        assert_eq!(err.details, Some("192.168.1.1".to_string()));
+    }
+
+    #[test]
+    fn test_template_not_found_status() {
+        let err = ApiError::template_not_found("missing", "a, b, c");
+        assert_eq!(err.status_code(), StatusCode::NOT_FOUND);
+        assert!(matches!(err.code, ErrorCode::TemplateNotFound));
+        assert!(err.message.contains("missing"));
+        assert!(err.details.as_ref().unwrap().contains("a, b, c"));
+    }
+
+    #[test]
+    fn test_image_too_large_status() {
+        let err = ApiError::image_too_large();
+        assert_eq!(err.status_code(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert!(matches!(err.code, ErrorCode::ImageTooLarge));
+    }
+
+    #[test]
+    fn test_image_invalid_content_type_status() {
+        let err = ApiError::image_invalid_content_type();
+        assert_eq!(err.status_code(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert!(matches!(err.code, ErrorCode::ImageInvalidContentType));
+        assert!(err.details.is_some());
+    }
+
+    #[test]
+    fn test_image_http_not_allowed_status() {
+        let err = ApiError::image_http_not_allowed();
+        assert_eq!(err.status_code(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert!(matches!(err.code, ErrorCode::ImageHttpNotAllowed));
+    }
+
+    #[test]
+    fn test_render_failed_status() {
+        let err = ApiError::render_failed("pixmap error");
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::RenderFailed));
+        assert_eq!(err.details, Some("pixmap error".to_string()));
+    }
+
+    #[test]
+    fn test_svg_parse_failed_status() {
+        let err = ApiError::svg_parse_failed("invalid xml");
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::SvgParseFailed));
+    }
+
+    #[test]
+    fn test_png_encode_failed_status() {
+        let err = ApiError::png_encode_failed("encoding error");
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::PngEncodeFailed));
+    }
+
+    #[test]
+    fn test_font_error_status() {
+        let err = ApiError::font_error("font not found");
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::FontError));
+    }
+
+    #[test]
+    fn test_internal_status() {
+        let err = ApiError::internal("unexpected error");
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::InternalError));
+        assert_eq!(err.message, "unexpected error");
+    }
+
+    #[test]
+    fn test_upstream_fetch_failed_status() {
+        let err = ApiError::upstream_fetch_failed("connection refused");
+        assert_eq!(err.status_code(), StatusCode::BAD_GATEWAY);
+        assert!(matches!(err.code, ErrorCode::UpstreamFetchFailed));
+    }
+
+    #[test]
+    fn test_service_overloaded_status() {
+        let err = ApiError::service_overloaded();
+        assert_eq!(err.status_code(), StatusCode::SERVICE_UNAVAILABLE);
+        assert!(matches!(err.code, ErrorCode::ServiceOverloaded));
+    }
+
+    #[test]
+    fn test_upstream_timeout_status() {
+        let err = ApiError::upstream_timeout();
+        assert_eq!(err.status_code(), StatusCode::GATEWAY_TIMEOUT);
+        assert!(matches!(err.code, ErrorCode::UpstreamTimeout));
+    }
+
+    // ========== ErrorCode Serialization Tests ==========
+
+    #[test]
+    fn test_error_code_serialization() {
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationFieldTooLong).unwrap(),
+            "\"VALIDATION_FIELD_TOO_LONG\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationInvalidUrl).unwrap(),
+            "\"VALIDATION_INVALID_URL\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::AuthMissingSignature).unwrap(),
+            "\"AUTH_MISSING_SIGNATURE\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::SsrfPrivateIpBlocked).unwrap(),
+            "\"SSRF_PRIVATE_IP_BLOCKED\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::TemplateNotFound).unwrap(),
+            "\"TEMPLATE_NOT_FOUND\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ImageTooLarge).unwrap(),
+            "\"IMAGE_TOO_LARGE\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::UpstreamFetchFailed).unwrap(),
+            "\"UPSTREAM_FETCH_FAILED\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ServiceOverloaded).unwrap(),
+            "\"SERVICE_OVERLOADED\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::UpstreamTimeout).unwrap(),
+            "\"UPSTREAM_TIMEOUT\""
+        );
+    }
+
+    // ========== From<ImageFetchError> Tests ==========
+
+    #[test]
+    fn test_from_image_fetch_error_request() {
+        let err: ApiError = ImageFetchError::Request("connection refused".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::BAD_GATEWAY);
+        assert!(matches!(err.code, ErrorCode::UpstreamFetchFailed));
+    }
+
+    #[test]
+    fn test_from_image_fetch_error_timeout() {
+        let err: ApiError = ImageFetchError::Request("request timed out".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::GATEWAY_TIMEOUT);
+        assert!(matches!(err.code, ErrorCode::UpstreamTimeout));
+    }
+
+    #[test]
+    fn test_from_image_fetch_error_timeout_uppercase() {
+        let err: ApiError = ImageFetchError::Request("TIMEOUT error".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::GATEWAY_TIMEOUT);
+        assert!(matches!(err.code, ErrorCode::UpstreamTimeout));
+    }
+
+    #[test]
+    fn test_from_image_fetch_error_too_large() {
+        let err: ApiError = ImageFetchError::TooLarge.into();
+        assert_eq!(err.status_code(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert!(matches!(err.code, ErrorCode::ImageTooLarge));
+    }
+
+    #[test]
+    fn test_from_image_fetch_error_invalid_content_type() {
+        let err: ApiError = ImageFetchError::InvalidContentType.into();
+        assert_eq!(err.status_code(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert!(matches!(err.code, ErrorCode::ImageInvalidContentType));
+    }
+
+    #[test]
+    fn test_from_image_fetch_error_private_ip_blocked() {
+        let err: ApiError = ImageFetchError::PrivateIpBlocked("10.0.0.1".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::FORBIDDEN);
+        assert!(matches!(err.code, ErrorCode::SsrfPrivateIpBlocked));
+    }
+
+    #[test]
+    fn test_from_image_fetch_error_http_not_allowed() {
+        let err: ApiError = ImageFetchError::InvalidUrl("HTTP URLs not allowed".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::UNPROCESSABLE_ENTITY);
+        assert!(matches!(err.code, ErrorCode::ImageHttpNotAllowed));
+    }
+
+    #[test]
+    fn test_from_image_fetch_error_invalid_url() {
+        let err: ApiError = ImageFetchError::InvalidUrl("parse error".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidUrl));
+    }
+
+    // ========== From<HmacError> Tests ==========
+
+    #[test]
+    fn test_from_hmac_error_missing_signature() {
+        let err: ApiError = HmacError::MissingSignature.into();
+        assert_eq!(err.status_code(), StatusCode::UNAUTHORIZED);
+        assert!(matches!(err.code, ErrorCode::AuthMissingSignature));
+    }
+
+    #[test]
+    fn test_from_hmac_error_invalid_hex_format() {
+        let hex_err = hex::FromHexError::InvalidHexCharacter { c: 'g', index: 0 };
+        let err: ApiError = HmacError::InvalidHexFormat(hex_err).into();
+        assert_eq!(err.status_code(), StatusCode::FORBIDDEN);
+        assert!(matches!(err.code, ErrorCode::AuthInvalidSignatureFormat));
+    }
+
+    // ========== From<GeneratorError> Tests ==========
+
+    #[test]
+    fn test_from_generator_error_template_not_found() {
+        let err: ApiError = GeneratorError::TemplateNotFound {
+            name: "missing".to_string(),
+            available: "a, b".to_string(),
+        }
+        .into();
+        assert_eq!(err.status_code(), StatusCode::NOT_FOUND);
+        assert!(matches!(err.code, ErrorCode::TemplateNotFound));
+    }
+
+    #[test]
+    fn test_from_generator_error_font_properties_not_found() {
+        let err: ApiError = GeneratorError::FontPropertiesNotFound("template".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::FontError));
+    }
+
+    #[test]
+    fn test_from_generator_error_svg_parse() {
+        let err: ApiError = GeneratorError::SvgParse("invalid xml".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::SvgParseFailed));
+    }
+
+    #[test]
+    fn test_from_generator_error_utf8() {
+        let err: ApiError = GeneratorError::Utf8("invalid utf8".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::InternalError));
+    }
+
+    #[test]
+    fn test_from_generator_error_png_encode() {
+        let err: ApiError = GeneratorError::PngEncode("encode error".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::PngEncodeFailed));
+    }
+
+    #[test]
+    fn test_from_generator_error_pixmap_creation() {
+        let err: ApiError = GeneratorError::PixmapCreation.into();
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::RenderFailed));
+    }
+
+    #[test]
+    fn test_from_generator_error_xml() {
+        let err: ApiError = GeneratorError::Xml("write error".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::RenderFailed));
+    }
+
+    #[test]
+    fn test_from_generator_error_text_measurement() {
+        let err: ApiError = GeneratorError::TextMeasurement("measurement error".to_string()).into();
+        assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(matches!(err.code, ErrorCode::RenderFailed));
+    }
+
+    // ========== Builder Pattern Tests ==========
+
+    #[test]
+    fn test_with_details() {
+        let err = ApiError::new(
+            StatusCode::BAD_REQUEST,
+            ErrorCode::ValidationInvalidUrl,
+            "msg",
+        )
+        .with_details("extra info");
+        assert_eq!(err.details, Some("extra info".to_string()));
+    }
+
+    #[test]
+    fn test_with_field() {
+        let err = ApiError::new(
+            StatusCode::BAD_REQUEST,
+            ErrorCode::ValidationInvalidUrl,
+            "msg",
+        )
+        .with_field("logo");
+        assert_eq!(err.field, Some("logo".to_string()));
+    }
+
+    #[test]
+    fn test_builder_chain() {
+        let err = ApiError::new(
+            StatusCode::BAD_REQUEST,
+            ErrorCode::ValidationInvalidUrl,
+            "msg",
+        )
+        .with_field("logo")
+        .with_details("reason");
+        assert_eq!(err.field, Some("logo".to_string()));
+        assert_eq!(err.details, Some("reason".to_string()));
+    }
+
+    // ========== Display Tests ==========
+
+    #[test]
+    fn test_display() {
+        let err = ApiError::validation_field_too_long("Title", 1000);
+        assert_eq!(format!("{}", err), "Title exceeds maximum length of 1000");
+    }
+
+    #[test]
+    fn test_display_simple_message() {
+        let err = ApiError::service_overloaded();
+        assert_eq!(format!("{}", err), "Server overloaded, try again later");
+    }
+
+    // ========== JSON Structure Tests ==========
+
+    #[test]
+    fn test_error_body_json_structure() {
+        let body = ErrorBody {
+            error: ErrorDetail {
+                code: ErrorCode::TemplateNotFound,
+                message: "Template 'foo' not found".to_string(),
+                details: Some("Available templates: bar".to_string()),
+                field: None,
+            },
+        };
+        let json = serde_json::to_string(&body).unwrap();
+        assert!(json.contains("\"code\":\"TEMPLATE_NOT_FOUND\""));
+        assert!(json.contains("\"message\":\"Template 'foo' not found\""));
+        assert!(json.contains("\"details\":\"Available templates: bar\""));
+        // field should be omitted when None
+        assert!(!json.contains("\"field\""));
+    }
+
+    #[test]
+    fn test_optional_fields_omitted() {
+        let body = ErrorBody {
+            error: ErrorDetail {
+                code: ErrorCode::ServiceOverloaded,
+                message: "Server overloaded".to_string(),
+                details: None,
+                field: None,
+            },
+        };
+        let json = serde_json::to_string(&body).unwrap();
+        assert!(!json.contains("details"));
+        assert!(!json.contains("field"));
+    }
+
+    #[test]
+    fn test_optional_fields_present() {
+        let body = ErrorBody {
+            error: ErrorDetail {
+                code: ErrorCode::ValidationFieldTooLong,
+                message: "Title too long".to_string(),
+                details: Some("Max 1000".to_string()),
+                field: Some("title".to_string()),
+            },
+        };
+        let json = serde_json::to_string(&body).unwrap();
+        assert!(json.contains("\"details\":\"Max 1000\""));
+        assert!(json.contains("\"field\":\"title\""));
+    }
+}

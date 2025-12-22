@@ -39,3 +39,6 @@ url = "2.5"
 usvg = "0.45.1"
 utoipa = "5.4.0"
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
+
+[dev-dependencies]
+serde_json = "1.0.146"
