@@ -108,13 +108,31 @@
             }
           },
           "400": {
-            "description": "Invalid input - field exceeds maximum length or invalid signature format"
+            "description": "Invalid input - field exceeds maximum length or invalid hex color"
           },
           "401": {
-            "description": "Authentication required or invalid signature"
+            "description": "Authentication required - missing signature"
+          },
+          "403": {
+            "description": "Forbidden - invalid signature or SSRF blocked"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "422": {
+            "description": "Unprocessable - invalid image URL, unsupported format, or image too large"
           },
           "500": {
-            "description": "Failed to generate image"
+            "description": "Internal server error"
+          },
+          "502": {
+            "description": "Bad gateway - upstream image fetch failed"
+          },
+          "503": {
+            "description": "Service unavailable - server overloaded"
+          },
+          "504": {
+            "description": "Gateway timeout - image fetch timed out"
           }
         }
       }
@@ -144,6 +162,75 @@
   },
   "components": {
     "schemas": {
+      "ErrorBody": {
+        "type": "object",
+        "description": "JSON error response body",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        }
+      },
+      "ErrorCode": {
+        "type": "string",
+        "description": "Machine-readable error codes for programmatic handling",
+        "enum": [
+          "VALIDATION_FIELD_TOO_LONG",
+          "VALIDATION_INVALID_URL",
+          "VALIDATION_INVALID_HEX_COLOR",
+          "AUTH_INVALID_SIGNATURE_FORMAT",
+          "AUTH_MISSING_SIGNATURE",
+          "AUTH_INVALID_SIGNATURE",
+          "SSRF_PRIVATE_IP_BLOCKED",
+          "TEMPLATE_NOT_FOUND",
+          "IMAGE_TOO_LARGE",
+          "IMAGE_INVALID_CONTENT_TYPE",
+          "IMAGE_HTTP_NOT_ALLOWED",
+          "RENDER_FAILED",
+          "SVG_PARSE_FAILED",
+          "PNG_ENCODE_FAILED",
+          "FONT_ERROR",
+          "INTERNAL_ERROR",
+          "UPSTREAM_FETCH_FAILED",
+          "SERVICE_OVERLOADED",
+          "UPSTREAM_TIMEOUT"
+        ]
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "description": "Error detail within the response",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode",
+            "description": "Machine-readable error code"
+          },
+          "details": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Additional details about the error"
+          },
+          "field": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field that caused the error (if applicable)"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          }
+        }
+      },
       "OgParams": {
         "type": "object",
         "properties": {
