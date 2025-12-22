@@ -1,2 +1,3 @@
 web/** linguist-documentation
-benchmarks/** linguist-documentation
+k6/** linguist-documentation
+comparisons/** linguist-documentation
