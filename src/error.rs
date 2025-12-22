@@ -16,13 +16,13 @@ pub enum ErrorCode {
     ValidationFieldTooLong,
     ValidationInvalidUrl,
     ValidationInvalidHexColor,
+    AuthInvalidSignatureFormat,
 
     // Auth errors (401)
     AuthMissingSignature,
 
     // Forbidden errors (403)
     AuthInvalidSignature,
-    AuthInvalidSignatureFormat,
     SsrfPrivateIpBlocked,
 
     // Not found errors (404)
@@ -107,8 +107,6 @@ impl ApiError {
         self.status
     }
 
-    // ========== Validation Errors (400) ==========
-
     pub fn validation_field_too_long(field: &str, max_len: usize) -> Self {
         Self::new(
             StatusCode::BAD_REQUEST,
@@ -138,8 +136,6 @@ impl ApiError {
         .with_details("Expected 6 hex characters (e.g., 'FF0000')")
     }
 
-    // ========== Auth Errors (401/403) ==========
-
     pub fn auth_missing_signature() -> Self {
         Self::new(
             StatusCode::UNAUTHORIZED,
@@ -159,14 +155,12 @@ impl ApiError {
 
     pub fn auth_invalid_signature_format() -> Self {
         Self::new(
-            StatusCode::FORBIDDEN,
+            StatusCode::BAD_REQUEST,
             ErrorCode::AuthInvalidSignatureFormat,
             "Invalid signature format: must be hex-encoded",
         )
         .with_field("signature")
     }
-
-    // ========== Forbidden Errors (403) ==========
 
     pub fn ssrf_blocked(details: &str) -> Self {
         Self::new(
@@ -177,8 +171,6 @@ impl ApiError {
         .with_details(details)
     }
 
-    // ========== Not Found Errors (404) ==========
-
     pub fn template_not_found(name: &str, available: &str) -> Self {
         Self::new(
             StatusCode::NOT_FOUND,
@@ -187,8 +179,6 @@ impl ApiError {
         )
         .with_details(format!("Available templates: {}", available))
     }
-
-    // ========== Unprocessable Entity Errors (422) ==========
 
     pub fn image_too_large() -> Self {
         Self::new(
@@ -215,8 +205,6 @@ impl ApiError {
         )
         .with_details("Use HTTPS or enable --allow-http flag")
     }
-
-    // ========== Internal Errors (500) ==========
 
     pub fn render_failed(details: &str) -> Self {
         Self::new(
@@ -262,8 +250,6 @@ impl ApiError {
         )
     }
 
-    // ========== Upstream Errors (502) ==========
-
     pub fn upstream_fetch_failed(details: &str) -> Self {
         Self::new(
             StatusCode::BAD_GATEWAY,
@@ -273,8 +259,6 @@ impl ApiError {
         .with_details(details)
     }
 
-    // ========== Overload Errors (503) ==========
-
     pub fn service_overloaded() -> Self {
         Self::new(
             StatusCode::SERVICE_UNAVAILABLE,
@@ -282,8 +266,6 @@ impl ApiError {
             "Server overloaded, try again later",
         )
     }
-
-    // ========== Timeout Errors (504) ==========
 
     pub fn upstream_timeout() -> Self {
         Self::new(
@@ -316,8 +298,6 @@ impl std::fmt::Display for ApiError {
 }
 
 impl std::error::Error for ApiError {}
-
-// ========== From Implementations ==========
 
 impl From<ImageFetchError> for ApiError {
     fn from(err: ImageFetchError) -> Self {
@@ -424,7 +404,7 @@ mod tests {
     #[test]
     fn test_auth_invalid_signature_format_status() {
         let err = ApiError::auth_invalid_signature_format();
-        assert_eq!(err.status_code(), StatusCode::FORBIDDEN);
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
         assert!(matches!(err.code, ErrorCode::AuthInvalidSignatureFormat));
         assert_eq!(err.field, Some("signature".to_string()));
     }
@@ -526,8 +506,6 @@ mod tests {
         assert!(matches!(err.code, ErrorCode::UpstreamTimeout));
     }
 
-    // ========== ErrorCode Serialization Tests ==========
-
     #[test]
     fn test_error_code_serialization() {
         assert_eq!(
@@ -567,8 +545,6 @@ mod tests {
             "\"UPSTREAM_TIMEOUT\""
         );
     }
-
-    // ========== From<ImageFetchError> Tests ==========
 
     #[test]
     fn test_from_image_fetch_error_request() {
@@ -626,8 +602,6 @@ mod tests {
         assert!(matches!(err.code, ErrorCode::ValidationInvalidUrl));
     }
 
-    // ========== From<HmacError> Tests ==========
-
     #[test]
     fn test_from_hmac_error_missing_signature() {
         let err: ApiError = HmacError::MissingSignature.into();
@@ -639,11 +613,9 @@ mod tests {
     fn test_from_hmac_error_invalid_hex_format() {
         let hex_err = hex::FromHexError::InvalidHexCharacter { c: 'g', index: 0 };
         let err: ApiError = HmacError::InvalidHexFormat(hex_err).into();
-        assert_eq!(err.status_code(), StatusCode::FORBIDDEN);
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
         assert!(matches!(err.code, ErrorCode::AuthInvalidSignatureFormat));
     }
-
-    // ========== From<GeneratorError> Tests ==========
 
     #[test]
     fn test_from_generator_error_template_not_found() {
@@ -705,8 +677,6 @@ mod tests {
         assert!(matches!(err.code, ErrorCode::RenderFailed));
     }
 
-    // ========== Builder Pattern Tests ==========
-
     #[test]
     fn test_with_details() {
         let err = ApiError::new(
@@ -742,8 +712,6 @@ mod tests {
         assert_eq!(err.details, Some("reason".to_string()));
     }
 
-    // ========== Display Tests ==========
-
     #[test]
     fn test_display() {
         let err = ApiError::validation_field_too_long("Title", 1000);
@@ -755,8 +723,6 @@ mod tests {
         let err = ApiError::service_overloaded();
         assert_eq!(format!("{}", err), "Server overloaded, try again later");
     }
-
-    // ========== JSON Structure Tests ==========
 
     #[test]
     fn test_error_body_json_structure() {
