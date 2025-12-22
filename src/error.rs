@@ -132,7 +132,7 @@ impl ApiError {
             ErrorCode::ValidationInvalidHexColor,
             format!("Invalid hex color '{}' for parameter '{}'", value, field),
         )
-        .with_field(field.to_string())
+        .with_field(field.to_lowercase())
         .with_details("Expected 6 hex characters (e.g., 'FF0000')")
     }
 
