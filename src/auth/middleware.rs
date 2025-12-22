@@ -6,6 +6,7 @@ use axum::{
 };
 
 use crate::AppState;
+use crate::error::ApiError;
 
 /// Axum middleware for HMAC authentication
 pub async fn hmac_auth_middleware(
@@ -27,7 +28,8 @@ pub async fn hmac_auth_middleware(
         }
         Err(e) => {
             tracing::warn!("HMAC validation failed: {}", e);
-            (e.status_code(), e.to_string()).into_response()
+            let api_error: ApiError = e.into();
+            api_error.into_response()
         }
     }
 }
