@@ -1,5 +1,6 @@
 mod auth;
 mod config;
+mod error;
 mod fonts;
 mod generator;
 mod image;

@@ -1,11 +1,10 @@
-use axum::http::StatusCode;
-use axum::response::{IntoResponse, Response};
 use serde::Deserialize;
 use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::AppState;
 use crate::config::ImageFallbackBehavior;
+use crate::error::ApiError;
 use crate::image::ValidatedImage;
 
 /// Validate that a string is exactly 6 hexadecimal characters
@@ -56,7 +55,7 @@ impl OgParams {
     }
 
     /// Validate input parameters against maximum length
-    pub fn validate(&self, max_length: usize) -> Result<(), String> {
+    pub fn validate(&self, max_length: usize) -> Result<(), ApiError> {
         let fields = [
             ("Title", &self.title),
             ("Description", &self.description),
@@ -69,7 +68,7 @@ impl OgParams {
             if let Some(value) = field
                 && value.len() > max_length
             {
-                return Err(format!("{} exceeds maximum length of {}", name, max_length));
+                return Err(ApiError::validation_field_too_long(name, max_length));
             }
         }
 
@@ -81,7 +80,7 @@ impl OgParams {
         &self,
         template_name: &str,
         state: &AppState,
-    ) -> Result<HashMap<String, String>, String> {
+    ) -> Result<HashMap<String, String>, ApiError> {
         let mut color_overrides = HashMap::new();
 
         let template_colors = state.templates.colors.get(template_name);
@@ -91,10 +90,7 @@ impl OgParams {
                 && template_colors_map.contains_key(key)
             {
                 if !is_valid_hex_color(value) {
-                    return Err(format!(
-                        "Invalid hex color '{}' for parameter '{}'. Expected 6 hex characters (e.g., 'FF0000')",
-                        value, key
-                    ));
+                    return Err(ApiError::validation_invalid_hex_color(key, value));
                 }
 
                 color_overrides.insert(key.to_string(), format!("#{}", value.to_lowercase()));
@@ -105,7 +101,7 @@ impl OgParams {
     }
 
     /// Fetch logo image if URL provided, respecting fallback behavior
-    pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<ValidatedImage>, Response> {
+    pub async fn fetch_logo(&self, state: &AppState) -> Result<Option<ValidatedImage>, ApiError> {
         let logo_url = self.get_effective_logo(state);
         self.fetch_image_from_url(&logo_url, "logo", state).await
     }
@@ -120,7 +116,7 @@ impl OgParams {
     }
 
     /// Fetch custom image if URL provided, respecting fallback behavior
-    pub async fn fetch_image(&self, state: &AppState) -> Result<Option<ValidatedImage>, Response> {
+    pub async fn fetch_image(&self, state: &AppState) -> Result<Option<ValidatedImage>, ApiError> {
         self.fetch_image_from_url(&self.image, "image", state).await
     }
 
@@ -130,17 +126,16 @@ impl OgParams {
         url_option: &Option<String>,
         name: &str,
         state: &AppState,
-    ) -> Result<Option<ValidatedImage>, Response> {
+    ) -> Result<Option<ValidatedImage>, ApiError> {
         if let Some(url) = url_option {
             match state.image.fetcher.fetch_image(url).await {
                 Ok(validated) => Ok(Some(validated)),
                 Err(e) => match state.image.fallback {
                     ImageFallbackBehavior::Skip => Ok(None),
-                    ImageFallbackBehavior::Error => Err((
-                        StatusCode::INTERNAL_SERVER_ERROR,
-                        format!("Failed to fetch {}: {}", name, e),
-                    )
-                        .into_response()),
+                    ImageFallbackBehavior::Error => {
+                        let api_error: ApiError = e.into();
+                        Err(api_error.with_field(name))
+                    }
                 },
             }
         } else {

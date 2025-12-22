@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 use std::sync::Arc;
 
+use super::error::GeneratorError;
 use super::events::{
     ImageReplacement, State, handle_default, handle_empty, handle_end, handle_start,
 };
@@ -23,17 +24,17 @@ pub struct Images {
     pub image: Option<ValidatedImage>,
 }
 
-fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Result<&'a str, String> {
+fn get_template<'a>(
+    template_map: &'a TemplateMap,
+    template_name: &str,
+) -> Result<&'a str, GeneratorError> {
     template_map
         .templates
         .get(template_name)
         .map(|s| s.as_str())
-        .ok_or_else(|| {
-            format!(
-                "Template '{}' not found. Available templates: {}",
-                template_name,
-                template_map.available_templates()
-            )
+        .ok_or_else(|| GeneratorError::TemplateNotFound {
+            name: template_name.to_string(),
+            available: template_map.available_templates(),
         })
 }
 
@@ -41,14 +42,11 @@ fn get_template<'a>(template_map: &'a TemplateMap, template_name: &str) -> Resul
 fn get_template_fonts<'a>(
     templates: &'a TemplateMap,
     template_name: &str,
-) -> Result<&'a TemplateFonts, String> {
-    templates.font_properties.get(template_name).ok_or_else(|| {
-        format!(
-            "Font properties not found for template '{}'. \
-                This may indicate a template loading error.",
-            template_name
-        )
-    })
+) -> Result<&'a TemplateFonts, GeneratorError> {
+    templates
+        .font_properties
+        .get(template_name)
+        .ok_or_else(|| GeneratorError::FontPropertiesNotFound(template_name.to_string()))
 }
 
 /// Get width constraints for a template, falling back to defaults
@@ -68,7 +66,7 @@ fn apply_truncation(
     constraints: &TextWidthConstraints,
     fonts: &TemplateFonts,
     fontdb: &Arc<usvg::fontdb::Database>,
-) -> Result<(String, String, String), String> {
+) -> Result<(String, String, String), GeneratorError> {
     // Create FontSystem once and reuse it for all truncation operations
     // This is a major performance optimization: previously we created a new FontSystem
     // for each text measurement (21-63 times per request), now we create it just once
@@ -80,21 +78,24 @@ fn apply_truncation(
         constraints.get_title_width(),
         &fonts.title,
         &mut font_system,
-    )?;
+    )
+    .map_err(GeneratorError::TextMeasurement)?;
 
     let truncated_description = truncate_text_to_width(
         description,
         constraints.get_description_width(),
         &fonts.description,
         &mut font_system,
-    )?;
+    )
+    .map_err(GeneratorError::TextMeasurement)?;
 
     let truncated_subtitle = truncate_text_to_width(
         subtitle,
         constraints.get_subtitle_width(),
         &fonts.subtitle,
         &mut font_system,
-    )?;
+    )
+    .map_err(GeneratorError::TextMeasurement)?;
 
     Ok((truncated_title, truncated_description, truncated_subtitle))
 }
@@ -126,7 +127,7 @@ pub fn generate_svg(
     templates: &TemplateMap,
     color_overrides: &HashMap<String, String>,
     fontdb: &Arc<usvg::fontdb::Database>,
-) -> Result<String, String> {
+) -> Result<String, GeneratorError> {
     let template_content = get_template(templates, template_name)?;
     let content = override_colors(template_content, template_name, templates, color_overrides);
 
@@ -177,16 +178,23 @@ pub fn generate_svg(
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Eof) => break,
-            Ok(Event::Start(e)) => handle_start(e, &mut writer, &mut state)?,
-            Ok(Event::Empty(e)) => handle_empty(e, &mut writer, &mut state)?,
-            Ok(Event::End(e)) => handle_end(e, &mut writer, &mut state)?,
-            Ok(e) => handle_default(e, &mut writer, &state)?,
-            Err(e) => return Err(format!("Parse error: {:?}", e)),
+            Ok(Event::Start(e)) => {
+                handle_start(e, &mut writer, &mut state).map_err(GeneratorError::Xml)?
+            }
+            Ok(Event::Empty(e)) => {
+                handle_empty(e, &mut writer, &mut state).map_err(GeneratorError::Xml)?
+            }
+            Ok(Event::End(e)) => {
+                handle_end(e, &mut writer, &mut state).map_err(GeneratorError::Xml)?
+            }
+            Ok(e) => handle_default(e, &mut writer, &state).map_err(GeneratorError::Xml)?,
+            Err(e) => return Err(GeneratorError::SvgParse(format!("{:?}", e))),
         }
         buf.clear();
     }
 
-    String::from_utf8(writer.into_inner().into_inner()).map_err(|e| format!("UTF-8 error: {}", e))
+    String::from_utf8(writer.into_inner().into_inner())
+        .map_err(|e| GeneratorError::Utf8(e.to_string()))
 }
 
 #[cfg(test)]
@@ -205,7 +213,10 @@ mod tests {
 
         let result = get_template_fonts(&templates, "test");
         assert!(result.is_err());
-        assert!(result.unwrap_err().contains("Font properties not found"));
+        assert!(matches!(
+            result.unwrap_err(),
+            GeneratorError::FontPropertiesNotFound(_)
+        ));
     }
 
     #[test]

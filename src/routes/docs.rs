@@ -6,7 +6,12 @@ use utoipa::OpenApi;
         crate::routes::index::generate,
         crate::routes::health::health_check
     ),
-    components(schemas(crate::params::OgParams)),
+    components(schemas(
+        crate::params::OgParams,
+        crate::error::ErrorBody,
+        crate::error::ErrorDetail,
+        crate::error::ErrorCode
+    )),
     info(
         title = "ogis: Open Graph Images as a Service",
         version = "0.1.0",

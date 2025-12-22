@@ -1,7 +1,8 @@
 use super::timing::{CacheableDuration, ServerTiming};
 use crate::{
     AppState,
-    generator::{self, Images, TextContent},
+    error::ApiError,
+    generator::{self, GeneratorError, Images, TextContent},
     params::OgParams,
     telemetry,
 };
@@ -33,9 +34,15 @@ fn extract_domain(url: &str) -> Option<String> {
     params(OgParams),
     responses(
         (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
-        (status = 400, description = "Invalid input - field exceeds maximum length or invalid signature format"),
-        (status = 401, description = "Authentication required or invalid signature"),
-        (status = 500, description = "Failed to generate image")
+        (status = 400, description = "Invalid input - field exceeds maximum length or invalid hex color"),
+        (status = 401, description = "Authentication required - missing signature"),
+        (status = 403, description = "Forbidden - invalid signature or SSRF blocked"),
+        (status = 404, description = "Template not found"),
+        (status = 422, description = "Unprocessable - invalid image URL, unsupported format, or image too large"),
+        (status = 500, description = "Internal server error"),
+        (status = 502, description = "Bad gateway - upstream image fetch failed"),
+        (status = 503, description = "Service unavailable - server overloaded"),
+        (status = 504, description = "Gateway timeout - image fetch timed out")
     ),
     tag = "image"
 )]
@@ -84,9 +91,12 @@ pub async fn generate(
 
     // Validate input lengths
     if let Err(err) = params.validate(state.max_input_length) {
-        span.record("http.response.status_code", 400_i64);
+        span.record(
+            "http.response.status_code",
+            err.status_code().as_u16() as i64,
+        );
         tracing::warn!(error = %err, "Validation failed");
-        return (StatusCode::BAD_REQUEST, format!("Invalid input: {}", err)).into_response();
+        return err.into_response();
     }
 
     // Fetch logo image if URL provided
@@ -110,10 +120,13 @@ pub async fn generate(
             }
             img
         }
-        Err(response) => {
-            span.record("http.response.status_code", 500_i64);
-            tracing::error!("Logo fetch failed");
-            return response;
+        Err(err) => {
+            span.record(
+                "http.response.status_code",
+                err.status_code().as_u16() as i64,
+            );
+            tracing::error!(error = %err, "Logo fetch failed");
+            return err.into_response();
         }
     };
 
@@ -138,10 +151,13 @@ pub async fn generate(
             }
             img
         }
-        Err(response) => {
-            span.record("http.response.status_code", 500_i64);
-            tracing::error!("Image fetch failed");
-            return response;
+        Err(err) => {
+            span.record(
+                "http.response.status_code",
+                err.status_code().as_u16() as i64,
+            );
+            tracing::error!(error = %err, "Image fetch failed");
+            return err.into_response();
         }
     };
 
@@ -151,13 +167,12 @@ pub async fn generate(
     let color_overrides = match params.extract_colors(template_name, &state) {
         Ok(colors) => colors,
         Err(err) => {
-            span.record("http.response.status_code", 400_i64);
+            span.record(
+                "http.response.status_code",
+                err.status_code().as_u16() as i64,
+            );
             tracing::warn!(error = %err, "Color validation failed");
-            return (
-                StatusCode::BAD_REQUEST,
-                format!("Invalid color parameter: {}", err),
-            )
-                .into_response();
+            return err.into_response();
         }
     };
 
@@ -176,22 +191,16 @@ pub async fn generate(
                 permit
             }
             Ok(Err(_)) => {
+                let err = ApiError::internal("Render semaphore closed");
                 span.record("http.response.status_code", 500_i64);
                 tracing::error!("Render semaphore closed");
-                return (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    "Service unavailable".to_string(),
-                )
-                    .into_response();
+                return err.into_response();
             }
             Err(_) => {
+                let err = ApiError::service_overloaded();
                 span.record("http.response.status_code", 503_i64);
                 tracing::warn!("Render queue timeout");
-                return (
-                    StatusCode::SERVICE_UNAVAILABLE,
-                    "Server overloaded, try again later".to_string(),
-                )
-                    .into_response();
+                return err.into_response();
             }
         };
 
@@ -222,7 +231,7 @@ pub async fn generate(
         let png_data = generator::render_to_png(&svg_data, &fontdb)?;
         let render_time = render_start.elapsed();
 
-        Ok::<_, String>(RenderResult {
+        Ok::<_, GeneratorError>(RenderResult {
             png_data,
             template_time,
             render_time,
@@ -260,23 +269,20 @@ pub async fn generate(
             )
                 .into_response()
         }
-        Ok(Err(err)) => {
-            span.record("http.response.status_code", 500_i64);
+        Ok(Err(gen_err)) => {
+            let err: ApiError = gen_err.into();
+            span.record(
+                "http.response.status_code",
+                err.status_code().as_u16() as i64,
+            );
             tracing::error!(error = %err, "Render failed");
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to render image: {}", err),
-            )
-                .into_response()
+            err.into_response()
         }
         Err(join_err) => {
+            let err = ApiError::internal("Rendering task failed");
             span.record("http.response.status_code", 500_i64);
             tracing::error!(error = %join_err, "Render task join failed");
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Rendering task failed".to_string(),
-            )
-                .into_response()
+            err.into_response()
         }
     }
 }
