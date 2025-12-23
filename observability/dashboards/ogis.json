@@ -137,6 +137,58 @@
         "legendFormat": "{{ http_response_status_code }}"
       }],
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+    },
+    {
+      "title": "Output Format Distribution",
+      "type": "piechart",
+      "gridPos": { "x": 0, "y": 36, "w": 8, "h": 8 },
+      "targets": [{
+        "expr": "sum by (format) (increase(ogis_output_format_total{service_name=\"ogis\"}[$__range]))",
+        "legendFormat": "{{ format }}"
+      }],
+      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] } },
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Scale Usage Distribution",
+      "type": "piechart",
+      "gridPos": { "x": 8, "y": 36, "w": 8, "h": 8 },
+      "targets": [{
+        "expr": "sum by (scale_bucket) (increase(ogis_output_format_total{service_name=\"ogis\"}[$__range]))",
+        "legendFormat": "{{ scale_bucket }}"
+      }],
+      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] } },
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Output Format Rate",
+      "type": "timeseries",
+      "gridPos": { "x": 16, "y": 36, "w": 8, "h": 8 },
+      "targets": [{
+        "expr": "sum by (format) (rate(ogis_output_format_total{service_name=\"ogis\"}[5m])) * 60",
+        "legendFormat": "{{ format }}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+    },
+    {
+      "title": "Render Duration by Format",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 44, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.90, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))",
+        "legendFormat": "{{ format }} p90"
+      }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Response Size by Format",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 44, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.90, sum by (format) (rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))",
+        "legendFormat": "{{ format }} p90"
+      }],
+      "fieldConfig": { "defaults": { "unit": "bytes" } }
     }
   ]
 }

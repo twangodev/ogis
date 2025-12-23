@@ -5,6 +5,7 @@ use utoipa::{IntoParams, ToSchema};
 use crate::AppState;
 use crate::config::ImageFallbackBehavior;
 use crate::error::ApiError;
+use crate::generator::{OutputFormat, RenderOptions};
 use crate::image::ValidatedImage;
 
 /// Validate that a string is exactly 6 hexadecimal characters
@@ -39,6 +40,18 @@ pub struct OgParams {
     #[schema(example = "a1b2c3d4e5f6...")]
     #[allow(dead_code)] // Used by middleware, not by route handler
     pub signature: Option<String>,
+    /// Output format: png (default), webp, jpeg
+    #[serde(default)]
+    #[schema(example = "webp")]
+    pub format: Option<String>,
+    /// Scale factor for output resolution (0.1-1.0, default: 1.0)
+    #[serde(default)]
+    #[schema(example = 0.5)]
+    pub scale: Option<f32>,
+    /// Quality for lossy formats (1-100, default: 90, ignored for PNG)
+    #[serde(default)]
+    #[schema(example = 90)]
+    pub quality: Option<u8>,
     /// Additional parameters (used for color customization)
     #[serde(flatten)]
     pub extra: HashMap<String, String>,
@@ -54,7 +67,7 @@ impl OgParams {
             && self.image.is_none()
     }
 
-    /// Validate input parameters against maximum length
+    /// Validate input parameters against maximum length and format constraints
     pub fn validate(&self, max_length: usize) -> Result<(), ApiError> {
         let fields = [
             ("Title", &self.title),
@@ -72,7 +85,41 @@ impl OgParams {
             }
         }
 
+        // Validate format if provided
+        if let Some(format) = &self.format
+            && OutputFormat::from_str(format).is_none()
+        {
+            return Err(ApiError::validation_invalid_format(format));
+        }
+
+        // Validate scale if provided (0.1 to 1.0)
+        if let Some(scale) = self.scale
+            && !(0.1..=1.0).contains(&scale)
+        {
+            return Err(ApiError::validation_invalid_scale(scale));
+        }
+
+        // Validate quality if provided (1 to 100)
+        if let Some(quality) = self.quality
+            && !(1..=100).contains(&quality)
+        {
+            return Err(ApiError::validation_invalid_quality(quality));
+        }
+
         Ok(())
+    }
+
+    /// Get render options from parameters (with defaults)
+    pub fn render_options(&self) -> RenderOptions {
+        RenderOptions {
+            format: self
+                .format
+                .as_deref()
+                .and_then(OutputFormat::from_str)
+                .unwrap_or_default(),
+            scale: self.scale.unwrap_or(1.0),
+            quality: self.quality.unwrap_or(90),
+        }
     }
 
     /// Extract and validate color overrides from extra parameters

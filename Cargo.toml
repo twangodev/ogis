@@ -15,6 +15,7 @@ hex = "0.4.3"
 hickory-resolver = "0.25.2"
 hmac = "0.12.1"
 http-body-util = "0.1.3"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
 infer = "0.19.0"
 ip_rfc = "0.1.0"
 moka = { version = "0.12", features = ["future"] }

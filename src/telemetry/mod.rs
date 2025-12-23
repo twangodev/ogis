@@ -4,7 +4,7 @@ mod middleware;
 mod provider;
 
 pub use config::OtelSettings;
-pub use metrics::get_metrics;
+pub use metrics::{get_metrics, scale_bucket};
 pub use middleware::metrics_middleware;
 
 use opentelemetry::{metrics::MeterProvider, trace::TracerProvider};

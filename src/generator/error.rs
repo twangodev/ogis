@@ -14,8 +14,8 @@ pub enum GeneratorError {
     #[error("UTF-8 encoding error: {0}")]
     Utf8(String),
 
-    #[error("PNG encoding failed: {0}")]
-    PngEncode(String),
+    #[error("Image encoding failed: {0}")]
+    ImageEncode(String),
 
     #[error("Failed to create pixmap")]
     PixmapCreation,
