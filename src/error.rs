@@ -16,6 +16,9 @@ pub enum ErrorCode {
     ValidationFieldTooLong,
     ValidationInvalidUrl,
     ValidationInvalidHexColor,
+    ValidationInvalidFormat,
+    ValidationInvalidScale,
+    ValidationInvalidQuality,
     AuthInvalidSignatureFormat,
 
     // Auth errors (401)
@@ -36,7 +39,7 @@ pub enum ErrorCode {
     // Internal errors (500)
     RenderFailed,
     SvgParseFailed,
-    PngEncodeFailed,
+    ImageEncodeFailed,
     FontError,
     InternalError,
 
@@ -136,6 +139,36 @@ impl ApiError {
         .with_details("Expected 6 hex characters (e.g., 'FF0000')")
     }
 
+    pub fn validation_invalid_format(format: &str) -> Self {
+        Self::new(
+            StatusCode::BAD_REQUEST,
+            ErrorCode::ValidationInvalidFormat,
+            format!("Invalid output format '{}'", format),
+        )
+        .with_field("format")
+        .with_details("Supported formats: png, jpeg, webp")
+    }
+
+    pub fn validation_invalid_scale(scale: f32) -> Self {
+        Self::new(
+            StatusCode::BAD_REQUEST,
+            ErrorCode::ValidationInvalidScale,
+            format!("Invalid scale value '{}'", scale),
+        )
+        .with_field("scale")
+        .with_details("Scale must be between 0.1 and 1.0")
+    }
+
+    pub fn validation_invalid_quality(quality: u8) -> Self {
+        Self::new(
+            StatusCode::BAD_REQUEST,
+            ErrorCode::ValidationInvalidQuality,
+            format!("Invalid quality value '{}'", quality),
+        )
+        .with_field("quality")
+        .with_details("Quality must be between 1 and 100")
+    }
+
     pub fn auth_missing_signature() -> Self {
         Self::new(
             StatusCode::UNAUTHORIZED,
@@ -224,11 +257,11 @@ impl ApiError {
         .with_details(details)
     }
 
-    pub fn png_encode_failed(details: &str) -> Self {
+    pub fn image_encode_failed(details: &str) -> Self {
         Self::new(
             StatusCode::INTERNAL_SERVER_ERROR,
-            ErrorCode::PngEncodeFailed,
-            "Failed to encode PNG",
+            ErrorCode::ImageEncodeFailed,
+            "Failed to encode image",
         )
         .with_details(details)
     }
@@ -349,7 +382,7 @@ impl From<GeneratorError> for ApiError {
             GeneratorError::Utf8(msg) => {
                 ApiError::internal("UTF-8 encoding error").with_details(msg)
             }
-            GeneratorError::PngEncode(msg) => ApiError::png_encode_failed(&msg),
+            GeneratorError::ImageEncode(msg) => ApiError::image_encode_failed(&msg),
             GeneratorError::PixmapCreation => ApiError::render_failed("Failed to create pixmap"),
             GeneratorError::Xml(msg) => ApiError::render_failed(&msg),
             GeneratorError::TextMeasurement(msg) => ApiError::render_failed(&msg),
@@ -384,6 +417,36 @@ mod tests {
         assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
         assert!(matches!(err.code, ErrorCode::ValidationInvalidHexColor));
         assert_eq!(err.field, Some("background".to_string()));
+    }
+
+    #[test]
+    fn test_validation_invalid_format_status() {
+        let err = ApiError::validation_invalid_format("gif");
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidFormat));
+        assert_eq!(err.field, Some("format".to_string()));
+        assert!(err.message.contains("gif"));
+        assert!(err.details.as_ref().unwrap().contains("png"));
+    }
+
+    #[test]
+    fn test_validation_invalid_scale_status() {
+        let err = ApiError::validation_invalid_scale(0.05);
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidScale));
+        assert_eq!(err.field, Some("scale".to_string()));
+        assert!(err.message.contains("0.05"));
+        assert!(err.details.as_ref().unwrap().contains("0.1"));
+    }
+
+    #[test]
+    fn test_validation_invalid_quality_status() {
+        let err = ApiError::validation_invalid_quality(150);
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidQuality));
+        assert_eq!(err.field, Some("quality".to_string()));
+        assert!(err.message.contains("150"));
+        assert!(err.details.as_ref().unwrap().contains("1 and 100"));
     }
 
     #[test]
@@ -464,10 +527,10 @@ mod tests {
     }
 
     #[test]
-    fn test_png_encode_failed_status() {
-        let err = ApiError::png_encode_failed("encoding error");
+    fn test_image_encode_failed_status() {
+        let err = ApiError::image_encode_failed("encoding error");
         assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
-        assert!(matches!(err.code, ErrorCode::PngEncodeFailed));
+        assert!(matches!(err.code, ErrorCode::ImageEncodeFailed));
     }
 
     #[test]
@@ -517,6 +580,18 @@ mod tests {
             "\"VALIDATION_INVALID_URL\""
         );
         assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationInvalidFormat).unwrap(),
+            "\"VALIDATION_INVALID_FORMAT\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationInvalidScale).unwrap(),
+            "\"VALIDATION_INVALID_SCALE\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationInvalidQuality).unwrap(),
+            "\"VALIDATION_INVALID_QUALITY\""
+        );
+        assert_eq!(
             serde_json::to_string(&ErrorCode::AuthMissingSignature).unwrap(),
             "\"AUTH_MISSING_SIGNATURE\""
         );
@@ -531,6 +606,10 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&ErrorCode::ImageTooLarge).unwrap(),
             "\"IMAGE_TOO_LARGE\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ImageEncodeFailed).unwrap(),
+            "\"IMAGE_ENCODE_FAILED\""
         );
         assert_eq!(
             serde_json::to_string(&ErrorCode::UpstreamFetchFailed).unwrap(),
@@ -650,10 +729,10 @@ mod tests {
     }
 
     #[test]
-    fn test_from_generator_error_png_encode() {
-        let err: ApiError = GeneratorError::PngEncode("encode error".to_string()).into();
+    fn test_from_generator_error_image_encode() {
+        let err: ApiError = GeneratorError::ImageEncode("encode error".to_string()).into();
         assert_eq!(err.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
-        assert!(matches!(err.code, ErrorCode::PngEncodeFailed));
+        assert!(matches!(err.code, ErrorCode::ImageEncodeFailed));
     }
 
     #[test]

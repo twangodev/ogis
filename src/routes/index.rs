@@ -2,7 +2,7 @@ use super::timing::{CacheableDuration, ServerTiming};
 use crate::{
     AppState,
     error::ApiError,
-    generator::{self, GeneratorError, Images, TextContent},
+    generator::{self, GeneratorError, Images, RenderOutput, TextContent},
     params::OgParams,
     telemetry,
 };
@@ -16,7 +16,7 @@ use std::time::{Duration, Instant};
 
 /// Result from the blocking render task
 struct RenderResult {
-    png_data: Vec<u8>,
+    output: RenderOutput,
     template_time: Duration,
     render_time: Duration,
 }
@@ -55,6 +55,8 @@ fn extract_domain(url: &str) -> Option<String> {
         ogis.has_image,
         ogis.logo_domain,
         ogis.image_domain,
+        ogis.format,
+        ogis.scale,
         http.response.status_code,
     )
 )]
@@ -89,7 +91,7 @@ pub async fn generate(
     span.record("ogis.logo_domain", logo_domain.as_deref().unwrap_or("-"));
     span.record("ogis.image_domain", image_domain.as_deref().unwrap_or("-"));
 
-    // Validate input lengths
+    // Validate input lengths and format/scale/quality
     if let Err(err) = params.validate(state.max_input_length) {
         span.record(
             "http.response.status_code",
@@ -98,6 +100,13 @@ pub async fn generate(
         tracing::warn!(error = %err, "Validation failed");
         return err.into_response();
     }
+
+    // Get render options and record in span
+    let render_options = params.render_options();
+    let format_str = render_options.format.as_str();
+    let scale = render_options.scale;
+    span.record("ogis.format", format_str);
+    span.record("ogis.scale", scale as f64);
 
     // Fetch logo image if URL provided
     let has_logo_url = params.logo.is_some();
@@ -228,11 +237,11 @@ pub async fn generate(
         let template_time = template_start.elapsed();
 
         let render_start = Instant::now();
-        let png_data = generator::render_to_png(&svg_data, &fontdb)?;
+        let output = generator::render(&svg_data, &fontdb, &render_options)?;
         let render_time = render_start.elapsed();
 
         Ok::<_, GeneratorError>(RenderResult {
-            png_data,
+            output,
             template_time,
             render_time,
         })
@@ -245,11 +254,21 @@ pub async fn generate(
             timing.render = Some(result.render_time);
             span.record("http.response.status_code", 200_i64);
 
-            // Record render duration metric (request metrics handled by middleware)
+            // Record render duration and output format metrics
             if let Some(m) = telemetry::get_metrics() {
                 m.render_duration.record(
                     (result.template_time + result.render_time).as_secs_f64(),
-                    &[KeyValue::new("template", template_name.to_string())],
+                    &[
+                        KeyValue::new("template", template_name.to_string()),
+                        KeyValue::new("format", format_str),
+                    ],
+                );
+                m.output_format.add(
+                    1,
+                    &[
+                        KeyValue::new("format", format_str),
+                        KeyValue::new("scale_bucket", telemetry::scale_bucket(scale)),
+                    ],
                 );
             }
 
@@ -258,14 +277,14 @@ pub async fn generate(
                 [
                     (
                         header::CONTENT_TYPE,
-                        header::HeaderValue::from_static("image/png"),
+                        header::HeaderValue::from_static(result.output.content_type),
                     ),
                     (
                         header::HeaderName::from_static("server-timing"),
                         timing.to_header_value(),
                     ),
                 ],
-                result.png_data,
+                result.output.bytes,
             )
                 .into_response()
         }
