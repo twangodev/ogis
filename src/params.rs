@@ -209,3 +209,74 @@ impl OgParams {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    fn default_params() -> OgParams {
+        OgParams {
+            title: None,
+            description: None,
+            subtitle: None,
+            logo: None,
+            image: None,
+            template: None,
+            signature: None,
+            format: None,
+            scale: None,
+            quality: None,
+            extra: HashMap::new(),
+        }
+    }
+
+    #[test]
+    fn test_validate_invalid_format() {
+        let mut params = default_params();
+        params.format = Some("gif".to_string());
+        assert!(params.validate(1000).is_err());
+    }
+
+    #[test]
+    fn test_validate_scale_out_of_range() {
+        let mut params = default_params();
+        params.scale = Some(0.05);
+        assert!(params.validate(1000).is_err());
+
+        params.scale = Some(1.5);
+        assert!(params.validate(1000).is_err());
+    }
+
+    #[test]
+    fn test_validate_quality_out_of_range() {
+        let mut params = default_params();
+        params.quality = Some(0);
+        assert!(params.validate(1000).is_err());
+
+        params.quality = Some(101);
+        assert!(params.validate(1000).is_err());
+    }
+
+    #[test]
+    fn test_render_options_defaults() {
+        let params = default_params();
+        let opts = params.render_options();
+        assert_eq!(opts.format, OutputFormat::Png);
+        assert_eq!(opts.scale, 1.0);
+        assert_eq!(opts.quality, 90);
+    }
+
+    #[test]
+    fn test_render_options_custom() {
+        let mut params = default_params();
+        params.format = Some("webp".to_string());
+        params.scale = Some(0.5);
+        params.quality = Some(80);
+
+        let opts = params.render_options();
+        assert_eq!(opts.format, OutputFormat::WebP);
+        assert_eq!(opts.scale, 0.5);
+        assert_eq!(opts.quality, 80);
+    }
+}

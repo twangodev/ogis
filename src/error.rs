@@ -420,6 +420,36 @@ mod tests {
     }
 
     #[test]
+    fn test_validation_invalid_format_status() {
+        let err = ApiError::validation_invalid_format("gif");
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidFormat));
+        assert_eq!(err.field, Some("format".to_string()));
+        assert!(err.message.contains("gif"));
+        assert!(err.details.as_ref().unwrap().contains("png"));
+    }
+
+    #[test]
+    fn test_validation_invalid_scale_status() {
+        let err = ApiError::validation_invalid_scale(0.05);
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidScale));
+        assert_eq!(err.field, Some("scale".to_string()));
+        assert!(err.message.contains("0.05"));
+        assert!(err.details.as_ref().unwrap().contains("0.1"));
+    }
+
+    #[test]
+    fn test_validation_invalid_quality_status() {
+        let err = ApiError::validation_invalid_quality(150);
+        assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
+        assert!(matches!(err.code, ErrorCode::ValidationInvalidQuality));
+        assert_eq!(err.field, Some("quality".to_string()));
+        assert!(err.message.contains("150"));
+        assert!(err.details.as_ref().unwrap().contains("1 and 100"));
+    }
+
+    #[test]
     fn test_auth_missing_signature_status() {
         let err = ApiError::auth_missing_signature();
         assert_eq!(err.status_code(), StatusCode::UNAUTHORIZED);
@@ -550,6 +580,18 @@ mod tests {
             "\"VALIDATION_INVALID_URL\""
         );
         assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationInvalidFormat).unwrap(),
+            "\"VALIDATION_INVALID_FORMAT\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationInvalidScale).unwrap(),
+            "\"VALIDATION_INVALID_SCALE\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ValidationInvalidQuality).unwrap(),
+            "\"VALIDATION_INVALID_QUALITY\""
+        );
+        assert_eq!(
             serde_json::to_string(&ErrorCode::AuthMissingSignature).unwrap(),
             "\"AUTH_MISSING_SIGNATURE\""
         );
@@ -564,6 +606,10 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&ErrorCode::ImageTooLarge).unwrap(),
             "\"IMAGE_TOO_LARGE\""
+        );
+        assert_eq!(
+            serde_json::to_string(&ErrorCode::ImageEncodeFailed).unwrap(),
+            "\"IMAGE_ENCODE_FAILED\""
         );
         assert_eq!(
             serde_json::to_string(&ErrorCode::UpstreamFetchFailed).unwrap(),

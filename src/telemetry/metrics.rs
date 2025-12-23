@@ -87,3 +87,36 @@ pub fn init_metrics(meter: &Meter) {
 pub fn get_metrics() -> Option<&'static OgisMetrics> {
     METRICS.get()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_scale_bucket_full() {
+        assert_eq!(scale_bucket(1.0), "full");
+        assert_eq!(scale_bucket(1.5), "full");
+        assert_eq!(scale_bucket(2.0), "full");
+    }
+
+    #[test]
+    fn test_scale_bucket_half() {
+        assert_eq!(scale_bucket(0.5), "half");
+        assert_eq!(scale_bucket(0.75), "half");
+        assert_eq!(scale_bucket(0.99), "half");
+    }
+
+    #[test]
+    fn test_scale_bucket_quarter() {
+        assert_eq!(scale_bucket(0.25), "quarter");
+        assert_eq!(scale_bucket(0.3), "quarter");
+        assert_eq!(scale_bucket(0.49), "quarter");
+    }
+
+    #[test]
+    fn test_scale_bucket_thumb() {
+        assert_eq!(scale_bucket(0.1), "thumb");
+        assert_eq!(scale_bucket(0.2), "thumb");
+        assert_eq!(scale_bucket(0.24), "thumb");
+    }
+}

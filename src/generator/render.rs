@@ -240,10 +240,47 @@ mod tests {
     }
 
     #[test]
+    fn test_output_format_as_str() {
+        assert_eq!(OutputFormat::Png.as_str(), "png");
+        assert_eq!(OutputFormat::Jpeg.as_str(), "jpeg");
+        assert_eq!(OutputFormat::WebP.as_str(), "webp");
+    }
+
+    #[test]
     fn test_render_options_default() {
         let opts = RenderOptions::default();
         assert_eq!(opts.format, OutputFormat::Png);
         assert_eq!(opts.scale, 1.0);
         assert_eq!(opts.quality, 90);
+    }
+
+    #[test]
+    fn test_demultiply_alpha_opaque() {
+        let input = [100, 150, 200, 255];
+        let result = demultiply_alpha(&input);
+        assert_eq!(result, vec![100, 150, 200, 255]);
+    }
+
+    #[test]
+    fn test_demultiply_alpha_transparent() {
+        let input = [0, 0, 0, 0];
+        let result = demultiply_alpha(&input);
+        assert_eq!(result, vec![0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn test_render_simple_svg() {
+        let svg = r#"<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10" fill="red"/></svg>"#;
+        let fontdb = Arc::new(usvg::fontdb::Database::new());
+        let result = render(svg, &fontdb, &RenderOptions::default());
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().content_type, "image/png");
+    }
+
+    #[test]
+    fn test_render_invalid_svg() {
+        let fontdb = Arc::new(usvg::fontdb::Database::new());
+        let result = render("not valid svg", &fontdb, &RenderOptions::default());
+        assert!(result.is_err());
     }
 }
