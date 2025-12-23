@@ -69,24 +69,24 @@
       "fieldConfig": { "defaults": { "unit": "s" } }
     },
     {
-      "title": "Render Duration by Template",
+      "title": "Requests by Template",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
       "targets": [{
-        "expr": "histogram_quantile(0.90, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))",
+        "expr": "sum by (template) (histogram_count(rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m]))) * 60",
         "legendFormat": "{{ template }}"
       }],
-      "fieldConfig": { "defaults": { "unit": "s" } }
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     },
     {
-      "title": "Image Fetches by Domain",
+      "title": "Render Duration by Template",
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
       "targets": [{
-        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain) * 60",
-        "legendFormat": "{{ domain }}"
+        "expr": "histogram_quantile(0.90, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))",
+        "legendFormat": "{{ template }} p90"
       }],
-      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+      "fieldConfig": { "defaults": { "unit": "s" } }
     },
     {
       "title": "Image Fetches: Cache Hit vs Miss",
@@ -99,9 +99,19 @@
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     },
     {
-      "title": "Image Size Distribution",
+      "title": "Image Fetches by Domain",
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain) * 60",
+        "legendFormat": "{{ domain }}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+    },
+    {
+      "title": "Image Size Distribution",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
       "targets": [{
         "expr": "histogram_quantile(0.90, sum by (type) (rate(ogis_image_size_bytes{service_name=\"ogis\"}[5m])))",
         "legendFormat": "{{ type }} p90"
@@ -111,7 +121,7 @@
     {
       "title": "Render Queue Wait Time",
       "type": "timeseries",
-      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 28, "w": 12, "h": 8 },
       "targets": [
         { "expr": "histogram_quantile(0.50, sum(rate(ogis_render_queue_wait_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p50" },
         { "expr": "histogram_quantile(0.99, sum(rate(ogis_render_queue_wait_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p99" }
@@ -121,7 +131,7 @@
     {
       "title": "Response Size",
       "type": "timeseries",
-      "gridPos": { "x": 0, "y": 28, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
       "targets": [{
         "expr": "histogram_quantile(0.90, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))",
         "legendFormat": "p90"
@@ -131,7 +141,7 @@
     {
       "title": "Requests by Status Code",
       "type": "timeseries",
-      "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 36, "w": 12, "h": 8 },
       "targets": [{
         "expr": "histogram_count(sum by (http_response_status_code) (rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m]))) * 60",
         "legendFormat": "{{ http_response_status_code }}"
@@ -139,9 +149,19 @@
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     },
     {
+      "title": "Render Duration by Format",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 36, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.90, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))",
+        "legendFormat": "{{ format }} p90"
+      }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
       "title": "Output Format Distribution",
       "type": "piechart",
-      "gridPos": { "x": 0, "y": 36, "w": 8, "h": 8 },
+      "gridPos": { "x": 0, "y": 44, "w": 8, "h": 8 },
       "targets": [{
         "expr": "sum by (format) (increase(ogis_output_format_total{service_name=\"ogis\"}[$__range]))",
         "legendFormat": "{{ format }}"
@@ -152,7 +172,7 @@
     {
       "title": "Scale Usage Distribution",
       "type": "piechart",
-      "gridPos": { "x": 8, "y": 36, "w": 8, "h": 8 },
+      "gridPos": { "x": 8, "y": 44, "w": 8, "h": 8 },
       "targets": [{
         "expr": "sum by (scale_bucket) (increase(ogis_output_format_total{service_name=\"ogis\"}[$__range]))",
         "legendFormat": "{{ scale_bucket }}"
@@ -163,32 +183,12 @@
     {
       "title": "Output Format Rate",
       "type": "timeseries",
-      "gridPos": { "x": 16, "y": 36, "w": 8, "h": 8 },
+      "gridPos": { "x": 16, "y": 44, "w": 8, "h": 8 },
       "targets": [{
         "expr": "sum by (format) (rate(ogis_output_format_total{service_name=\"ogis\"}[5m])) * 60",
         "legendFormat": "{{ format }}"
       }],
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
-    },
-    {
-      "title": "Render Duration by Format",
-      "type": "timeseries",
-      "gridPos": { "x": 0, "y": 44, "w": 12, "h": 8 },
-      "targets": [{
-        "expr": "histogram_quantile(0.90, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))",
-        "legendFormat": "{{ format }} p90"
-      }],
-      "fieldConfig": { "defaults": { "unit": "s" } }
-    },
-    {
-      "title": "Response Size by Format",
-      "type": "timeseries",
-      "gridPos": { "x": 12, "y": 44, "w": 12, "h": 8 },
-      "targets": [{
-        "expr": "histogram_quantile(0.90, sum by (format) (rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))",
-        "legendFormat": "{{ format }} p90"
-      }],
-      "fieldConfig": { "defaults": { "unit": "bytes" } }
     }
   ]
 }
