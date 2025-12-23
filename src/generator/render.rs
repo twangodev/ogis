@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use image::codecs::jpeg::JpegEncoder;
 use image::codecs::png::PngEncoder;
-use image::codecs::webp::WebPEncoder;
 use image::{ExtendedColorType, ImageEncoder};
 
 use super::error::GeneratorError;
@@ -202,18 +201,13 @@ fn encode_webp(
     height: u32,
     quality: u8,
 ) -> Result<Vec<u8>, GeneratorError> {
-    let mut buffer = Cursor::new(Vec::new());
-    let encoder = WebPEncoder::new_lossless(&mut buffer);
+    let encoder = webp::Encoder::from_rgba(rgba, width, height);
+    let lossless = quality >= 100;
+    let memory = encoder
+        .encode_simple(lossless, quality as f32)
+        .map_err(|e| GeneratorError::ImageEncode(format!("WebP: {:?}", e)))?;
 
-    // Note: image crate's WebP encoder only supports lossless mode
-    // Quality parameter is ignored for now, but we accept it for API consistency
-    let _ = quality;
-
-    encoder
-        .write_image(rgba, width, height, ExtendedColorType::Rgba8)
-        .map_err(|e| GeneratorError::ImageEncode(format!("WebP: {}", e)))?;
-
-    Ok(buffer.into_inner())
+    Ok(memory.to_vec())
 }
 
 #[cfg(test)]
