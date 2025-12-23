@@ -91,9 +91,9 @@ pub fn render(
 
     let size = tree.size();
 
-    // Calculate scaled dimensions
-    let scaled_width = (size.width() * options.scale).round() as u32;
-    let scaled_height = (size.height() * options.scale).round() as u32;
+    // Calculate scaled dimensions (ensure at least 1 pixel)
+    let scaled_width = ((size.width() * options.scale).round() as u32).max(1);
+    let scaled_height = ((size.height() * options.scale).round() as u32).max(1);
 
     // Create pixmap at scaled size
     let mut pixmap = tiny_skia::Pixmap::new(scaled_width, scaled_height)
