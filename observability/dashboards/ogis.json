@@ -81,47 +81,40 @@
     {
       "title": "Render Duration by Template",
       "type": "timeseries",
-      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
-      "targets": [{
-        "expr": "histogram_quantile(0.90, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))",
-        "legendFormat": "{{ template }} p90"
-      }],
+      "gridPos": { "x": 0, "y": 12, "w": 8, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p90" },
+        { "expr": "histogram_quantile(0.99, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p99" }
+      ],
       "fieldConfig": { "defaults": { "unit": "s" } }
     },
     {
-      "title": "Image Fetches: Cache Hit vs Miss",
+      "title": "Render Duration by Format",
       "type": "timeseries",
-      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "gridPos": { "x": 8, "y": 12, "w": 8, "h": 8 },
       "targets": [
-        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m])) * 60", "legendFormat": "Cache Hit" },
-        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"false\"}[5m])) * 60", "legendFormat": "Cache Miss" }
+        { "expr": "histogram_quantile(0.50, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p90" },
+        { "expr": "histogram_quantile(0.99, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p99" }
       ],
-      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+      "fieldConfig": { "defaults": { "unit": "s" } }
     },
     {
-      "title": "Image Fetches by Domain",
+      "title": "Render Duration by Scale",
       "type": "timeseries",
-      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
-      "targets": [{
-        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain) * 60",
-        "legendFormat": "{{ domain }}"
-      }],
-      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
-    },
-    {
-      "title": "Image Size Distribution",
-      "type": "timeseries",
-      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
-      "targets": [{
-        "expr": "histogram_quantile(0.90, sum by (type) (rate(ogis_image_size_bytes{service_name=\"ogis\"}[5m])))",
-        "legendFormat": "{{ type }} p90"
-      }],
-      "fieldConfig": { "defaults": { "unit": "bytes" } }
+      "gridPos": { "x": 16, "y": 12, "w": 8, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum by (scale_bucket) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (scale_bucket) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p90" },
+        { "expr": "histogram_quantile(0.99, sum by (scale_bucket) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p99" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
     },
     {
       "title": "Render Queue Wait Time",
       "type": "timeseries",
-      "gridPos": { "x": 0, "y": 28, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
       "targets": [
         { "expr": "histogram_quantile(0.50, sum(rate(ogis_render_queue_wait_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p50" },
         { "expr": "histogram_quantile(0.99, sum(rate(ogis_render_queue_wait_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p99" }
@@ -131,11 +124,42 @@
     {
       "title": "Response Size",
       "type": "timeseries",
-      "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.90, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "p90" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "p99" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes" } }
+    },
+    {
+      "title": "Image Fetches: Cache Hit vs Miss",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 28, "w": 8, "h": 8 },
+      "targets": [
+        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"true\"}[5m])) * 60", "legendFormat": "Cache Hit" },
+        { "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"false\"}[5m])) * 60", "legendFormat": "Cache Miss" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+    },
+    {
+      "title": "Image Fetches by Domain",
+      "type": "timeseries",
+      "gridPos": { "x": 8, "y": 28, "w": 8, "h": 8 },
       "targets": [{
-        "expr": "histogram_quantile(0.90, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))",
-        "legendFormat": "p90"
+        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain) * 60",
+        "legendFormat": "{{ domain }}"
       }],
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+    },
+    {
+      "title": "Image Size Distribution",
+      "type": "timeseries",
+      "gridPos": { "x": 16, "y": 28, "w": 8, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum by (type) (rate(ogis_image_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ type }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (type) (rate(ogis_image_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ type }} p90" }
+      ],
       "fieldConfig": { "defaults": { "unit": "bytes" } }
     },
     {
@@ -149,44 +173,22 @@
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     },
     {
-      "title": "Render Duration by Format",
-      "type": "timeseries",
-      "gridPos": { "x": 12, "y": 36, "w": 12, "h": 8 },
-      "targets": [{
-        "expr": "histogram_quantile(0.90, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))",
-        "legendFormat": "{{ format }} p90"
-      }],
-      "fieldConfig": { "defaults": { "unit": "s" } }
-    },
-    {
       "title": "Output Format Distribution",
-      "type": "piechart",
-      "gridPos": { "x": 0, "y": 44, "w": 8, "h": 8 },
-      "targets": [{
-        "expr": "sum by (format) (increase(ogis_output_format_total{service_name=\"ogis\"}[$__range]))",
-        "legendFormat": "{{ format }}"
-      }],
-      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] } },
-      "fieldConfig": { "defaults": { "unit": "short" } }
-    },
-    {
-      "title": "Scale Usage Distribution",
-      "type": "piechart",
-      "gridPos": { "x": 8, "y": 44, "w": 8, "h": 8 },
-      "targets": [{
-        "expr": "sum by (scale_bucket) (increase(ogis_output_format_total{service_name=\"ogis\"}[$__range]))",
-        "legendFormat": "{{ scale_bucket }}"
-      }],
-      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] } },
-      "fieldConfig": { "defaults": { "unit": "short" } }
-    },
-    {
-      "title": "Output Format Rate",
       "type": "timeseries",
-      "gridPos": { "x": 16, "y": 44, "w": 8, "h": 8 },
+      "gridPos": { "x": 12, "y": 36, "w": 6, "h": 8 },
       "targets": [{
         "expr": "sum by (format) (rate(ogis_output_format_total{service_name=\"ogis\"}[5m])) * 60",
         "legendFormat": "{{ format }}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
+    },
+    {
+      "title": "Scale Usage Distribution",
+      "type": "timeseries",
+      "gridPos": { "x": 18, "y": 36, "w": 6, "h": 8 },
+      "targets": [{
+        "expr": "sum by (scale_bucket) (rate(ogis_output_format_total{service_name=\"ogis\"}[5m])) * 60",
+        "legendFormat": "{{ scale_bucket }}"
       }],
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     }
