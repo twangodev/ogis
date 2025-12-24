@@ -49,6 +49,10 @@
 				searchParams.set(key, value);
 			}
 		}
+		// Optimize for display: WebP at 50% scale with quality 80
+		searchParams.set('format', 'webp');
+		searchParams.set('scale', '0.5');
+		searchParams.set('quality', '80');
 		return `https://img.ogis.dev?${searchParams.toString()}`;
 	});
 

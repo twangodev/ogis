@@ -135,6 +135,10 @@
 		params.set('description', card.description);
 		params.set('subtitle', card.subtitle);
 		params.set('template', card.template);
+		// Optimize for display: WebP at 40% scale with quality 80
+		params.set('format', 'webp');
+		params.set('scale', '0.4');
+		params.set('quality', '80');
 		return `https://img.ogis.dev?${params.toString()}`;
 	}
 </script>
