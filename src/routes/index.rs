@@ -261,6 +261,7 @@ pub async fn generate(
                     &[
                         KeyValue::new("template", template_name.to_string()),
                         KeyValue::new("format", format_str),
+                        KeyValue::new("scale_bucket", telemetry::scale_bucket(scale)),
                     ],
                 );
                 m.output_format.add(
