@@ -12,7 +12,8 @@
 
 	let { name, label, description = '', size = 'md', class: className = '' }: Props = $props();
 
-	const apiUrl = `https://img.ogis.dev/?template=${name}&title=${encodeURIComponent(label)}&subtitle=Open%20Graph%20Template&description=Beautiful%20images%20for%20your%20links`;
+	// Optimize for thumbnails: WebP at 30% scale with quality 75
+	const apiUrl = `https://img.ogis.dev/?template=${name}&title=${encodeURIComponent(label)}&subtitle=Open%20Graph%20Template&description=Beautiful%20images%20for%20your%20links&format=webp&scale=0.3&quality=75`;
 
 	let imageLoaded = $state(false);
 	let isHovered = $state(false);

@@ -7,6 +7,11 @@
 	let copiedMeta = $state(false);
 	let downloading = $state(false);
 
+	// Get format info for download button
+	const format = $derived(playground.renderOptions.format);
+	const formatLabel = $derived(format.toUpperCase());
+	const fileExtension = $derived(format === 'jpeg' ? 'jpg' : format);
+
 	// Generate HTML meta tags
 	const metaTags = $derived(`<meta property="og:image" content="${playground.apiUrl}" />
 <meta property="og:title" content="${playground.content.title}" />
@@ -58,7 +63,7 @@
 
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = `og-image-${playground.template}.png`;
+			a.download = `og-image-${playground.template}.${fileExtension}`;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);
@@ -75,7 +80,7 @@
 <div class="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/50 p-4">
 	<Button onclick={downloadImage} disabled={downloading}>
 		<DownloadIcon class="mr-2 size-4" />
-		{downloading ? 'Downloading...' : 'Download PNG'}
+		{downloading ? 'Downloading...' : `Download ${formatLabel}`}
 	</Button>
 
 	<Button variant="outline" onclick={copyUrl}>

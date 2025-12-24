@@ -6,6 +6,7 @@
 	import ContentEditor from '$lib/components/playground/ContentEditor.svelte';
 	import MediaInputs from '$lib/components/playground/MediaInputs.svelte';
 	import ColorCustomizer from '$lib/components/playground/ColorCustomizer.svelte';
+	import OutputSettings from '$lib/components/playground/OutputSettings.svelte';
 	import PreviewPanel from '$lib/components/playground/PreviewPanel.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ShuffleIcon from '@lucide/svelte/icons/shuffle';
@@ -65,6 +66,12 @@
 			<section>
 				<h2 class="mb-3 text-sm font-medium">Colors</h2>
 				<ColorCustomizer />
+			</section>
+
+			<!-- Output Settings -->
+			<section>
+				<h2 class="mb-3 text-sm font-medium">Output</h2>
+				<OutputSettings />
 			</section>
 		</div>
 

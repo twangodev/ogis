@@ -18,6 +18,14 @@ export interface PlaygroundMedia {
 	image: string;
 }
 
+export type OutputFormat = 'png' | 'jpeg' | 'webp';
+
+export interface PlaygroundRenderOptions {
+	format: OutputFormat;
+	scale: number; // 0.1 - 1.0
+	quality: number; // 1 - 100
+}
+
 // Create the playground state as an object (so it can be exported)
 function createPlaygroundState() {
 	let templates = $state<TemplateDefinition[]>([]);
@@ -32,6 +40,11 @@ function createPlaygroundState() {
 		image: ''
 	});
 	let colors = $state<Record<string, string>>({});
+	let renderOptions = $state<PlaygroundRenderOptions>({
+		format: 'png',
+		scale: 1.0,
+		quality: 90
+	});
 	let urlSyncEnabled = $state(false);
 
 	// Debounce timer for URL updates
@@ -77,6 +90,28 @@ function createPlaygroundState() {
 			}
 		}
 
+		// Parse render options
+		const urlFormat = searchParams.get('format');
+		if (urlFormat && ['png', 'jpeg', 'webp'].includes(urlFormat)) {
+			renderOptions.format = urlFormat as OutputFormat;
+		}
+
+		const urlScale = searchParams.get('scale');
+		if (urlScale) {
+			const scale = parseFloat(urlScale);
+			if (!isNaN(scale) && scale >= 0.1 && scale <= 1.0) {
+				renderOptions.scale = scale;
+			}
+		}
+
+		const urlQuality = searchParams.get('quality');
+		if (urlQuality) {
+			const quality = parseInt(urlQuality, 10);
+			if (!isNaN(quality) && quality >= 1 && quality <= 100) {
+				renderOptions.quality = quality;
+			}
+		}
+
 		urlSyncEnabled = true;
 
 		// Initialize debounced URL immediately
@@ -99,6 +134,17 @@ function createPlaygroundState() {
 			if (value) {
 				params.set(key, value);
 			}
+		}
+
+		// Add render options (only non-default values)
+		if (renderOptions.format !== 'png') {
+			params.set('format', renderOptions.format);
+		}
+		if (renderOptions.scale !== 1.0) {
+			params.set('scale', renderOptions.scale.toString());
+		}
+		if (renderOptions.quality !== 90) {
+			params.set('quality', renderOptions.quality.toString());
 		}
 
 		return `https://img.ogis.dev/?${params.toString()}`;
@@ -156,6 +202,17 @@ function createPlaygroundState() {
 				if (value) {
 					params.set(key, value);
 				}
+			}
+
+			// Add render options (only non-default values)
+			if (renderOptions.format !== 'png') {
+				params.set('format', renderOptions.format);
+			}
+			if (renderOptions.scale !== 1.0) {
+				params.set('scale', renderOptions.scale.toString());
+			}
+			if (renderOptions.quality !== 90) {
+				params.set('quality', renderOptions.quality.toString());
 			}
 
 			const queryString = params.toString();
@@ -221,6 +278,18 @@ function createPlaygroundState() {
 		},
 		resetColors() {
 			colors = {};
+			syncToUrl();
+		},
+
+		get renderOptions() {
+			return renderOptions;
+		},
+		set renderOptions(value: PlaygroundRenderOptions) {
+			renderOptions = value;
+			syncToUrl();
+		},
+		updateRenderOptions(updates: Partial<PlaygroundRenderOptions>) {
+			renderOptions = { ...renderOptions, ...updates };
 			syncToUrl();
 		},
 
