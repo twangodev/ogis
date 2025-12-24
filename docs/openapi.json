@@ -85,6 +85,36 @@
             }
           },
           {
+            "name": "format",
+            "in": "query",
+            "description": "Output format: png (default), webp, jpeg",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scale",
+            "in": "query",
+            "description": "Scale factor for output resolution (0.1-1.0, default: 1.0)",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "float"
+            }
+          },
+          {
+            "name": "quality",
+            "in": "query",
+            "description": "Quality for lossy formats (1-100, default: 90, ignored for PNG)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
             "name": "extra",
             "in": "query",
             "description": "Additional parameters (used for color customization)",
@@ -181,6 +211,9 @@
           "VALIDATION_FIELD_TOO_LONG",
           "VALIDATION_INVALID_URL",
           "VALIDATION_INVALID_HEX_COLOR",
+          "VALIDATION_INVALID_FORMAT",
+          "VALIDATION_INVALID_SCALE",
+          "VALIDATION_INVALID_QUALITY",
           "AUTH_INVALID_SIGNATURE_FORMAT",
           "AUTH_MISSING_SIGNATURE",
           "AUTH_INVALID_SIGNATURE",
@@ -191,7 +224,7 @@
           "IMAGE_HTTP_NOT_ALLOWED",
           "RENDER_FAILED",
           "SVG_PARSE_FAILED",
-          "PNG_ENCODE_FAILED",
+          "IMAGE_ENCODE_FAILED",
           "FONT_ERROR",
           "INTERNAL_ERROR",
           "UPSTREAM_FETCH_FAILED",
@@ -241,6 +274,14 @@
             ],
             "description": "Description text for the image"
           },
+          "format": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Output format: png (default), webp, jpeg",
+            "example": "webp"
+          },
           "image": {
             "type": [
               "string",
@@ -254,6 +295,25 @@
               "null"
             ],
             "description": "Optional logo image URL"
+          },
+          "quality": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Quality for lossy formats (1-100, default: 90, ignored for PNG)",
+            "example": 90,
+            "minimum": 0
+          },
+          "scale": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Scale factor for output resolution (0.1-1.0, default: 1.0)",
+            "example": 0.5
           },
           "signature": {
             "type": [
