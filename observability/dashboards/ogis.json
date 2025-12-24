@@ -3,6 +3,7 @@
   "uid": "ogis-overview",
   "tags": ["ogis", "otel"],
   "timezone": "browser",
+  "refresh": "15s",
   "schemaVersion": 39,
   "panels": [
     {
