@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::AppState;
+use crate::accept::negotiate_format;
 use crate::config::ImageFallbackBehavior;
 use crate::error::ApiError;
 use crate::generator::{OutputFormat, RenderOptions};
@@ -109,14 +110,26 @@ impl OgParams {
         Ok(())
     }
 
-    /// Get render options from parameters (with defaults)
-    pub fn render_options(&self) -> RenderOptions {
+    /// Get render options with Accept header content negotiation.
+    ///
+    /// Priority:
+    /// 1. Explicit `?format=` parameter takes precedence
+    /// 2. Accept header negotiation per RFC 9110 (quality values)
+    /// 3. Default to PNG
+    ///
+    /// Note: Call `validate()` before this to reject invalid format parameters.
+    pub fn render_options_with_accept(&self, accept_header: Option<&str>) -> RenderOptions {
+        let format = if let Some(ref fmt) = self.format {
+            // Explicit format parameter always wins
+            // Safety: validate() should be called first to reject invalid formats
+            OutputFormat::from_str(fmt).expect("format should be validated before calling render_options_with_accept")
+        } else {
+            // Use Accept header negotiation, fallback to PNG
+            negotiate_format(accept_header).unwrap_or_default()
+        };
+
         RenderOptions {
-            format: self
-                .format
-                .as_deref()
-                .and_then(OutputFormat::from_str)
-                .unwrap_or_default(),
+            format,
             scale: self.scale.unwrap_or(1.0),
             quality: self.quality.unwrap_or(90),
         }
@@ -261,7 +274,7 @@ mod tests {
     #[test]
     fn test_render_options_defaults() {
         let params = default_params();
-        let opts = params.render_options();
+        let opts = params.render_options_with_accept(None);
         assert_eq!(opts.format, OutputFormat::Png);
         assert_eq!(opts.scale, 1.0);
         assert_eq!(opts.quality, 90);
@@ -274,9 +287,26 @@ mod tests {
         params.scale = Some(0.5);
         params.quality = Some(80);
 
-        let opts = params.render_options();
+        let opts = params.render_options_with_accept(None);
         assert_eq!(opts.format, OutputFormat::WebP);
         assert_eq!(opts.scale, 0.5);
         assert_eq!(opts.quality, 80);
+    }
+
+    #[test]
+    fn test_render_options_accept_header_negotiation() {
+        let params = default_params();
+        // Accept header should be used when no format param
+        let opts = params.render_options_with_accept(Some("image/webp"));
+        assert_eq!(opts.format, OutputFormat::WebP);
+    }
+
+    #[test]
+    fn test_render_options_format_overrides_accept() {
+        let mut params = default_params();
+        params.format = Some("jpeg".to_string());
+        // Explicit format should override Accept header
+        let opts = params.render_options_with_accept(Some("image/webp"));
+        assert_eq!(opts.format, OutputFormat::Jpeg);
     }
 }
