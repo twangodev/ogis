@@ -120,11 +120,9 @@ impl OgParams {
     /// Note: Call `validate()` before this to reject invalid format parameters.
     pub fn render_options_with_accept(&self, accept_header: Option<&str>) -> RenderOptions {
         let format = if let Some(ref fmt) = self.format {
-            // Explicit format parameter always wins
-            // Safety: validate() should be called first to reject invalid formats
-            OutputFormat::from_str(fmt).expect("format should be validated before calling render_options_with_accept")
+            OutputFormat::from_str(fmt)
+                .expect("format should be validated before calling render_options_with_accept")
         } else {
-            // Use Accept header negotiation, fallback to PNG
             negotiate_format(accept_header).unwrap_or_default()
         };
 
