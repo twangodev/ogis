@@ -2,13 +2,17 @@
 
 use headers_accept::Accept;
 use std::str::FromStr;
+use std::sync::LazyLock;
 
 use crate::generator::OutputFormat;
 
-/// Supported image media types for content negotiation.
-const IMAGE_WEBP: &str = "image/webp";
-const IMAGE_PNG: &str = "image/png";
-const IMAGE_JPEG: &str = "image/jpeg";
+/// All supported output formats for negotiation.
+const SUPPORTED_FORMATS: [OutputFormat; 3] = [OutputFormat::WebP, OutputFormat::Png, OutputFormat::Jpeg];
+
+/// Parsed MIME types for negotiation, initialized once.
+static AVAILABLE_MIMES: LazyLock<[mediatype::MediaType; 3]> = LazyLock::new(|| {
+    SUPPORTED_FORMATS.map(|f| mediatype::MediaType::parse(f.content_type()).unwrap())
+});
 
 /// Negotiate the best output format based on the Accept header.
 ///
@@ -23,21 +27,13 @@ pub fn negotiate_format(accept_header: Option<&str>) -> Option<OutputFormat> {
     let header = accept_header?;
     let accept = Accept::from_str(header).ok()?;
 
-    // Available formats we support
-    let available: Vec<mediatype::MediaType> = [IMAGE_WEBP, IMAGE_PNG, IMAGE_JPEG]
+    let best = accept.negotiate(&*AVAILABLE_MIMES)?;
+    let best_mime = best.essence().to_string();
+
+    SUPPORTED_FORMATS
         .iter()
-        .filter_map(|s| mediatype::MediaType::parse(s).ok())
-        .collect();
-
-    // Negotiate returns the best match based on client preferences (RFC 9110)
-    let best = accept.negotiate(&available)?;
-
-    match best.essence().to_string().as_str() {
-        IMAGE_WEBP => Some(OutputFormat::WebP),
-        IMAGE_PNG => Some(OutputFormat::Png),
-        IMAGE_JPEG => Some(OutputFormat::Jpeg),
-        _ => None,
-    }
+        .find(|f| f.content_type() == best_mime)
+        .copied()
 }
 
 #[cfg(test)]
