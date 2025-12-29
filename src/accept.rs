@@ -7,7 +7,8 @@ use std::sync::LazyLock;
 use crate::generator::OutputFormat;
 
 /// All supported output formats for negotiation.
-const SUPPORTED_FORMATS: [OutputFormat; 3] = [OutputFormat::WebP, OutputFormat::Png, OutputFormat::Jpeg];
+const SUPPORTED_FORMATS: [OutputFormat; 3] =
+    [OutputFormat::WebP, OutputFormat::Png, OutputFormat::Jpeg];
 
 /// Parsed MIME types for negotiation, initialized once.
 static AVAILABLE_MIMES: LazyLock<[mediatype::MediaType; 3]> = LazyLock::new(|| {
