@@ -11,6 +11,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "mint": "^4.2.249"
+    "mint": "^4.2.255"
   }
 }
