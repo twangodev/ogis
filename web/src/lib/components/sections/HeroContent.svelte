@@ -41,12 +41,12 @@
 
 	// Animated stats - start at 0, then animate to actual values
 	let displayedRequests = $state(0);
-	let displayedBytesInGb = $state(0);
+	let displayedBytesInTb = $state(0);
 
 	onMount(() => {
 		setTimeout(() => {
 			displayedRequests = stats.requests;
-			displayedBytesInGb = stats.bytes / 1024 ** 3; // Convert to GB
+			displayedBytesInTb = stats.bytes / 1024 ** 4; // Convert to TB
 		}, 100);
 	});
 
@@ -107,9 +107,9 @@
 						<div class="flex items-center gap-2">
 							<span class="font-semibold text-foreground">
 								<NumberFlow
-									value={displayedBytesInGb}
-									format={{ maximumFractionDigits: 2 }}
-									suffix=" GB"
+									value={displayedBytesInTb}
+									format={{ maximumFractionDigits: 3 }}
+									suffix=" TB"
 								/>
 							</span>
 							<span>data served</span>
