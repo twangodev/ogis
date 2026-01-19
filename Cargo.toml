@@ -22,7 +22,7 @@ moka = { version = "0.12", features = ["future"] }
 opentelemetry = "0.31.0"
 opentelemetry-otlp = { version = "0.31.0", features = ["trace", "metrics", "http-proto", "reqwest-client"] }
 opentelemetry_sdk = { version = "0.31.0", features = ["rt-tokio", "spec_unstable_metrics_views"] }
-quick-xml = "0.38.4"
+quick-xml = "0.39.0"
 reqwest = { version = "0.12", features = ["default-tls", "stream"] }
 resvg = "0.45.1"
 saphyr = "0.0.6"
