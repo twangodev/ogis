@@ -119,6 +119,13 @@ impl OgParams {
             return Err(ApiError::validation_invalid_quality(quality));
         }
 
+        // Validate extra parameters (text overrides / color overrides)
+        for (key, value) in &self.extra {
+            if value.len() > max_length {
+                return Err(ApiError::validation_field_too_long(key, max_length));
+            }
+        }
+
         Ok(())
     }
 
@@ -345,5 +352,23 @@ mod tests {
         let extra = HashMap::new();
         let result = filter_text_overrides(&extra, None);
         assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_validate_extra_field_too_long() {
+        let mut params = default_params();
+        params
+            .extra
+            .insert("subreddit".to_string(), "x".repeat(1001));
+        assert!(params.validate(1000).is_err());
+    }
+
+    #[test]
+    fn test_validate_extra_field_within_limit() {
+        let mut params = default_params();
+        params
+            .extra
+            .insert("subreddit".to_string(), "x".repeat(1000));
+        assert!(params.validate(1000).is_ok());
     }
 }
