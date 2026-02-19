@@ -31,24 +31,31 @@
     </text>
   </g>
 
-  <!-- Title -->
-  <text x="80" y="140"
+  <!-- Title (2 lines) -->
+  <text id="ogis_title" x="80" y="125"
         font-family="Arial, Helvetica, sans-serif"
-        font-size="52"
+        font-size="38"
         font-weight="800"
         fill="#1A1A1B">
-    <tspan id="ogis_title" x="80" dy="0">Placeholder Title</tspan>
+    Placeholder Title Line One. This is the first
+  </text>
+  <text id="ogis_title_l2" x="80" y="168"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="38"
+        font-weight="800"
+        fill="#1A1A1B">
+    line. Oh second? Placeholder Title Line Two
   </text>
 
-  <!-- Body: 5 description lines -->
-  <text id="ogis_description" x="80" y="210"
+  <!-- Body: 8 description lines -->
+  <text id="ogis_description" x="80" y="220"
         font-family="Arial, Helvetica, sans-serif"
         font-size="30"
         font-weight="400"
         fill="#1F2937">
     Placeholder body line one that is visible in template previews.
   </text>
-  <text id="ogis_description_l2" x="80" y="255"
+  <text id="ogis_description_l2" x="80" y="260"
         font-family="Arial, Helvetica, sans-serif"
         font-size="30"
         font-weight="400"
@@ -62,35 +69,35 @@
         fill="#1F2937">
     Placeholder body line three for spacing reference.
   </text>
-  <text id="ogis_description_l4" x="80" y="345"
+  <text id="ogis_description_l4" x="80" y="340"
         font-family="Arial, Helvetica, sans-serif"
         font-size="30"
         font-weight="400"
         fill="#1F2937">
     Placeholder body line four continues the post content.
   </text>
-  <text id="ogis_description_l5" x="80" y="390"
+  <text id="ogis_description_l5" x="80" y="380"
         font-family="Arial, Helvetica, sans-serif"
         font-size="30"
         font-weight="400"
         fill="#1F2937">
     Placeholder body line five wraps up the visible excerpt.
   </text>
-  <text id="ogis_description_l6" x="80" y="435"
+  <text id="ogis_description_l6" x="80" y="420"
         font-family="Arial, Helvetica, sans-serif"
         font-size="30"
         font-weight="400"
         fill="#1F2937">
     Placeholder body line six adds more detail to the post.
   </text>
-  <text id="ogis_description_l7" x="80" y="480"
+  <text id="ogis_description_l7" x="80" y="460"
         font-family="Arial, Helvetica, sans-serif"
         font-size="30"
         font-weight="400"
         fill="#1F2937">
     Placeholder body line seven nears the end of the card.
   </text>
-  <text id="ogis_description_l8" x="80" y="525"
+  <text id="ogis_description_l8" x="80" y="500"
         font-family="Arial, Helvetica, sans-serif"
         font-size="30"
         font-weight="400"
