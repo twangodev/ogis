@@ -47,6 +47,7 @@ pub struct TemplateMap {
     pub width_constraints: HashMap<String, TextWidthConstraints>,
     pub font_properties: HashMap<String, TemplateFonts>,
     pub truncation: HashMap<String, bool>,
+    pub max_scale: HashMap<String, f32>,
 }
 
 impl TemplateMap {
@@ -102,6 +103,21 @@ fn parse_truncation(template_node: &Yaml) -> bool {
         .find(|(key, _)| key.as_str() == Some("truncation"))
         .and_then(|(_, v)| v.as_bool())
         .unwrap_or(true)
+}
+
+/// Parse max_scale setting from a template YAML node (defaults to 1.0)
+fn parse_max_scale(template_node: &Yaml) -> f32 {
+    let Yaml::Mapping(m) = template_node else {
+        return 1.0;
+    };
+    m.iter()
+        .find(|(key, _)| key.as_str() == Some("max_scale"))
+        .and_then(|(_, v)| {
+            v.as_floating_point()
+                .map(|f| f as f32)
+                .or_else(|| v.as_integer().map(|i| i as f32))
+        })
+        .unwrap_or(1.0)
 }
 
 /// Parse width constraints from a template YAML node
@@ -244,6 +260,7 @@ fn load_template(
     width_constraints: &mut HashMap<String, TextWidthConstraints>,
     font_properties: &mut HashMap<String, TemplateFonts>,
     truncation: &mut HashMap<String, bool>,
+    max_scale: &mut HashMap<String, f32>,
 ) {
     let name = template_node["name"].as_str();
     let file_path = template_node["file"].as_str();
@@ -291,6 +308,10 @@ fn load_template(
     // Parse truncation setting
     let trunc = parse_truncation(template_node);
     truncation.insert(template_name.to_string(), trunc);
+
+    // Parse max_scale setting
+    let scale = parse_max_scale(template_node);
+    max_scale.insert(template_name.to_string(), scale);
 }
 
 pub fn load_templates() -> TemplateMap {
@@ -299,6 +320,7 @@ pub fn load_templates() -> TemplateMap {
     let mut width_constraints = HashMap::new();
     let mut font_properties = HashMap::new();
     let mut truncation = HashMap::new();
+    let mut max_scale = HashMap::new();
 
     let doc = yaml_loader::load_yaml("templates.yaml");
 
@@ -312,6 +334,7 @@ pub fn load_templates() -> TemplateMap {
                 &mut width_constraints,
                 &mut font_properties,
                 &mut truncation,
+                &mut max_scale,
             );
         }
     }
@@ -334,6 +357,7 @@ pub fn load_templates() -> TemplateMap {
         width_constraints,
         font_properties,
         truncation,
+        max_scale,
     };
 
     // Validate that the default template exists
@@ -385,5 +409,17 @@ mod tests {
     fn test_parse_truncation_non_mapping() {
         let yaml = parse_yaml("just a string");
         assert!(parse_truncation(&yaml));
+    }
+
+    #[test]
+    fn test_parse_max_scale_defaults_to_one() {
+        let yaml = parse_yaml("name: test\nfile: test.svg\n");
+        assert_eq!(parse_max_scale(&yaml), 1.0);
+    }
+
+    #[test]
+    fn test_parse_max_scale_custom() {
+        let yaml = parse_yaml("name: test\nmax_scale: 2.0\n");
+        assert_eq!(parse_max_scale(&yaml), 2.0);
     }
 }

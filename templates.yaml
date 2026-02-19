@@ -757,6 +757,7 @@ templates:
   - name: reddit
     file: templates/reddit.svg
     truncation: false
+    max_scale: 2.0
     colors:
       background: "#FFFFFF"
       accent: "#FF4500"

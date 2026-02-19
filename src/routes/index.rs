@@ -91,8 +91,16 @@ pub async fn generate(
     span.record("ogis.logo_domain", logo_domain.as_deref().unwrap_or("-"));
     span.record("ogis.image_domain", image_domain.as_deref().unwrap_or("-"));
 
+    // Look up per-template max_scale (defaults to 1.0)
+    let max_scale = state
+        .templates
+        .max_scale
+        .get(template_name)
+        .copied()
+        .unwrap_or(1.0);
+
     // Validate input lengths and format/scale/quality
-    if let Err(err) = params.validate(state.max_input_length) {
+    if let Err(err) = params.validate(state.max_input_length, max_scale) {
         span.record(
             "http.response.status_code",
             err.status_code().as_u16() as i64,

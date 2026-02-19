@@ -222,6 +222,7 @@ mod tests {
             width_constraints: HashMap::new(),
             font_properties: HashMap::new(),
             truncation: HashMap::new(),
+            max_scale: HashMap::new(),
         };
 
         let result = get_template_fonts(&templates, "test");
@@ -241,6 +242,7 @@ mod tests {
             width_constraints: HashMap::new(),
             font_properties: HashMap::new(),
             truncation: HashMap::new(),
+            max_scale: HashMap::new(),
         };
 
         let constraints = get_width_constraints(&templates, "test");
