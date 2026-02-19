@@ -16,9 +16,7 @@ fn filter_text_overrides(
 ) -> HashMap<String, String> {
     extra
         .iter()
-        .filter(|(key, _)| {
-            template_colors.is_none_or(|colors| !colors.contains_key(key.as_str()))
-        })
+        .filter(|(key, _)| template_colors.is_none_or(|colors| !colors.contains_key(key.as_str())))
         .map(|(key, value)| (format!("ogis_{}", key), value.clone()))
         .collect()
 }
