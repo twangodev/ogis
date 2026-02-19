@@ -293,40 +293,6 @@ fn load_template(
     truncation.insert(template_name.to_string(), trunc);
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use saphyr::{LoadableYamlNode, Yaml};
-
-    fn parse_yaml(s: &str) -> Yaml<'static> {
-        Yaml::load_from_str(s).unwrap().into_iter().next().unwrap()
-    }
-
-    #[test]
-    fn test_parse_truncation_defaults_to_true() {
-        let yaml = parse_yaml("name: test\nfile: test.svg\n");
-        assert!(parse_truncation(&yaml));
-    }
-
-    #[test]
-    fn test_parse_truncation_false() {
-        let yaml = parse_yaml("name: test\ntruncation: false\n");
-        assert!(!parse_truncation(&yaml));
-    }
-
-    #[test]
-    fn test_parse_truncation_true() {
-        let yaml = parse_yaml("name: test\ntruncation: true\n");
-        assert!(parse_truncation(&yaml));
-    }
-
-    #[test]
-    fn test_parse_truncation_non_mapping() {
-        let yaml = parse_yaml("just a string");
-        assert!(parse_truncation(&yaml));
-    }
-}
-
 pub fn load_templates() -> TemplateMap {
     let mut templates = HashMap::new();
     let mut colors = HashMap::new();
@@ -386,4 +352,38 @@ pub fn load_templates() -> TemplateMap {
     );
 
     template_map
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use saphyr::{LoadableYamlNode, Yaml};
+
+    fn parse_yaml(s: &str) -> Yaml<'static> {
+        Yaml::load_from_str(s).unwrap().into_iter().next().unwrap()
+    }
+
+    #[test]
+    fn test_parse_truncation_defaults_to_true() {
+        let yaml = parse_yaml("name: test\nfile: test.svg\n");
+        assert!(parse_truncation(&yaml));
+    }
+
+    #[test]
+    fn test_parse_truncation_false() {
+        let yaml = parse_yaml("name: test\ntruncation: false\n");
+        assert!(!parse_truncation(&yaml));
+    }
+
+    #[test]
+    fn test_parse_truncation_true() {
+        let yaml = parse_yaml("name: test\ntruncation: true\n");
+        assert!(parse_truncation(&yaml));
+    }
+
+    #[test]
+    fn test_parse_truncation_non_mapping() {
+        let yaml = parse_yaml("just a string");
+        assert!(parse_truncation(&yaml));
+    }
 }
