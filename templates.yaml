@@ -754,3 +754,14 @@ templates:
       blob_light_blue: "#7dd3fc"
       blob_slate: "#9ca3af"
       text: "#ffffff"
+  - name: reddit
+    file: templates/reddit.svg
+    truncation: false
+    colors:
+      background: "#FFFFFF"
+      accent: "#FF4500"
+      subreddit_text: "#FF4500"
+      meta_text: "#878A8C"
+      title_text: "#1A1A1B"
+      description_text: "#1F2937"
+      footer: "#F8F9FA"

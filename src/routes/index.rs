@@ -173,6 +173,14 @@ pub async fn generate(
     // Apply defaults for missing params
     let (title, description, subtitle) = params.with_defaults(&state);
 
+    let text_overrides = params.extract_text_overrides(template_name, &state);
+    let truncation = state
+        .templates
+        .truncation
+        .get(template_name)
+        .copied()
+        .unwrap_or(true);
+
     let color_overrides = match params.extract_colors(template_name, &state) {
         Ok(colors) => colors,
         Err(err) => {
@@ -223,6 +231,7 @@ pub async fn generate(
             title: &title,
             description: &description,
             subtitle: &subtitle,
+            extra: text_overrides,
         };
 
         let template_start = Instant::now();
@@ -233,6 +242,7 @@ pub async fn generate(
             &templates,
             &color_overrides,
             &fontdb,
+            truncation,
         )?;
         let template_time = template_start.elapsed();
 
