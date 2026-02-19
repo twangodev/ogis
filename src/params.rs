@@ -8,6 +8,21 @@ use crate::error::ApiError;
 use crate::generator::{OutputFormat, RenderOptions};
 use crate::image::ValidatedImage;
 
+/// Filter extra query params into text overrides, excluding any keys that match template colors.
+/// Each surviving key is prefixed with `ogis_`.
+fn filter_text_overrides(
+    extra: &HashMap<String, String>,
+    template_colors: Option<&HashMap<String, String>>,
+) -> HashMap<String, String> {
+    extra
+        .iter()
+        .filter(|(key, _)| {
+            template_colors.is_none_or(|colors| !colors.contains_key(key.as_str()))
+        })
+        .map(|(key, value)| (format!("ogis_{}", key), value.clone()))
+        .collect()
+}
+
 /// Validate that a string is exactly 6 hexadecimal characters
 #[inline]
 fn is_valid_hex_color(s: &str) -> bool {
@@ -129,13 +144,7 @@ impl OgParams {
         state: &AppState,
     ) -> HashMap<String, String> {
         let template_colors = state.templates.colors.get(template_name);
-        self.extra
-            .iter()
-            .filter(|(key, _)| {
-                template_colors.is_none_or(|colors| !colors.contains_key(key.as_str()))
-            })
-            .map(|(key, value)| (format!("ogis_{}", key), value.clone()))
-            .collect()
+        filter_text_overrides(&self.extra, template_colors)
     }
 
     /// Extract and validate color overrides from extra parameters
@@ -294,5 +303,49 @@ mod tests {
         assert_eq!(opts.format, OutputFormat::WebP);
         assert_eq!(opts.scale, 0.5);
         assert_eq!(opts.quality, 80);
+    }
+
+    #[test]
+    fn test_filter_text_overrides_adds_ogis_prefix() {
+        let mut extra = HashMap::new();
+        extra.insert("subreddit".to_string(), "rust".to_string());
+
+        let result = filter_text_overrides(&extra, None);
+        assert_eq!(result.get("ogis_subreddit").unwrap(), "rust");
+        assert_eq!(result.len(), 1);
+    }
+
+    #[test]
+    fn test_filter_text_overrides_excludes_color_keys() {
+        let mut extra = HashMap::new();
+        extra.insert("primary".to_string(), "FF0000".to_string());
+        extra.insert("subreddit".to_string(), "rust".to_string());
+
+        let mut colors = HashMap::new();
+        colors.insert("primary".to_string(), "#000000".to_string());
+
+        let result = filter_text_overrides(&extra, Some(&colors));
+        assert_eq!(result.len(), 1);
+        assert!(result.contains_key("ogis_subreddit"));
+        assert!(!result.contains_key("ogis_primary"));
+    }
+
+    #[test]
+    fn test_filter_text_overrides_no_colors() {
+        let mut extra = HashMap::new();
+        extra.insert("foo".to_string(), "bar".to_string());
+        extra.insert("baz".to_string(), "qux".to_string());
+
+        let result = filter_text_overrides(&extra, None);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result.get("ogis_foo").unwrap(), "bar");
+        assert_eq!(result.get("ogis_baz").unwrap(), "qux");
+    }
+
+    #[test]
+    fn test_filter_text_overrides_empty() {
+        let extra = HashMap::new();
+        let result = filter_text_overrides(&extra, None);
+        assert!(result.is_empty());
     }
 }
