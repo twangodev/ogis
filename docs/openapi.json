@@ -96,7 +96,7 @@
           {
             "name": "scale",
             "in": "query",
-            "description": "Scale factor for output resolution (0.1-1.0, default: 1.0)",
+            "description": "Scale factor for output resolution (0.1-max_scale, default: 1.0)",
             "required": false,
             "schema": {
               "type": "number",
@@ -312,7 +312,7 @@
               "null"
             ],
             "format": "float",
-            "description": "Scale factor for output resolution (0.1-1.0, default: 1.0)",
+            "description": "Scale factor for output resolution (0.1-max_scale, default: 1.0)",
             "example": 0.5
           },
           "signature": {
