@@ -1,7 +1,7 @@
 use opentelemetry_otlp::{MetricExporter, SpanExporter, WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::{
     Resource,
-    metrics::{Aggregation, Instrument, InstrumentKind, PeriodicReader, SdkMeterProvider, Stream},
+    metrics::{PeriodicReader, SdkMeterProvider},
     trace::{RandomIdGenerator, Sampler, SdkTracerProvider},
 };
 use std::time::Duration;
@@ -93,27 +93,9 @@ pub fn create_meter_provider(
         .with_service_name(settings.service_name.clone())
         .build();
 
-    let exponential_histogram_view = |inst: &Instrument| -> Option<Stream> {
-        if inst.kind() == InstrumentKind::Histogram {
-            Some(
-                Stream::builder()
-                    .with_aggregation(Aggregation::Base2ExponentialHistogram {
-                        max_size: 160,
-                        max_scale: 20,
-                        record_min_max: true,
-                    })
-                    .build()
-                    .ok()?,
-            )
-        } else {
-            None
-        }
-    };
-
     let provider = SdkMeterProvider::builder()
         .with_reader(reader)
         .with_resource(resource)
-        .with_view(exponential_histogram_view)
         .build();
 
     Ok(provider)

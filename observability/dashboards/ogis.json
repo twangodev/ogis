@@ -11,7 +11,7 @@
       "type": "stat",
       "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
       "targets": [{
-        "expr": "histogram_count(sum(increase(http_server_request_duration_seconds{service_name=\"ogis\"}[$__range])))",
+        "expr": "sum(increase(http_server_request_duration_seconds_count{service_name=\"ogis\"}[$__range]))",
         "legendFormat": "total"
       }],
       "options": { "colorMode": "value" },
@@ -22,7 +22,7 @@
       "type": "stat",
       "gridPos": { "x": 4, "y": 0, "w": 5, "h": 4 },
       "targets": [{
-        "expr": "histogram_count(sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m]))) * 60",
+        "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m])) * 60",
         "legendFormat": "req/min"
       }],
       "options": { "colorMode": "value" },
@@ -33,7 +33,7 @@
       "type": "stat",
       "gridPos": { "x": 9, "y": 0, "w": 5, "h": 4 },
       "targets": [{
-        "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m])))",
+        "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))",
         "legendFormat": "p50"
       }],
       "fieldConfig": { "defaults": { "unit": "s", "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "red", "value": 1}] } } }
@@ -43,7 +43,7 @@
       "type": "stat",
       "gridPos": { "x": 14, "y": 0, "w": 5, "h": 4 },
       "targets": [{
-        "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m])))",
+        "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))",
         "legendFormat": "p99"
       }],
       "fieldConfig": { "defaults": { "unit": "s", "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 2}] } } }
@@ -63,9 +63,9 @@
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p50" },
-        { "expr": "histogram_quantile(0.90, sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p90" },
-        { "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p99" }
+        { "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.90, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p90" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p99" }
       ],
       "fieldConfig": { "defaults": { "unit": "s" } }
     },
@@ -74,7 +74,7 @@
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
       "targets": [{
-        "expr": "sum by (template) (histogram_count(rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m]))) * 60",
+        "expr": "sum by (template) (rate(ogis_render_duration_seconds_count{service_name=\"ogis\"}[5m])) * 60",
         "legendFormat": "{{ template }}"
       }],
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
@@ -84,9 +84,9 @@
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 12, "w": 8, "h": 8 },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p50" },
-        { "expr": "histogram_quantile(0.90, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p90" },
-        { "expr": "histogram_quantile(0.99, sum by (template) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p99" }
+        { "expr": "histogram_quantile(0.50, sum by (le, template) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (le, template) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p90" },
+        { "expr": "histogram_quantile(0.99, sum by (le, template) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ template }} p99" }
       ],
       "fieldConfig": { "defaults": { "unit": "s" } }
     },
@@ -95,9 +95,9 @@
       "type": "timeseries",
       "gridPos": { "x": 8, "y": 12, "w": 8, "h": 8 },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p50" },
-        { "expr": "histogram_quantile(0.90, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p90" },
-        { "expr": "histogram_quantile(0.99, sum by (format) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p99" }
+        { "expr": "histogram_quantile(0.50, sum by (le, format) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (le, format) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p90" },
+        { "expr": "histogram_quantile(0.99, sum by (le, format) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ format }} p99" }
       ],
       "fieldConfig": { "defaults": { "unit": "s" } }
     },
@@ -106,9 +106,9 @@
       "type": "timeseries",
       "gridPos": { "x": 16, "y": 12, "w": 8, "h": 8 },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum by (scale_bucket) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p50" },
-        { "expr": "histogram_quantile(0.90, sum by (scale_bucket) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p90" },
-        { "expr": "histogram_quantile(0.99, sum by (scale_bucket) (rate(ogis_render_duration_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p99" }
+        { "expr": "histogram_quantile(0.50, sum by (le, scale_bucket) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (le, scale_bucket) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p90" },
+        { "expr": "histogram_quantile(0.99, sum by (le, scale_bucket) (rate(ogis_render_duration_seconds_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ scale_bucket }} p99" }
       ],
       "fieldConfig": { "defaults": { "unit": "s" } }
     },
@@ -117,8 +117,8 @@
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum(rate(ogis_render_queue_wait_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p50" },
-        { "expr": "histogram_quantile(0.99, sum(rate(ogis_render_queue_wait_seconds{service_name=\"ogis\"}[5m])))", "legendFormat": "p99" }
+        { "expr": "histogram_quantile(0.50, sum(rate(ogis_render_queue_wait_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.99, sum(rate(ogis_render_queue_wait_seconds_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p99" }
       ],
       "fieldConfig": { "defaults": { "unit": "s" } }
     },
@@ -127,9 +127,9 @@
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "p50" },
-        { "expr": "histogram_quantile(0.90, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "p90" },
-        { "expr": "histogram_quantile(0.99, sum(rate(http_server_response_body_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "p99" }
+        { "expr": "histogram_quantile(0.50, sum(rate(http_server_response_body_size_bytes_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.90, sum(rate(http_server_response_body_size_bytes_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p90" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_server_response_body_size_bytes_bucket{service_name=\"ogis\"}[5m])) by (le))", "legendFormat": "p99" }
       ],
       "fieldConfig": { "defaults": { "unit": "bytes" } }
     },
@@ -144,11 +144,11 @@
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
     },
     {
-      "title": "Image Fetches by Domain",
+      "title": "Image Fetches by Domain (Cache Misses)",
       "type": "timeseries",
       "gridPos": { "x": 8, "y": 28, "w": 8, "h": 8 },
       "targets": [{
-        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\"}[5m])) by (domain) * 60",
+        "expr": "sum(rate(ogis_image_fetch_total{service_name=\"ogis\", cached=\"false\"}[5m])) by (domain) * 60",
         "legendFormat": "{{ domain }}"
       }],
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
@@ -158,8 +158,8 @@
       "type": "timeseries",
       "gridPos": { "x": 16, "y": 28, "w": 8, "h": 8 },
       "targets": [
-        { "expr": "histogram_quantile(0.50, sum by (type) (rate(ogis_image_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ type }} p50" },
-        { "expr": "histogram_quantile(0.90, sum by (type) (rate(ogis_image_size_bytes{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ type }} p90" }
+        { "expr": "histogram_quantile(0.50, sum by (le, type) (rate(ogis_image_size_bytes_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ type }} p50" },
+        { "expr": "histogram_quantile(0.90, sum by (le, type) (rate(ogis_image_size_bytes_bucket{service_name=\"ogis\"}[5m])))", "legendFormat": "{{ type }} p90" }
       ],
       "fieldConfig": { "defaults": { "unit": "bytes" } }
     },
@@ -168,7 +168,7 @@
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 36, "w": 12, "h": 8 },
       "targets": [{
-        "expr": "histogram_count(sum by (http_response_status_code) (rate(http_server_request_duration_seconds{service_name=\"ogis\"}[5m]))) * 60",
+        "expr": "sum by (http_response_status_code) (rate(http_server_request_duration_seconds_count{service_name=\"ogis\"}[5m])) * 60",
         "legendFormat": "{{ http_response_status_code }}"
       }],
       "fieldConfig": { "defaults": { "unit": "none", "custom": { "axisSuffix": " /min" } } }
