@@ -8,7 +8,7 @@ use crate::{
 };
 use axum::{
     extract::{Query, State},
-    http::{StatusCode, header},
+    http::{HeaderMap, StatusCode, header},
     response::IntoResponse,
 };
 use opentelemetry::KeyValue;
@@ -62,6 +62,7 @@ fn extract_domain(url: &str) -> Option<String> {
 )]
 pub async fn generate(
     State(state): State<AppState>,
+    headers: HeaderMap,
     Query(params): Query<OgParams>,
 ) -> impl IntoResponse {
     let span = tracing::Span::current();
@@ -101,8 +102,9 @@ pub async fn generate(
         return err.into_response();
     }
 
-    // Get render options and record in span
-    let render_options = params.render_options();
+    // Get render options with Accept header negotiation
+    let accept_header = headers.get(header::ACCEPT).and_then(|h| h.to_str().ok());
+    let render_options = params.render_options_with_accept(accept_header);
     let format_str = render_options.format.as_str();
     let scale = render_options.scale;
     span.record("ogis.format", format_str);
