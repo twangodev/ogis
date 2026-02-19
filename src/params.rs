@@ -57,7 +57,7 @@ pub struct OgParams {
     #[serde(default)]
     #[schema(example = "webp")]
     pub format: Option<String>,
-    /// Scale factor for output resolution (0.1-1.0, default: 1.0)
+    /// Scale factor for output resolution (0.1-max_scale, default: 1.0)
     #[serde(default)]
     #[schema(example = 0.5)]
     pub scale: Option<f32>,
@@ -81,7 +81,7 @@ impl OgParams {
     }
 
     /// Validate input parameters against maximum length and format constraints
-    pub fn validate(&self, max_length: usize) -> Result<(), ApiError> {
+    pub fn validate(&self, max_length: usize, max_scale: f32) -> Result<(), ApiError> {
         let fields = [
             ("Title", &self.title),
             ("Description", &self.description),
@@ -105,11 +105,11 @@ impl OgParams {
             return Err(ApiError::validation_invalid_format(format));
         }
 
-        // Validate scale if provided (0.1 to 1.0)
+        // Validate scale if provided (0.1 to max_scale)
         if let Some(scale) = self.scale
-            && !(0.1..=1.0).contains(&scale)
+            && !(0.1..=max_scale).contains(&scale)
         {
-            return Err(ApiError::validation_invalid_scale(scale));
+            return Err(ApiError::validation_invalid_scale(scale, max_scale));
         }
 
         // Validate quality if provided (1 to 100)
@@ -265,27 +265,40 @@ mod tests {
     fn test_validate_invalid_format() {
         let mut params = default_params();
         params.format = Some("gif".to_string());
-        assert!(params.validate(1000).is_err());
+        assert!(params.validate(1000, 1.0).is_err());
     }
 
     #[test]
     fn test_validate_scale_out_of_range() {
         let mut params = default_params();
         params.scale = Some(0.05);
-        assert!(params.validate(1000).is_err());
+        assert!(params.validate(1000, 1.0).is_err());
 
         params.scale = Some(1.5);
-        assert!(params.validate(1000).is_err());
+        assert!(params.validate(1000, 1.0).is_err());
+    }
+
+    #[test]
+    fn test_validate_scale_respects_max_scale() {
+        let mut params = default_params();
+        params.scale = Some(1.5);
+        assert!(params.validate(1000, 2.0).is_ok());
+
+        params.scale = Some(2.0);
+        assert!(params.validate(1000, 2.0).is_ok());
+
+        params.scale = Some(2.5);
+        assert!(params.validate(1000, 2.0).is_err());
     }
 
     #[test]
     fn test_validate_quality_out_of_range() {
         let mut params = default_params();
         params.quality = Some(0);
-        assert!(params.validate(1000).is_err());
+        assert!(params.validate(1000, 1.0).is_err());
 
         params.quality = Some(101);
-        assert!(params.validate(1000).is_err());
+        assert!(params.validate(1000, 1.0).is_err());
     }
 
     #[test]
@@ -360,7 +373,7 @@ mod tests {
         params
             .extra
             .insert("subreddit".to_string(), "x".repeat(1001));
-        assert!(params.validate(1000).is_err());
+        assert!(params.validate(1000, 1.0).is_err());
     }
 
     #[test]
@@ -369,6 +382,6 @@ mod tests {
         params
             .extra
             .insert("subreddit".to_string(), "x".repeat(1000));
-        assert!(params.validate(1000).is_ok());
+        assert!(params.validate(1000, 1.0).is_ok());
     }
 }

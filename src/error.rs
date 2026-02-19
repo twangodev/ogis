@@ -149,14 +149,14 @@ impl ApiError {
         .with_details("Supported formats: png, jpeg, webp")
     }
 
-    pub fn validation_invalid_scale(scale: f32) -> Self {
+    pub fn validation_invalid_scale(scale: f32, max_scale: f32) -> Self {
         Self::new(
             StatusCode::BAD_REQUEST,
             ErrorCode::ValidationInvalidScale,
             format!("Invalid scale value '{}'", scale),
         )
         .with_field("scale")
-        .with_details("Scale must be between 0.1 and 1.0")
+        .with_details(format!("Scale must be between 0.1 and {max_scale}"))
     }
 
     pub fn validation_invalid_quality(quality: u8) -> Self {
@@ -431,12 +431,19 @@ mod tests {
 
     #[test]
     fn test_validation_invalid_scale_status() {
-        let err = ApiError::validation_invalid_scale(0.05);
+        let err = ApiError::validation_invalid_scale(0.05, 1.0);
         assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
         assert!(matches!(err.code, ErrorCode::ValidationInvalidScale));
         assert_eq!(err.field, Some("scale".to_string()));
         assert!(err.message.contains("0.05"));
         assert!(err.details.as_ref().unwrap().contains("0.1"));
+        assert!(err.details.as_ref().unwrap().contains("1"));
+    }
+
+    #[test]
+    fn test_validation_invalid_scale_custom_max() {
+        let err = ApiError::validation_invalid_scale(2.5, 2.0);
+        assert!(err.details.as_ref().unwrap().contains("2"));
     }
 
     #[test]
