@@ -46,6 +46,7 @@ pub struct TemplateMap {
     pub colors: HashMap<String, HashMap<String, String>>,
     pub width_constraints: HashMap<String, TextWidthConstraints>,
     pub font_properties: HashMap<String, TemplateFonts>,
+    pub truncation: HashMap<String, bool>,
 }
 
 impl TemplateMap {
@@ -90,6 +91,17 @@ fn parse_template_colors(template_node: &Yaml) -> Option<HashMap<String, String>
     } else {
         Some(template_colors)
     }
+}
+
+/// Parse truncation setting from a template YAML node (defaults to true)
+fn parse_truncation(template_node: &Yaml) -> bool {
+    let Yaml::Mapping(m) = template_node else {
+        return true;
+    };
+    m.iter()
+        .find(|(key, _)| key.as_str() == Some("truncation"))
+        .and_then(|(_, v)| v.as_bool())
+        .unwrap_or(true)
 }
 
 /// Parse width constraints from a template YAML node
@@ -231,6 +243,7 @@ fn load_template(
     colors: &mut HashMap<String, HashMap<String, String>>,
     width_constraints: &mut HashMap<String, TextWidthConstraints>,
     font_properties: &mut HashMap<String, TemplateFonts>,
+    truncation: &mut HashMap<String, bool>,
 ) {
     let name = template_node["name"].as_str();
     let file_path = template_node["file"].as_str();
@@ -274,6 +287,10 @@ fn load_template(
     // Parse and load width constraints
     let constraints = parse_width_constraints(template_node);
     width_constraints.insert(template_name.to_string(), constraints);
+
+    // Parse truncation setting
+    let trunc = parse_truncation(template_node);
+    truncation.insert(template_name.to_string(), trunc);
 }
 
 pub fn load_templates() -> TemplateMap {
@@ -281,6 +298,7 @@ pub fn load_templates() -> TemplateMap {
     let mut colors = HashMap::new();
     let mut width_constraints = HashMap::new();
     let mut font_properties = HashMap::new();
+    let mut truncation = HashMap::new();
 
     let doc = yaml_loader::load_yaml("templates.yaml");
 
@@ -293,6 +311,7 @@ pub fn load_templates() -> TemplateMap {
                 &mut colors,
                 &mut width_constraints,
                 &mut font_properties,
+                &mut truncation,
             );
         }
     }
@@ -314,6 +333,7 @@ pub fn load_templates() -> TemplateMap {
         colors,
         width_constraints,
         font_properties,
+        truncation,
     };
 
     // Validate that the default template exists

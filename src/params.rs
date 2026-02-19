@@ -122,6 +122,22 @@ impl OgParams {
         }
     }
 
+    /// Extract extra params that aren't color overrides as text replacements
+    pub fn extract_text_overrides(
+        &self,
+        template_name: &str,
+        state: &AppState,
+    ) -> HashMap<String, String> {
+        let template_colors = state.templates.colors.get(template_name);
+        self.extra
+            .iter()
+            .filter(|(key, _)| {
+                template_colors.is_none_or(|colors| !colors.contains_key(key.as_str()))
+            })
+            .map(|(key, value)| (format!("ogis_{}", key), value.clone()))
+            .collect()
+    }
+
     /// Extract and validate color overrides from extra parameters
     pub fn extract_colors(
         &self,

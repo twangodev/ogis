@@ -17,6 +17,7 @@ pub struct TextContent<'a> {
     pub title: &'a str,
     pub description: &'a str,
     pub subtitle: &'a str,
+    pub extra: HashMap<String, String>,
 }
 
 pub struct Images {
@@ -127,21 +128,30 @@ pub fn generate_svg(
     templates: &TemplateMap,
     color_overrides: &HashMap<String, String>,
     fontdb: &Arc<usvg::fontdb::Database>,
+    truncation: bool,
 ) -> Result<String, GeneratorError> {
     let template_content = get_template(templates, template_name)?;
     let content = override_colors(template_content, template_name, templates, color_overrides);
 
-    // Get cached font properties and width constraints, then apply truncation
-    let fonts = get_template_fonts(templates, template_name)?;
-    let constraints = get_width_constraints(templates, template_name);
-    let (truncated_title, truncated_description, truncated_subtitle) = apply_truncation(
-        text.title,
-        text.description,
-        text.subtitle,
-        &constraints,
-        fonts,
-        fontdb,
-    )?;
+    // Apply truncation if enabled for this template
+    let (truncated_title, truncated_description, truncated_subtitle) = if truncation {
+        let fonts = get_template_fonts(templates, template_name)?;
+        let constraints = get_width_constraints(templates, template_name);
+        apply_truncation(
+            text.title,
+            text.description,
+            text.subtitle,
+            &constraints,
+            fonts,
+            fontdb,
+        )?
+    } else {
+        (
+            text.title.to_string(),
+            text.description.to_string(),
+            text.subtitle.to_string(),
+        )
+    };
 
     let mut reader = Reader::from_str(&content);
     reader.config_mut().trim_text(false);
@@ -149,11 +159,13 @@ pub fn generate_svg(
     let mut writer = Writer::new(Cursor::new(Vec::new()));
 
     // Create text replacement map with truncated text: element ID -> replacement text
-    let text_replacements = HashMap::from([
+    let mut text_replacements = HashMap::from([
         ("ogis_title".to_string(), truncated_title),
         ("ogis_description".to_string(), truncated_description),
         ("ogis_subtitle".to_string(), truncated_subtitle),
     ]);
+    // Add extra text fields (no truncation applied)
+    text_replacements.extend(text.extra);
 
     // Convert ValidatedImage to ImageReplacement
     let logo_replacement = images.logo.map(|v| ImageReplacement {
@@ -209,6 +221,7 @@ mod tests {
             colors: HashMap::new(),
             width_constraints: HashMap::new(),
             font_properties: HashMap::new(),
+            truncation: HashMap::new(),
         };
 
         let result = get_template_fonts(&templates, "test");
@@ -227,6 +240,7 @@ mod tests {
             colors: HashMap::new(),
             width_constraints: HashMap::new(),
             font_properties: HashMap::new(),
+            truncation: HashMap::new(),
         };
 
         let constraints = get_width_constraints(&templates, "test");
