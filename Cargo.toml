@@ -7,7 +7,7 @@ edition = "2024"
 axum = "0.8.8"
 base64 = "0.22"
 bytesize = "2.3.1"
-clap = { version = "4.5.58", features = ["derive", "env"] }
+clap = { version = "4.5.60", features = ["derive", "env"] }
 cosmic-text = "0.15"
 dotenvy = "0.15.7"
 futures-util = "0.3.32"
