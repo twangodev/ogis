@@ -1,0 +1,34 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+<!-- ogis_gradient_defs -->
+  </defs>
+
+<!-- ogis_background_layers -->
+
+  <g transform="translate(80, 0)">
+    <text x="0" y="280"
+          font-family="sans-serif"
+          font-size="68"
+          font-weight="bold"
+          fill="{{title_color}}">
+      <tspan id="ogis_title" x="0" dy="0">Placeholder Title</tspan>
+    </text>
+
+    <text x="0" y="350"
+          font-family="sans-serif"
+          font-size="28"
+          fill="{{desc_color}}"
+          opacity="{{desc_opacity}}">
+      <tspan id="ogis_description" x="0" dy="0">Placeholder Description</tspan>
+    </text>
+
+    <text id="ogis_subtitle" x="0" y="570"
+          font-family="sans-serif"
+          font-size="20"
+          font-weight="600"
+          fill="{{subtitle_color}}"
+          opacity="{{subtitle_opacity}}">
+      Placeholder Subtitle
+    </text>
+  </g>
+</svg>

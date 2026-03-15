@@ -56,7 +56,7 @@ fn get_width_constraints(templates: &TemplateMap, template_name: &str) -> TextWi
         .width_constraints
         .get(template_name)
         .cloned()
-        .unwrap_or_else(TextWidthConstraints::new)
+        .unwrap_or_default()
 }
 
 /// Truncate text to fit within width constraints using cached font properties
