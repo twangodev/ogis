@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#1a2e1a'}
+- {offset: 100, color: '#2d3b2d'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: olive
+  cx: 30
+  cy: 45
+  r: 50
+  stops:
+  - {offset: 0, color: '#4d7c0f', opacity: 0.8}
+  - {offset: 100, color: '#4d7c0f', opacity: 0.0}
+- name: lime
+  cx: 70
+  cy: 60
+  r: 55
+  stops:
+  - {offset: 0, color: '#65a30d'}
+  - {offset: 100, color: '#65a30d', opacity: 0.0}
+- name: stone
+  cx: 50
+  cy: 25
+  r: 45
+  stops:
+  - {offset: 0, color: '#78716c', opacity: 0.5}
+  - {offset: 100, color: '#78716c', opacity: 0.0}
+- name: green
+  cx: 15
+  cy: 75
+  r: 40
+  stops:
+  - {offset: 0, color: '#84cc16', opacity: 0.5}
+  - {offset: 100, color: '#84cc16', opacity: 0.0}
+- name: gray
+  cx: 85
+  cy: 30
+  r: 35
+  stops:
+  - {offset: 0, color: '#a3a3a3', opacity: 0.3}
+  - {offset: 100, color: '#a3a3a3', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

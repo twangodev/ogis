@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#e6b8a2'}
+- {offset: 100, color: '#dda0a0'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: lavender
+  cx: 70
+  cy: 25
+  r: 45
+  stops:
+  - {offset: 0, color: '#b57edc', opacity: 0.7}
+  - {offset: 100, color: '#b57edc', opacity: 0.0}
+- name: purple
+  cx: 25
+  cy: 60
+  r: 42
+  stops:
+  - {offset: 0, color: '#9370db', opacity: 0.5}
+  - {offset: 100, color: '#9370db', opacity: 0.0}
+- name: peach
+  cx: 55
+  cy: 80
+  r: 35
+  stops:
+  - {offset: 0, color: '#ffcba4', opacity: 0.6}
+  - {offset: 100, color: '#ffcba4', opacity: 0.0}
+- name: thistle
+  cx: 85
+  cy: 65
+  r: 30
+  stops:
+  - {offset: 0, color: '#d8bfd8', opacity: 0.5}
+  - {offset: 100, color: '#d8bfd8', opacity: 0.0}
+- name: cream
+  cx: 15
+  cy: 35
+  r: 32
+  stops:
+  - {offset: 0, color: '#ffdab9', opacity: 0.5}
+  - {offset: 100, color: '#ffdab9', opacity: 0.0}
+noise:
+  coarse_opacity: 0.06
+  fine_opacity: 0.03
+text_colors: {title: '#4a3728', description: '#5d4654', subtitle: '#6b4e71', desc_opacity: 0.85, subtitle_opacity: 0.7}

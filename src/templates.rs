@@ -590,23 +590,35 @@ fn load_layouts(doc: &Yaml) -> HashMap<String, String> {
     layouts
 }
 
-fn load_gradients(doc: &Yaml) -> HashMap<String, GradientDef> {
+fn load_gradients() -> HashMap<String, GradientDef> {
     let mut gradients = HashMap::new();
-    let Some(Yaml::Mapping(m)) = yaml_get(doc, "gradients") else {
-        return gradients;
+    let dir = match std::fs::read_dir("gradients") {
+        Ok(dir) => dir,
+        Err(e) => {
+            tracing::warn!("No gradients directory found: {e}");
+            return gradients;
+        }
     };
-    for (key, value) in m.iter() {
-        let Some(name) = key.as_str() else { continue };
-        match parse_gradient_def(value) {
-            Some(def) => {
-                tracing::info!(
-                    "Parsed gradient '{name}': {} base stops, {} blobs",
-                    def.base_stops.len(),
-                    def.blobs.len()
-                );
-                gradients.insert(name.to_string(), def);
+    for entry in dir.flatten() {
+        let path = entry.path();
+        if path.extension().is_some_and(|ext| ext == "yaml" || ext == "yml") {
+            let name = path
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .unwrap_or_default()
+                .to_string();
+            let doc = yaml_loader::load_yaml(path.to_str().unwrap_or_default());
+            match parse_gradient_def(&doc) {
+                Some(def) => {
+                    tracing::info!(
+                        "Parsed gradient '{name}': {} base stops, {} blobs",
+                        def.base_stops.len(),
+                        def.blobs.len()
+                    );
+                    gradients.insert(name, def);
+                }
+                None => tracing::error!("Failed to parse gradient from {}", path.display()),
             }
-            None => tracing::error!("Failed to parse gradient '{name}'"),
         }
     }
     gradients
@@ -645,38 +657,27 @@ fn load_file_template(node: &Yaml) -> Option<TemplateEntry> {
 /// Build a composed template from a layout SVG + gradient definition.
 fn build_composed_template(
     template_name: &str,
-    layout_key: &str,
+    layout_svg: &str,
     gradient_key: &str,
-    node: &Yaml,
-    layouts: &HashMap<String, String>,
-    gradients: &HashMap<String, GradientDef>,
-) -> Option<TemplateEntry> {
-    let layout_svg = layouts.get(layout_key).or_else(|| {
-        tracing::error!("Layout '{layout_key}' not found for template '{template_name}'");
-        None
-    })?;
-    let gradient_def = gradients.get(gradient_key).or_else(|| {
-        tracing::error!("Gradient '{gradient_key}' not found for template '{template_name}'");
-        None
-    })?;
-
+    gradient_def: &GradientDef,
+) -> TemplateEntry {
     let svg = compose_template(layout_svg, gradient_def);
     let fonts = parse_font_properties(&svg);
     tracing::info!(
-        "Composed '{template_name}' (layout={layout_key}, gradient={gradient_key}): title={}px/w{}",
+        "Composed '{template_name}' (gradient={gradient_key}): title={}px/w{}",
         fonts.title.size,
         fonts.title.weight,
     );
 
-    Some(TemplateEntry {
+    TemplateEntry {
         name: template_name.to_string(),
         svg,
         colors: build_colors_map(gradient_def),
         fonts,
-        width_constraints: parse_width_constraints(node),
-        truncation: yaml_bool_or(node, "truncation", true),
-        max_scale: yaml_num_or(node, "max_scale", 1.0),
-    })
+        width_constraints: TextWidthConstraints::default(),
+        truncation: true,
+        max_scale: 1.0,
+    }
 }
 
 fn register_entry(
@@ -709,7 +710,7 @@ pub fn load_templates() -> TemplateMap {
     let doc = yaml_loader::load_yaml("templates.yaml");
 
     let layouts = load_layouts(&doc);
-    let gradients = load_gradients(&doc);
+    let gradients = load_gradients();
 
     if !layouts.is_empty() {
         tracing::info!(
@@ -719,20 +720,34 @@ pub fn load_templates() -> TemplateMap {
         );
     }
 
+    // Auto-generate all layout × gradient combinations
+    let mut gradient_names: Vec<&String> = gradients.keys().collect();
+    gradient_names.sort();
+    let mut layout_names: Vec<&String> = layouts.keys().collect();
+    layout_names.sort();
+    for gradient_name in &gradient_names {
+        for layout_name in &layout_names {
+            let template_name = format!("gradient-{gradient_name}-{layout_name}");
+            let layout_svg = &layouts[layout_name.as_str()];
+            let gradient_def = &gradients[gradient_name.as_str()];
+            let entry =
+                build_composed_template(&template_name, layout_svg, gradient_name, gradient_def);
+            register_entry(
+                entry,
+                &mut templates,
+                &mut colors,
+                &mut width_constraints,
+                &mut font_properties,
+                &mut truncation,
+                &mut max_scale,
+            );
+        }
+    }
+
+    // Load file-based templates from templates.yaml
     if let Some(template_list) = yaml_vec(&doc, "templates") {
         for node in template_list {
-            let entry = match (
-                yaml_str(node, "name"),
-                yaml_str(node, "layout"),
-                yaml_str(node, "gradient"),
-            ) {
-                (Some(name), Some(layout), Some(gradient)) => {
-                    build_composed_template(&name, &layout, &gradient, node, &layouts, &gradients)
-                }
-                _ => load_file_template(node),
-            };
-
-            if let Some(entry) = entry {
+            if let Some(entry) = load_file_template(node) {
                 register_entry(
                     entry,
                     &mut templates,

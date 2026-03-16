@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#4a1942'}
+- {offset: 100, color: '#5c2a54'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: gold
+  cx: 75
+  cy: 25
+  r: 45
+  stops:
+  - {offset: 0, color: '#ffd700', opacity: 0.7}
+  - {offset: 100, color: '#ffd700', opacity: 0.0}
+- name: amber
+  cx: 20
+  cy: 60
+  r: 42
+  stops:
+  - {offset: 0, color: '#daa520', opacity: 0.5}
+  - {offset: 100, color: '#daa520', opacity: 0.0}
+- name: plum
+  cx: 55
+  cy: 80
+  r: 35
+  stops:
+  - {offset: 0, color: '#7b2869', opacity: 0.6}
+  - {offset: 100, color: '#7b2869', opacity: 0.0}
+- name: yellow
+  cx: 90
+  cy: 65
+  r: 30
+  stops:
+  - {offset: 0, color: '#ffec8b', opacity: 0.4}
+  - {offset: 100, color: '#ffec8b', opacity: 0.0}
+- name: wine
+  cx: 10
+  cy: 30
+  r: 32
+  stops:
+  - {offset: 0, color: '#8b3a62', opacity: 0.5}
+  - {offset: 100, color: '#8b3a62', opacity: 0.0}
+noise:
+  coarse_opacity: 0.12
+  fine_opacity: 0.06
+text_colors: {title: '#ffffff', description: '#fff8e8', subtitle: '#fff0d8', desc_opacity: 0.85, subtitle_opacity: 0.7}

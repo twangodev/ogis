@@ -6,6 +6,7 @@ export interface TemplateDefinition {
 	name: string;
 	label: string;
 	colors: string[];
+	layout?: string;
 }
 
 export interface PlaygroundContent {

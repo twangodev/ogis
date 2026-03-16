@@ -4,6 +4,7 @@
 	import { playground } from '$lib/stores/playground.svelte';
 	import TemplateCard from './TemplateCard.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Select from '$lib/components/ui/select';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
@@ -13,11 +14,48 @@
 
 	let dialogOpen = $state(false);
 	let search = $state('');
+	let selectedLayout = $state<string>('all');
+
+	function formatLayoutName(layout: string): string {
+		return layout
+			.replace(/-/g, ' ')
+			.replace(/\b\w/g, (c) => c.toUpperCase());
+	}
+
+	const layoutOptions = $derived.by(() => {
+		const counts = new Map<string, number>();
+		for (const t of playground.templates) {
+			if (t.layout) {
+				counts.set(t.layout, (counts.get(t.layout) ?? 0) + 1);
+			}
+		}
+		return Array.from(counts.entries())
+			.sort((a, b) => b[1] - a[1])
+			.map(([layout, count]) => ({
+				value: layout,
+				label: formatLayoutName(layout),
+				count
+			}));
+	});
+
+	const layoutFilteredTemplates = $derived(
+		selectedLayout === 'all'
+			? playground.templates
+			: playground.templates.filter((t) => t.layout === selectedLayout)
+	);
 
 	const filteredTemplates = $derived(
 		search.trim()
-			? fuzzysort.go(search, playground.templates, { keys: ['label', 'name'] }).map((r) => r.obj)
-			: playground.templates
+			? fuzzysort
+					.go(search, layoutFilteredTemplates, { keys: ['label', 'name'] })
+					.map((r) => r.obj)
+			: layoutFilteredTemplates
+	);
+
+	const selectedLayoutLabel = $derived(
+		selectedLayout === 'all'
+			? `All Layouts (${playground.templates.length})`
+			: `${formatLayoutName(selectedLayout)} (${layoutFilteredTemplates.length})`
 	);
 
 	$effect(() => {
@@ -25,9 +63,28 @@
 	});
 </script>
 
+<!-- Layout filter -->
+<div class="mb-2">
+	<Select.Root type="single" bind:value={selectedLayout}>
+		<Select.Trigger class="w-full">
+			{selectedLayoutLabel}
+		</Select.Trigger>
+		<Select.Content>
+			<Select.Item value="all" label="All Layouts ({playground.templates.length})">
+				All Layouts ({playground.templates.length})
+			</Select.Item>
+			{#each layoutOptions as opt (opt.value)}
+				<Select.Item value={opt.value} label="{opt.label} ({opt.count})">
+					{opt.label} ({opt.count})
+				</Select.Item>
+			{/each}
+		</Select.Content>
+	</Select.Root>
+</div>
+
 <!-- First 5 rows (15 templates) always visible -->
 <div class="grid grid-cols-3 gap-2">
-	{#each playground.templates.slice(0, 15) as template (template.name)}
+	{#each layoutFilteredTemplates.slice(0, 15) as template (template.name)}
 		<TemplateCard
 			name={template.name}
 			label={template.label}
@@ -38,7 +95,7 @@
 </div>
 
 <!-- Show more button opens dialog -->
-{#if playground.templates.length > 15}
+{#if layoutFilteredTemplates.length > 15}
 	<Dialog.Root bind:open={dialogOpen}>
 		<Dialog.Trigger
 			class="flex w-full items-center justify-center gap-1 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -51,9 +108,11 @@
 				<div class="flex items-center justify-between pr-8">
 					<div>
 						<Dialog.Title>All Templates</Dialog.Title>
-						<Dialog.Description
-							>Choose from {playground.templates.length} available templates</Dialog.Description
-						>
+						<Dialog.Description>
+							{selectedLayout === 'all'
+								? `Choose from ${playground.templates.length} available templates`
+								: `${layoutFilteredTemplates.length} templates with ${formatLayoutName(selectedLayout)} layout`}
+						</Dialog.Description>
 					</div>
 					<Button variant="ghost" size="icon" onclick={() => playground.shuffleTemplates()}>
 						<ShuffleIcon class="size-4" />

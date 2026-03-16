@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#451a03'}
+- {offset: 100, color: '#78350f'}
+direction: [50, 0, 50, 100]
+blobs:
+- name: cream
+  cx: 50
+  cy: 30
+  r: 55
+  stops:
+  - {offset: 0, color: '#f7e7ce', opacity: 0.6}
+  - {offset: 100, color: '#f7e7ce', opacity: 0.0}
+- name: gold
+  cx: 25
+  cy: 60
+  r: 50
+  stops:
+  - {offset: 0, color: '#d4af37', opacity: 0.7}
+  - {offset: 100, color: '#d4af37', opacity: 0.0}
+- name: tan
+  cx: 75
+  cy: 55
+  r: 50
+  stops:
+  - {offset: 0, color: '#c9a66b', opacity: 0.6}
+  - {offset: 100, color: '#c9a66b', opacity: 0.0}
+- name: yellow
+  cx: 40
+  cy: 80
+  r: 40
+  stops:
+  - {offset: 0, color: '#fcd34d', opacity: 0.5}
+  - {offset: 100, color: '#fcd34d', opacity: 0.0}
+- name: ivory
+  cx: 70
+  cy: 20
+  r: 35
+  stops:
+  - {offset: 0, color: '#fef3c7', opacity: 0.5}
+  - {offset: 100, color: '#fef3c7', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

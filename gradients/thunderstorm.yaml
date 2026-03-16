@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#374151'}
+- {offset: 100, color: '#4b5563'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: electric
+  cx: 80
+  cy: 25
+  r: 45
+  stops:
+  - {offset: 0, color: '#38bdf8', opacity: 0.7}
+  - {offset: 100, color: '#38bdf8', opacity: 0.0}
+- name: sky
+  cx: 20
+  cy: 60
+  r: 42
+  stops:
+  - {offset: 0, color: '#0ea5e9', opacity: 0.5}
+  - {offset: 100, color: '#0ea5e9', opacity: 0.0}
+- name: gray
+  cx: 55
+  cy: 80
+  r: 38
+  stops:
+  - {offset: 0, color: '#6b7280', opacity: 0.6}
+  - {offset: 100, color: '#6b7280', opacity: 0.0}
+- name: light_blue
+  cx: 90
+  cy: 70
+  r: 32
+  stops:
+  - {offset: 0, color: '#7dd3fc', opacity: 0.4}
+  - {offset: 100, color: '#7dd3fc', opacity: 0.0}
+- name: slate
+  cx: 10
+  cy: 30
+  r: 30
+  stops:
+  - {offset: 0, color: '#9ca3af', opacity: 0.5}
+  - {offset: 100, color: '#9ca3af', opacity: 0.0}
+noise:
+  coarse_opacity: 0.15
+  fine_opacity: 0.08
+text_colors: {title: '#ffffff', description: '#bae6fd', subtitle: '#e0f2fe', desc_opacity: 0.85, subtitle_opacity: 0.7}

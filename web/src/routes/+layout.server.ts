@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { parse } from 'yaml';
 import { resolve } from 'path';
 import { fetchCloudflareStats } from '$lib/cloudflare';
@@ -23,27 +23,49 @@ interface TemplateEntry {
 
 interface TemplatesYaml {
 	default: string;
-	gradients?: Record<string, GradientDef>;
+	layouts?: Record<string, string>;
 	templates: TemplateEntry[];
 }
 
 export async function load() {
-	// Read templates.yaml from repo root (one level up from web/)
-	const yamlPath = resolve(process.cwd(), '..', 'templates.yaml');
+	const repoRoot = resolve(process.cwd(), '..');
+
+	// Read templates.yaml from repo root
+	const yamlPath = resolve(repoRoot, 'templates.yaml');
 	const yamlContent = readFileSync(yamlPath, 'utf-8');
 	const data = parse(yamlContent) as TemplatesYaml;
 
-	// Split into base and gradient templates
-	const base = data.templates.filter((t) => !t.name.startsWith('gradient-'));
-	const gradients = data.templates.filter((t) => t.name.startsWith('gradient-'));
+	// Read gradient definitions from gradients/ directory
+	const gradientsDir = resolve(repoRoot, 'gradients');
+	const gradientDefs: Record<string, GradientDef> = {};
+	for (const file of readdirSync(gradientsDir)) {
+		if (file.endsWith('.yaml') || file.endsWith('.yml')) {
+			const name = file.replace(/\.ya?ml$/, '');
+			const content = readFileSync(resolve(gradientsDir, file), 'utf-8');
+			gradientDefs[name] = parse(content) as GradientDef;
+		}
+	}
+
+	// Auto-generate all layout × gradient combinations
+	const layoutNames = Object.keys(data.layouts ?? {}).sort();
+	const gradientNames = Object.keys(gradientDefs).sort();
+
+	const composedTemplates: TemplateEntry[] = gradientNames.flatMap((gradient) =>
+		layoutNames.map((layout) => ({
+			name: `gradient-${gradient}-${layout}`,
+			layout,
+			gradient
+		}))
+	);
+
+	// Combine: composed templates + file-based templates from YAML
+	const allTemplates = [...composedTemplates, ...data.templates];
 
 	// Get color keys for a template entry
 	function getColorKeys(t: TemplateEntry): string[] {
-		// File-based templates have explicit colors
 		if (t.colors) return Object.keys(t.colors);
-		// Composed templates derive colors from the gradient definition
-		if (t.gradient && data.gradients?.[t.gradient]) {
-			const grad = data.gradients[t.gradient];
+		if (t.gradient && gradientDefs[t.gradient]) {
+			const grad = gradientDefs[t.gradient];
 			return ['background', ...grad.blobs.map((b) => `blob_${b.name}`), 'text'];
 		}
 		return [];
@@ -56,15 +78,19 @@ export async function load() {
 			.replace('gradient-', '')
 			.replace(/-/g, ' ')
 			.replace(/\b\w/g, (c) => c.toUpperCase()),
-		colors: getColorKeys(t)
+		colors: getColorKeys(t),
+		layout: t.layout
 	});
+
+	const base = allTemplates.filter((t) => !t.name.startsWith('gradient-'));
+	const gradients = allTemplates.filter((t) => t.name.startsWith('gradient-'));
 
 	// Fetch Cloudflare stats at build time
 	const stats = await fetchCloudflareStats();
 
 	return {
 		templates: {
-			all: data.templates.map(formatTemplate),
+			all: allTemplates.map(formatTemplate),
 			base: base.map(formatTemplate),
 			gradients: gradients.map(formatTemplate),
 			default: data.default

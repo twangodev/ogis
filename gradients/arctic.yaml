@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#0c4a6e'}
+- {offset: 100, color: '#164e63'}
+direction: [0, 100, 100, 0]
+blobs:
+- name: cyan
+  cx: 30
+  cy: 25
+  r: 55
+  stops:
+  - {offset: 0, color: '#67e8f9', opacity: 0.7}
+  - {offset: 100, color: '#67e8f9', opacity: 0.0}
+- name: light_cyan
+  cx: 70
+  cy: 70
+  r: 50
+  stops:
+  - {offset: 0, color: '#a5f3fc'}
+  - {offset: 100, color: '#a5f3fc', opacity: 0.0}
+- name: sky
+  cx: 15
+  cy: 75
+  r: 45
+  stops:
+  - {offset: 0, color: '#7dd3fc', opacity: 0.6}
+  - {offset: 100, color: '#7dd3fc', opacity: 0.0}
+- name: ice
+  cx: 85
+  cy: 30
+  r: 40
+  stops:
+  - {offset: 0, color: '#e0f2fe', opacity: 0.5}
+  - {offset: 100, color: '#e0f2fe', opacity: 0.0}
+- name: teal
+  cx: 50
+  cy: 50
+  r: 60
+  stops:
+  - {offset: 0, color: '#22d3ee', opacity: 0.4}
+  - {offset: 100, color: '#22d3ee', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

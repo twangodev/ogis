@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#37474f'}
+- {offset: 100, color: '#455a64'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: steel
+  cx: 25
+  cy: 25
+  r: 35
+  stops:
+  - {offset: 0, color: '#4682b4', opacity: 0.7}
+  - {offset: 100, color: '#4682b4', opacity: 0.0}
+- name: teal
+  cx: 75
+  cy: 25
+  r: 35
+  stops:
+  - {offset: 0, color: '#5f9ea0', opacity: 0.6}
+  - {offset: 100, color: '#5f9ea0', opacity: 0.0}
+- name: slate
+  cx: 25
+  cy: 75
+  r: 35
+  stops:
+  - {offset: 0, color: '#708090', opacity: 0.6}
+  - {offset: 100, color: '#708090', opacity: 0.0}
+- name: color_4
+  cx: 75
+  cy: 75
+  r: 35
+  stops:
+  - {offset: 0, color: '#778899', opacity: 0.5}
+  - {offset: 100, color: '#778899', opacity: 0.0}
+- name: light
+  cx: 50
+  cy: 50
+  r: 40
+  stops:
+  - {offset: 0, color: '#b0c4de', opacity: 0.4}
+  - {offset: 100, color: '#b0c4de', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

@@ -1,0 +1,45 @@
+base_stops:
+- {offset: 0, color: '#4a1942'}
+- {offset: 50, color: '#8b4367'}
+- {offset: 100, color: '#fcb69f'}
+direction: [0, 100, 0, 0]
+blobs:
+- name: cream
+  cx: 50
+  cy: 85
+  r: 60
+  stops:
+  - {offset: 0, color: '#ffecd2', opacity: 0.7}
+  - {offset: 100, color: '#ffecd2', opacity: 0.0}
+- name: peach
+  cx: 30
+  cy: 70
+  r: 50
+  stops:
+  - {offset: 0, color: '#fcb69f', opacity: 0.6}
+  - {offset: 100, color: '#fcb69f', opacity: 0.0}
+- name: pink
+  cx: 70
+  cy: 75
+  r: 45
+  stops:
+  - {offset: 0, color: '#ff9a9e', opacity: 0.6}
+  - {offset: 100, color: '#ff9a9e', opacity: 0.0}
+- name: coral
+  cx: 20
+  cy: 60
+  r: 35
+  stops:
+  - {offset: 0, color: '#fad0c4', opacity: 0.5}
+  - {offset: 100, color: '#fad0c4', opacity: 0.0}
+- name: color_5
+  cx: 80
+  cy: 65
+  r: 40
+  stops:
+  - {offset: 0, color: '#ffeaa7', opacity: 0.4}
+  - {offset: 100, color: '#ffeaa7', opacity: 0.0}
+noise:
+  coarse_opacity: 0.15
+  fine_opacity: 0.08
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

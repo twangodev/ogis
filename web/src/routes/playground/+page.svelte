@@ -15,8 +15,9 @@
 	let { data } = $props();
 
 	onMount(() => {
-		// Set templates from layout data
+		// Set templates from layout data and shuffle for variety
 		playground.setTemplates(data.templates.all);
+		playground.shuffleTemplates();
 		// Initialize state from URL params on mount
 		playground.initFromUrl(page.url.searchParams);
 	});

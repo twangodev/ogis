@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#7c2d12'}
+- {offset: 100, color: '#9a3412'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: peach
+  cx: 30
+  cy: 40
+  r: 55
+  stops:
+  - {offset: 0, color: '#fdba74', opacity: 0.8}
+  - {offset: 100, color: '#fdba74', opacity: 0.0}
+- name: light_peach
+  cx: 70
+  cy: 30
+  r: 50
+  stops:
+  - {offset: 0, color: '#fed7aa'}
+  - {offset: 100, color: '#fed7aa', opacity: 0.0}
+- name: yellow
+  cx: 55
+  cy: 70
+  r: 50
+  stops:
+  - {offset: 0, color: '#fbbf24', opacity: 0.6}
+  - {offset: 100, color: '#fbbf24', opacity: 0.0}
+- name: orange
+  cx: 20
+  cy: 75
+  r: 40
+  stops:
+  - {offset: 0, color: '#fb923c', opacity: 0.7}
+  - {offset: 100, color: '#fb923c', opacity: 0.0}
+- name: cream
+  cx: 85
+  cy: 60
+  r: 45
+  stops:
+  - {offset: 0, color: '#ffedd5', opacity: 0.5}
+  - {offset: 100, color: '#ffedd5', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

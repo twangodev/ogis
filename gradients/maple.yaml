@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#5c1a1a'}
+- {offset: 100, color: '#722828'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: orange
+  cx: 25
+  cy: 25
+  r: 40
+  stops:
+  - {offset: 0, color: '#c04000', opacity: 0.8}
+  - {offset: 100, color: '#c04000', opacity: 0.0}
+- name: tomato
+  cx: 55
+  cy: 45
+  r: 45
+  stops:
+  - {offset: 0, color: '#ff6347', opacity: 0.7}
+  - {offset: 100, color: '#ff6347', opacity: 0.0}
+- name: coral
+  cx: 35
+  cy: 70
+  r: 40
+  stops:
+  - {offset: 0, color: '#cd5c5c', opacity: 0.6}
+  - {offset: 100, color: '#cd5c5c', opacity: 0.0}
+- name: color_4
+  cx: 70
+  cy: 25
+  r: 35
+  stops:
+  - {offset: 0, color: '#e9967a', opacity: 0.5}
+  - {offset: 100, color: '#e9967a', opacity: 0.0}
+- name: color_5
+  cx: 15
+  cy: 55
+  r: 30
+  stops:
+  - {offset: 0, color: '#ffa07a', opacity: 0.4}
+  - {offset: 100, color: '#ffa07a', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

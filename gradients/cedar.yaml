@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#3e2723'}
+- {offset: 100, color: '#4e342e'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: tan
+  cx: 20
+  cy: 50
+  r: 55
+  stops:
+  - {offset: 0, color: '#c19a6b', opacity: 0.8}
+  - {offset: 100, color: '#c19a6b', opacity: 0.0}
+- name: sienna
+  cx: 20
+  cy: 50
+  r: 40
+  stops:
+  - {offset: 0, color: '#8b4513', opacity: 0.7}
+  - {offset: 100, color: '#8b4513', opacity: 0.0}
+- name: brown
+  cx: 20
+  cy: 50
+  r: 25
+  stops:
+  - {offset: 0, color: '#654321', opacity: 0.8}
+  - {offset: 100, color: '#654321', opacity: 0.0}
+- name: color_4
+  cx: 40
+  cy: 30
+  r: 35
+  stops:
+  - {offset: 0, color: '#a0522d', opacity: 0.5}
+  - {offset: 100, color: '#a0522d', opacity: 0.0}
+- name: color_5
+  cx: 35
+  cy: 75
+  r: 30
+  stops:
+  - {offset: 0, color: '#d2b48c', opacity: 0.4}
+  - {offset: 100, color: '#d2b48c', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

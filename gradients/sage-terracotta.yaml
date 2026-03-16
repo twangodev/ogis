@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#7d8471'}
+- {offset: 100, color: '#9caf88'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: terracotta
+  cx: 70
+  cy: 30
+  r: 45
+  stops:
+  - {offset: 0, color: '#cd5c45', opacity: 0.7}
+  - {offset: 100, color: '#cd5c45', opacity: 0.0}
+- name: rust
+  cx: 25
+  cy: 65
+  r: 42
+  stops:
+  - {offset: 0, color: '#e07850', opacity: 0.5}
+  - {offset: 100, color: '#e07850', opacity: 0.0}
+- name: sage
+  cx: 50
+  cy: 20
+  r: 38
+  stops:
+  - {offset: 0, color: '#b2ac88', opacity: 0.6}
+  - {offset: 100, color: '#b2ac88', opacity: 0.0}
+- name: tan
+  cx: 85
+  cy: 70
+  r: 32
+  stops:
+  - {offset: 0, color: '#c4a484', opacity: 0.4}
+  - {offset: 100, color: '#c4a484', opacity: 0.0}
+- name: brown
+  cx: 15
+  cy: 80
+  r: 30
+  stops:
+  - {offset: 0, color: '#a67b5b', opacity: 0.5}
+  - {offset: 100, color: '#a67b5b', opacity: 0.0}
+noise:
+  coarse_opacity: 0.1
+  fine_opacity: 0.05
+text_colors: {title: '#ffffff', description: '#ffeedd', subtitle: '#fff5eb', desc_opacity: 0.85, subtitle_opacity: 0.8}

@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#0a0a18'}
+- {offset: 100, color: '#101025'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: navy
+  cx: 15
+  cy: 25
+  r: 40
+  stops:
+  - {offset: 0, color: '#1a1a2e', opacity: 0.8}
+  - {offset: 100, color: '#1a1a2e', opacity: 0.0}
+- name: indigo
+  cx: 85
+  cy: 75
+  r: 45
+  stops:
+  - {offset: 0, color: '#16213e', opacity: 0.7}
+  - {offset: 100, color: '#16213e', opacity: 0.0}
+- name: blue
+  cx: 25
+  cy: 75
+  r: 40
+  stops:
+  - {offset: 0, color: '#0f3460', opacity: 0.6}
+  - {offset: 100, color: '#0f3460', opacity: 0.0}
+- name: color_4
+  cx: 75
+  cy: 30
+  r: 35
+  stops:
+  - {offset: 0, color: '#1a2a50', opacity: 0.5}
+  - {offset: 100, color: '#1a2a50', opacity: 0.0}
+- name: color_5
+  cx: 50
+  cy: 50
+  r: 30
+  stops:
+  - {offset: 0, color: '#253560', opacity: 0.4}
+  - {offset: 100, color: '#253560', opacity: 0.0}
+noise:
+  coarse_opacity: 0.15
+  fine_opacity: 0.08
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#a0a0c0', desc_opacity: 0.8, subtitle_opacity: 0.8}

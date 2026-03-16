@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#5c3d2e'}
+- {offset: 100, color: '#6d4c3d'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: orange
+  cx: 35
+  cy: 40
+  r: 50
+  stops:
+  - {offset: 0, color: '#b06500', opacity: 0.8}
+  - {offset: 100, color: '#b06500', opacity: 0.0}
+- name: coral
+  cx: 55
+  cy: 60
+  r: 45
+  stops:
+  - {offset: 0, color: '#e2725b', opacity: 0.7}
+  - {offset: 100, color: '#e2725b', opacity: 0.0}
+- name: rust
+  cx: 25
+  cy: 65
+  r: 40
+  stops:
+  - {offset: 0, color: '#cf5c36', opacity: 0.6}
+  - {offset: 100, color: '#cf5c36', opacity: 0.0}
+- name: color_4
+  cx: 65
+  cy: 30
+  r: 35
+  stops:
+  - {offset: 0, color: '#d4a574', opacity: 0.5}
+  - {offset: 100, color: '#d4a574', opacity: 0.0}
+- name: color_5
+  cx: 45
+  cy: 20
+  r: 30
+  stops:
+  - {offset: 0, color: '#f4a460', opacity: 0.4}
+  - {offset: 100, color: '#f4a460', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}
