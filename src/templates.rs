@@ -180,9 +180,7 @@ fn yaml_num_val(node: &Yaml) -> Option<f32> {
 }
 
 fn yaml_num(node: &Yaml, key: &str) -> f32 {
-    yaml_get(node, key)
-        .and_then(yaml_num_val)
-        .unwrap_or(0.0)
+    yaml_get(node, key).and_then(yaml_num_val).unwrap_or(0.0)
 }
 
 fn yaml_num_or(node: &Yaml, key: &str, default: f32) -> f32 {
@@ -355,7 +353,14 @@ fn write_stop(out: &mut String, stop: &GradientStop) {
     out.push_str("/>\n");
 }
 
-fn write_noise_filter(out: &mut String, id: &str, freq: f32, octaves: u32, slope: f32, intercept: f32) {
+fn write_noise_filter(
+    out: &mut String,
+    id: &str,
+    freq: f32,
+    octaves: u32,
+    slope: f32,
+    intercept: f32,
+) {
     out.push_str("    <filter id=\"");
     out.push_str(id);
     out.push_str("\" x=\"0%\" y=\"0%\" width=\"100%\" height=\"100%\">");
@@ -380,7 +385,10 @@ fn build_gradient_defs(gradient: &GradientDef) -> String {
     // Base linear gradient
     out.push_str(&format!(
         "    <linearGradient id=\"baseGradient\" x1=\"{}%\" y1=\"{}%\" x2=\"{}%\" y2=\"{}%\">\n",
-        fmt_num(d[0]), fmt_num(d[1]), fmt_num(d[2]), fmt_num(d[3])
+        fmt_num(d[0]),
+        fmt_num(d[1]),
+        fmt_num(d[2]),
+        fmt_num(d[3])
     ));
     for stop in &gradient.base_stops {
         write_stop(&mut out, stop);
@@ -391,7 +399,10 @@ fn build_gradient_defs(gradient: &GradientDef) -> String {
     for (i, blob) in gradient.blobs.iter().enumerate() {
         out.push_str(&format!(
             "    <radialGradient id=\"blob{}\" cx=\"{}%\" cy=\"{}%\" r=\"{}%\">\n",
-            i + 1, fmt_num(blob.cx), fmt_num(blob.cy), fmt_num(blob.r)
+            i + 1,
+            fmt_num(blob.cx),
+            fmt_num(blob.cy),
+            fmt_num(blob.r)
         ));
         for stop in &blob.stops {
             write_stop(&mut out, stop);
@@ -401,8 +412,22 @@ fn build_gradient_defs(gradient: &GradientDef) -> String {
 
     // Noise filters
     let n = &gradient.noise;
-    write_noise_filter(&mut out, "noiseCoarse", n.coarse_frequency, n.coarse_octaves, n.coarse_slope, n.coarse_intercept);
-    write_noise_filter(&mut out, "noiseFine", n.fine_frequency, n.fine_octaves, n.fine_slope, n.fine_intercept);
+    write_noise_filter(
+        &mut out,
+        "noiseCoarse",
+        n.coarse_frequency,
+        n.coarse_octaves,
+        n.coarse_slope,
+        n.coarse_intercept,
+    );
+    write_noise_filter(
+        &mut out,
+        "noiseFine",
+        n.fine_frequency,
+        n.fine_octaves,
+        n.fine_slope,
+        n.fine_intercept,
+    );
 
     out
 }
@@ -439,8 +464,14 @@ fn build_gradient_layers(gradient: &GradientDef) -> String {
 fn compose_template(layout_svg: &str, gradient: &GradientDef) -> String {
     let tc = &gradient.text_colors;
     layout_svg
-        .replace("<!-- ogis_gradient_defs -->", &build_gradient_defs(gradient))
-        .replace("<!-- ogis_background_layers -->", &build_gradient_layers(gradient))
+        .replace(
+            "<!-- ogis_gradient_defs -->",
+            &build_gradient_defs(gradient),
+        )
+        .replace(
+            "<!-- ogis_background_layers -->",
+            &build_gradient_layers(gradient),
+        )
         .replace("{{title_color}}", &tc.title)
         .replace("{{desc_color}}", &tc.description)
         .replace("{{subtitle_color}}", &tc.subtitle)
@@ -590,9 +621,12 @@ fn load_file_template(node: &Yaml) -> Option<TemplateEntry> {
     let fonts = parse_font_properties(&svg);
     tracing::info!(
         "Loaded '{name}' from {path}: title={}px/w{}, desc={}px/w{}, subtitle={}px/w{}",
-        fonts.title.size, fonts.title.weight,
-        fonts.description.size, fonts.description.weight,
-        fonts.subtitle.size, fonts.subtitle.weight,
+        fonts.title.size,
+        fonts.title.weight,
+        fonts.description.size,
+        fonts.description.weight,
+        fonts.subtitle.size,
+        fonts.subtitle.weight,
     );
 
     let colors = parse_template_colors(node);
@@ -692,9 +726,9 @@ pub fn load_templates() -> TemplateMap {
                 yaml_str(node, "layout"),
                 yaml_str(node, "gradient"),
             ) {
-                (Some(name), Some(layout), Some(gradient)) => build_composed_template(
-                    &name, &layout, &gradient, node, &layouts, &gradients,
-                ),
+                (Some(name), Some(layout), Some(gradient)) => {
+                    build_composed_template(&name, &layout, &gradient, node, &layouts, &gradients)
+                }
                 _ => load_file_template(node),
             };
 
@@ -716,8 +750,7 @@ pub fn load_templates() -> TemplateMap {
         panic!("No templates were loaded from templates.yaml");
     }
 
-    let default = yaml_str(&doc, "default")
-        .expect("Missing 'default' field in templates.yaml");
+    let default = yaml_str(&doc, "default").expect("Missing 'default' field in templates.yaml");
 
     let template_map = TemplateMap {
         templates,
@@ -758,8 +791,16 @@ mod tests {
     fn test_gradient(text_colors: GradientTextColors) -> GradientDef {
         GradientDef {
             base_stops: vec![
-                GradientStop { offset: 0.0, color: "#111111".to_string(), opacity: None },
-                GradientStop { offset: 100.0, color: "#222222".to_string(), opacity: None },
+                GradientStop {
+                    offset: 0.0,
+                    color: "#111111".to_string(),
+                    opacity: None,
+                },
+                GradientStop {
+                    offset: 100.0,
+                    color: "#222222".to_string(),
+                    opacity: None,
+                },
             ],
             direction: [0.0, 0.0, 100.0, 100.0],
             blobs: vec![BlobDef {
@@ -768,8 +809,16 @@ mod tests {
                 cy: 70.0,
                 r: 60.0,
                 stops: vec![
-                    GradientStop { offset: 0.0, color: "#7c3aed".to_string(), opacity: Some(0.8) },
-                    GradientStop { offset: 100.0, color: "#7c3aed".to_string(), opacity: Some(0.0) },
+                    GradientStop {
+                        offset: 0.0,
+                        color: "#7c3aed".to_string(),
+                        opacity: Some(0.8),
+                    },
+                    GradientStop {
+                        offset: 100.0,
+                        color: "#7c3aed".to_string(),
+                        opacity: Some(0.0),
+                    },
                 ],
             }],
             noise: NoiseDef::default(),
@@ -793,12 +842,18 @@ mod tests {
 
     #[test]
     fn test_parse_max_scale_defaults_to_one() {
-        assert_eq!(yaml_num_or(&parse_yaml("name: test"), "max_scale", 1.0), 1.0);
+        assert_eq!(
+            yaml_num_or(&parse_yaml("name: test"), "max_scale", 1.0),
+            1.0
+        );
     }
 
     #[test]
     fn test_parse_max_scale_custom() {
-        assert_eq!(yaml_num_or(&parse_yaml("max_scale: 2.0"), "max_scale", 1.0), 2.0);
+        assert_eq!(
+            yaml_num_or(&parse_yaml("max_scale: 2.0"), "max_scale", 1.0),
+            2.0
+        );
     }
 
     #[test]
@@ -854,13 +909,17 @@ mod tests {
     #[test]
     fn test_build_colors_map_empty_stops() {
         let gradient = GradientDef {
-            base_stops: vec![
-                GradientStop { offset: 0.0, color: "#000".to_string(), opacity: None },
-            ],
+            base_stops: vec![GradientStop {
+                offset: 0.0,
+                color: "#000".to_string(),
+                opacity: None,
+            }],
             direction: [0.0; 4],
             blobs: vec![BlobDef {
                 name: "empty".to_string(),
-                cx: 0.0, cy: 0.0, r: 0.0,
+                cx: 0.0,
+                cy: 0.0,
+                r: 0.0,
                 stops: vec![],
             }],
             noise: NoiseDef::default(),
