@@ -3,15 +3,28 @@ import { parse } from 'yaml';
 import { resolve } from 'path';
 import { fetchCloudflareStats } from '$lib/cloudflare';
 
-interface TemplateConfig {
+interface GradientBlob {
 	name: string;
-	file: string;
-	colors: Record<string, string>;
+}
+
+interface GradientDef {
+	blobs: GradientBlob[];
+}
+
+interface TemplateEntry {
+	name: string;
+	// File-based templates
+	file?: string;
+	colors?: Record<string, string>;
+	// Composed templates
+	layout?: string;
+	gradient?: string;
 }
 
 interface TemplatesYaml {
 	default: string;
-	templates: TemplateConfig[];
+	gradients?: Record<string, GradientDef>;
+	templates: TemplateEntry[];
 }
 
 export async function load() {
@@ -24,14 +37,26 @@ export async function load() {
 	const base = data.templates.filter((t) => !t.name.startsWith('gradient-'));
 	const gradients = data.templates.filter((t) => t.name.startsWith('gradient-'));
 
+	// Get color keys for a template entry
+	function getColorKeys(t: TemplateEntry): string[] {
+		// File-based templates have explicit colors
+		if (t.colors) return Object.keys(t.colors);
+		// Composed templates derive colors from the gradient definition
+		if (t.gradient && data.gradients?.[t.gradient]) {
+			const grad = data.gradients[t.gradient];
+			return ['background', ...grad.blobs.map((b) => `blob_${b.name}`), 'text'];
+		}
+		return [];
+	}
+
 	// Create display-friendly format
-	const formatTemplate = (t: TemplateConfig) => ({
+	const formatTemplate = (t: TemplateEntry) => ({
 		name: t.name,
 		label: t.name
 			.replace('gradient-', '')
 			.replace(/-/g, ' ')
 			.replace(/\b\w/g, (c) => c.toUpperCase()),
-		colors: Object.keys(t.colors)
+		colors: getColorKeys(t)
 	});
 
 	// Fetch Cloudflare stats at build time

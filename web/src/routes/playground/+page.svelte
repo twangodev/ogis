@@ -7,6 +7,7 @@
 	import MediaInputs from '$lib/components/playground/MediaInputs.svelte';
 	import ColorCustomizer from '$lib/components/playground/ColorCustomizer.svelte';
 	import OutputSettings from '$lib/components/playground/OutputSettings.svelte';
+	import ServerConfig from '$lib/components/playground/ServerConfig.svelte';
 	import PreviewPanel from '$lib/components/playground/PreviewPanel.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ShuffleIcon from '@lucide/svelte/icons/shuffle';
@@ -72,6 +73,12 @@
 			<section>
 				<h2 class="mb-3 text-sm font-medium">Output</h2>
 				<OutputSettings />
+			</section>
+
+			<!-- Server Config -->
+			<section>
+				<h2 class="mb-3 text-sm font-medium">Server</h2>
+				<ServerConfig />
 			</section>
 		</div>
 

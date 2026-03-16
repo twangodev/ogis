@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ImagePreview from './ImagePreview.svelte';
+	import { apiConfig } from '$lib/config/api.svelte';
 
 	interface Props {
 		name: string;
@@ -13,7 +14,14 @@
 	// Generate thumbnail URL with default content
 	// Optimize for small thumbnails: WebP at 20% scale with quality 70
 	const thumbnailUrl = $derived(
-		`https://img.ogis.dev/?template=${name}&title=Preview&description=Template%20Preview&format=webp&scale=0.2&quality=70`
+		apiConfig.generateUrl({
+			template: name,
+			title: 'Preview',
+			description: 'Template Preview',
+			format: 'webp',
+			scale: '0.2',
+			quality: '70'
+		})
 	);
 
 	// Use IntersectionObserver for lazy loading

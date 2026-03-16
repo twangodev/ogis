@@ -4,6 +4,14 @@ layouts:
   centered: templates/layouts/centered.svg
   split: templates/layouts/split.svg
   minimal: templates/layouts/minimal.svg
+  right-heavy: templates/layouts/right-heavy.svg
+  stacked: templates/layouts/stacked.svg
+  banner: templates/layouts/banner.svg
+  editorial: templates/layouts/editorial.svg
+  spotlight: templates/layouts/spotlight.svg
+  reverse-split: templates/layouts/reverse-split.svg
+  top-bar: templates/layouts/top-bar.svg
+  bottom-bar: templates/layouts/bottom-bar.svg
 gradients:
   amethyst:
     base_stops:
@@ -3293,11 +3301,20 @@ templates:
 - name: gradient-amethyst
   layout: centered
   gradient: amethyst
+- name: gradient-amethyst-spotlight
+  layout: spotlight
+  gradient: amethyst
 - name: gradient-arctic
   layout: left-heavy
   gradient: arctic
+- name: gradient-arctic-right
+  layout: right-heavy
+  gradient: arctic
 - name: gradient-aurora
   layout: left-heavy
+  gradient: aurora
+- name: gradient-aurora-banner
+  layout: banner
   gradient: aurora
 - name: gradient-autumn
   layout: left-heavy
@@ -3311,6 +3328,9 @@ templates:
 - name: gradient-cedar
   layout: split
   gradient: cedar
+- name: gradient-cedar-reverse
+  layout: reverse-split
+  gradient: cedar
 - name: gradient-champagne
   layout: left-heavy
   gradient: champagne
@@ -3322,6 +3342,9 @@ templates:
   gradient: cloud
 - name: gradient-cobalt
   layout: left-heavy
+  gradient: cobalt
+- name: gradient-cobalt-editorial
+  layout: editorial
   gradient: cobalt
 - name: gradient-copper-teal
   layout: left-heavy
@@ -3335,11 +3358,20 @@ templates:
 - name: gradient-coral
   layout: left-heavy
   gradient: coral
+- name: gradient-coral-right
+  layout: right-heavy
+  gradient: coral
 - name: gradient-cosmos
   layout: split
   gradient: cosmos
 - name: gradient-dawn
   layout: centered
+  gradient: dawn
+- name: gradient-dawn-bottombar
+  layout: bottom-bar
+  gradient: dawn
+- name: gradient-dawn-stacked
+  layout: stacked
   gradient: dawn
 - name: gradient-duotone
   layout: minimal
@@ -3359,6 +3391,9 @@ templates:
 - name: gradient-evergreen
   layout: split
   gradient: evergreen
+- name: gradient-evergreen-reverse
+  layout: reverse-split
+  gradient: evergreen
 - name: gradient-fig
   layout: split
   gradient: fig
@@ -3367,6 +3402,9 @@ templates:
   gradient: forest
 - name: gradient-galaxy
   layout: left-heavy
+  gradient: galaxy
+- name: gradient-galaxy-banner
+  layout: banner
   gradient: galaxy
 - name: gradient-garnet
   layout: split
@@ -3422,6 +3460,9 @@ templates:
 - name: gradient-neon
   layout: left-heavy
   gradient: neon
+- name: gradient-neon-banner
+  layout: banner
+  gradient: neon
 - name: gradient-noir
   layout: left-heavy
   gradient: noir
@@ -3431,11 +3472,20 @@ templates:
 - name: gradient-ocean
   layout: left-heavy
   gradient: ocean
+- name: gradient-ocean-right
+  layout: right-heavy
+  gradient: ocean
 - name: gradient-opal
   layout: centered
   gradient: opal
+- name: gradient-opal-bottombar
+  layout: bottom-bar
+  gradient: opal
 - name: gradient-orchid
   layout: centered
+  gradient: orchid
+- name: gradient-orchid-spotlight
+  layout: spotlight
   gradient: orchid
 - name: gradient-peach-lavender
   layout: minimal
@@ -3470,17 +3520,29 @@ templates:
 - name: gradient-sapphire
   layout: centered
   gradient: sapphire
+- name: gradient-sapphire-stacked
+  layout: stacked
+  gradient: sapphire
 - name: gradient-seaglass
   layout: minimal
   gradient: seaglass
 - name: gradient-shadow
   layout: minimal
   gradient: shadow
+- name: gradient-shadow-topbar
+  layout: top-bar
+  gradient: shadow
 - name: gradient-sherbet
   layout: split
   gradient: sherbet
 - name: gradient-steel
   layout: centered
+  gradient: steel
+- name: gradient-steel-editorial
+  layout: editorial
+  gradient: steel
+- name: gradient-steel-topbar
+  layout: top-bar
   gradient: steel
 - name: gradient-storm
   layout: left-heavy

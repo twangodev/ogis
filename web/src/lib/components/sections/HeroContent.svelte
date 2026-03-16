@@ -3,6 +3,7 @@
 	import CardStack from '$lib/components/hero/CardStack.svelte';
 	import URLBar from '$lib/components/hero/URLBar.svelte';
 	import type { CloudflareStats } from '$lib/cloudflare';
+	import { apiConfig } from '$lib/config/api.svelte';
 	import NumberFlow from '@number-flow/svelte';
 	import { onMount } from 'svelte';
 
@@ -53,16 +54,14 @@
 	// Build URL from active card with all available parameters
 	const url = $derived.by(() => {
 		if (!activeCard) return '';
-
-		const params = new URLSearchParams();
-		if (activeCard.template) params.set('template', activeCard.template);
-		params.set('title', activeCard.title);
-		params.set('description', activeCard.description);
-		if (activeCard.subtitle) params.set('subtitle', activeCard.subtitle);
-		if (activeCard.logo) params.set('logo', activeCard.logo);
-		if (activeCard.image) params.set('image', activeCard.image);
-
-		return `https://img.ogis.dev?${params.toString()}`;
+		return apiConfig.generateUrl({
+			template: activeCard.template,
+			title: activeCard.title,
+			description: activeCard.description,
+			subtitle: activeCard.subtitle,
+			logo: activeCard.logo,
+			image: activeCard.image
+		});
 	});
 </script>
 

@@ -1,5 +1,6 @@
 import { goto } from '$app/navigation';
 import { shuffle } from '$lib/utils/shuffle';
+import { apiConfig } from '$lib/config/api.svelte';
 
 export interface TemplateDefinition {
 	name: string;
@@ -120,34 +121,25 @@ function createPlaygroundState() {
 
 	// Build the current API URL (not debounced)
 	function buildApiUrl(): string {
-		const params = new URLSearchParams();
-		params.set('template', template);
+		const params: Record<string, string> = { template };
 
-		if (content.title) params.set('title', content.title);
-		if (content.subtitle) params.set('subtitle', content.subtitle);
-		if (content.description) params.set('description', content.description);
-		if (media.logo) params.set('logo', media.logo);
-		if (media.image) params.set('image', media.image);
+		if (content.title) params.title = content.title;
+		if (content.subtitle) params.subtitle = content.subtitle;
+		if (content.description) params.description = content.description;
+		if (media.logo) params.logo = media.logo;
+		if (media.image) params.image = media.image;
 
 		// Add color overrides
 		for (const [key, value] of Object.entries(colors)) {
-			if (value) {
-				params.set(key, value);
-			}
+			if (value) params[key] = value;
 		}
 
 		// Add render options (only non-default values)
-		if (renderOptions.format !== 'png') {
-			params.set('format', renderOptions.format);
-		}
-		if (renderOptions.scale !== 1.0) {
-			params.set('scale', renderOptions.scale.toString());
-		}
-		if (renderOptions.quality !== 90) {
-			params.set('quality', renderOptions.quality.toString());
-		}
+		if (renderOptions.format !== 'png') params.format = renderOptions.format;
+		if (renderOptions.scale !== 1.0) params.scale = renderOptions.scale.toString();
+		if (renderOptions.quality !== 90) params.quality = renderOptions.quality.toString();
 
-		return `https://img.ogis.dev/?${params.toString()}`;
+		return apiConfig.generateUrl(params);
 	}
 
 	// Update debounced API URL

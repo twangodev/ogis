@@ -2,6 +2,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import type { TransitionConfig } from 'svelte/transition';
 	import ImagePreview from '$lib/components/playground/ImagePreview.svelte';
+	import { apiConfig } from '$lib/config/api.svelte';
 
 	type I18nCard = {
 		title: string;
@@ -130,16 +131,15 @@
 	];
 
 	function buildImageUrl(card: I18nCard): string {
-		const params = new URLSearchParams();
-		params.set('title', card.title);
-		params.set('description', card.description);
-		params.set('subtitle', card.subtitle);
-		params.set('template', card.template);
-		// Optimize for display: WebP at 40% scale with quality 80
-		params.set('format', 'webp');
-		params.set('scale', '0.4');
-		params.set('quality', '80');
-		return `https://img.ogis.dev?${params.toString()}`;
+		return apiConfig.generateUrl({
+			title: card.title,
+			description: card.description,
+			subtitle: card.subtitle,
+			template: card.template,
+			format: 'webp',
+			scale: '0.4',
+			quality: '80'
+		});
 	}
 </script>
 
