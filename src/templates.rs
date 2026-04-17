@@ -198,10 +198,8 @@ fn extract_font_from_svg(svg_content: &str, element_id: &str) -> FontProperties 
                     let key = attr.key.as_ref();
                     if let Ok(value) = std::str::from_utf8(&attr.value) {
                         match key {
-                            b"id" => {
-                                if value == element_id {
-                                    found_target_id = true;
-                                }
+                            b"id" if value == element_id => {
+                                found_target_id = true;
                             }
                             b"font-family" => temp_family = value.to_string(),
                             b"font-size" => {
