@@ -161,10 +161,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Pull ogis image
+        run: docker compose -f docker-compose.benchmark.yml pull ogis
+        env:
+          OGIS_IMAGE: twango/ogis:latest
+
       - name: Start services
         uses: hoverkraft-tech/compose-action@v2
         with:
           compose-file: docker-compose.benchmark.yml
+        env:
+          OGIS_IMAGE: twango/ogis:latest
 
       - name: Install k6
         uses: grafana/setup-k6-action@v1
