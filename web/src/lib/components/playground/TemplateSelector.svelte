@@ -17,9 +17,7 @@
 	let selectedLayout = $state<string>('all');
 
 	function formatLayoutName(layout: string): string {
-		return layout
-			.replace(/-/g, ' ')
-			.replace(/\b\w/g, (c) => c.toUpperCase());
+		return layout.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 	}
 
 	const layoutOptions = $derived.by(() => {
@@ -46,9 +44,7 @@
 
 	const filteredTemplates = $derived(
 		search.trim()
-			? fuzzysort
-					.go(search, layoutFilteredTemplates, { keys: ['label', 'name'] })
-					.map((r) => r.obj)
+			? fuzzysort.go(search, layoutFilteredTemplates, { keys: ['label', 'name'] }).map((r) => r.obj)
 			: layoutFilteredTemplates
 	);
 

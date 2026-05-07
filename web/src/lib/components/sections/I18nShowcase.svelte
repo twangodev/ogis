@@ -15,7 +15,13 @@
 	// Custom transition with fly + rotate
 	function flyRotate(
 		_node: Element,
-		{ x = 0, rotate = 0, delay = 0, duration = 400, easing = cubicOut }: {
+		{
+			x = 0,
+			rotate = 0,
+			delay = 0,
+			duration = 400,
+			easing = cubicOut
+		}: {
 			x?: number;
 			rotate?: number;
 			delay?: number;
@@ -160,7 +166,12 @@
 						{@const anim = getAnimation(index)}
 						<div
 							class="group"
-							in:flyRotate={{ x: anim.x, rotate: anim.rotate, delay: anim.delay, duration: anim.duration }}
+							in:flyRotate={{
+								x: anim.x,
+								rotate: anim.rotate,
+								delay: anim.delay,
+								duration: anim.duration
+							}}
 						>
 							<div
 								class="overflow-hidden rounded-xl border border-border shadow-md transition-shadow duration-300 group-hover:shadow-xl"

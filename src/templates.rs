@@ -601,7 +601,10 @@ fn load_gradients() -> HashMap<String, GradientDef> {
     };
     for entry in dir.flatten() {
         let path = entry.path();
-        if path.extension().is_some_and(|ext| ext == "yaml" || ext == "yml") {
+        if path
+            .extension()
+            .is_some_and(|ext| ext == "yaml" || ext == "yml")
+        {
             let name = path
                 .file_stem()
                 .and_then(|s| s.to_str())
