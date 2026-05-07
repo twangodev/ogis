@@ -1,5 +1,5 @@
 FROM rust:1.90 AS chef
-RUN cargo install cargo-chef
+RUN cargo install --locked cargo-chef
 WORKDIR /app
 
 FROM chef AS planner
