@@ -1,18 +1,24 @@
-import { OgisClient, type OgisParams } from 'ogis';
+import type { OgisParams } from 'ogis';
 
 const DEFAULT_API_URL = 'https://img.ogis.dev';
 const STORAGE_KEY = 'ogis-api-url';
 
+function buildUrl(base: string, params: OgisParams): string {
+	const qs = new URLSearchParams();
+	for (const [key, value] of Object.entries(params)) {
+		if (value !== undefined) qs.append(key, String(value));
+	}
+	const query = qs.toString();
+	return query ? `${base}/?${query}` : `${base}/`;
+}
+
 function createApiConfig() {
 	let baseUrl = $state(DEFAULT_API_URL);
-	let client = $state(new OgisClient({ baseUrl }));
 
-	// Load from localStorage on init (browser only)
 	if (typeof window !== 'undefined') {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		if (stored) {
 			baseUrl = stored;
-			client = new OgisClient({ baseUrl: stored });
 		}
 	}
 
@@ -23,7 +29,6 @@ function createApiConfig() {
 		set baseUrl(value: string) {
 			const normalized = value.replace(/\/+$/, '') || DEFAULT_API_URL;
 			baseUrl = normalized;
-			client = new OgisClient({ baseUrl: normalized });
 			if (typeof window !== 'undefined') {
 				if (normalized === DEFAULT_API_URL) {
 					localStorage.removeItem(STORAGE_KEY);
@@ -40,14 +45,12 @@ function createApiConfig() {
 		},
 		reset() {
 			baseUrl = DEFAULT_API_URL;
-			client = new OgisClient({ baseUrl: DEFAULT_API_URL });
 			if (typeof window !== 'undefined') {
 				localStorage.removeItem(STORAGE_KEY);
 			}
 		},
-		/** Generate an image URL using the ogis client */
 		generateUrl(params: OgisParams): string {
-			return client.generateUrl(params);
+			return buildUrl(baseUrl, params);
 		}
 	};
 }
