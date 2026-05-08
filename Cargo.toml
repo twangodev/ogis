@@ -8,7 +8,7 @@ axum = "0.8.8"
 base64 = "0.22"
 bytesize = "2.3.1"
 clap = { version = "4.5.58", features = ["derive", "env"] }
-cosmic-text = "0.15"
+cosmic-text = "0.16"
 dotenvy = "0.15.7"
 futures-util = "0.3.32"
 hex = "0.4.3"
