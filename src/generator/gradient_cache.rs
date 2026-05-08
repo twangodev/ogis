@@ -58,6 +58,13 @@ impl GradientCache {
             })
     }
 
+    /// Side-effect-free check for whether a key is currently cached. Used by
+    /// callers that want to record hit/miss telemetry before invoking
+    /// `get_or_render` (which inserts on miss).
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.cache.contains_key(key)
+    }
+
     /// Total bytes currently held in the cache (for telemetry).
     pub fn weighted_size(&self) -> u64 {
         self.cache.weighted_size()
