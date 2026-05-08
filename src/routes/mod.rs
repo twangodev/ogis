@@ -1,6 +1,7 @@
 pub mod docs;
 pub mod health;
 pub mod index;
+pub mod templates;
 pub mod timing;
 
 use crate::AppState;
@@ -28,6 +29,7 @@ pub fn create_router(state: AppState) -> Router {
         ))
         .route_layer(middleware::from_fn(metrics_middleware))
         .route("/health", get(health::health_check))
+        .route("/templates", get(templates::list_templates))
         .merge(docs_router)
         .layer(cors)
         .with_state(state)
