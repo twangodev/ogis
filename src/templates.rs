@@ -461,22 +461,29 @@ fn build_gradient_layers(gradient: &GradientDef) -> String {
 // Template composition — combines a layout SVG with a gradient definition
 // ---------------------------------------------------------------------------
 
-fn compose_template(layout_svg: &str, gradient: &GradientDef) -> String {
+fn compose_template(layout_svg: &str, gradient: &GradientDef) -> Option<String> {
+    const DEFS_MARKER: &str = "<!-- ogis_gradient_defs -->";
+    const LAYERS_MARKER: &str = "<!-- ogis_background_layers -->";
+    if !layout_svg.contains(DEFS_MARKER) {
+        tracing::error!("Layout missing marker {DEFS_MARKER}");
+        return None;
+    }
+    if !layout_svg.contains(LAYERS_MARKER) {
+        tracing::error!("Layout missing marker {LAYERS_MARKER}");
+        return None;
+    }
+
     let tc = &gradient.text_colors;
-    layout_svg
-        .replace(
-            "<!-- ogis_gradient_defs -->",
-            &build_gradient_defs(gradient),
-        )
-        .replace(
-            "<!-- ogis_background_layers -->",
-            &build_gradient_layers(gradient),
-        )
-        .replace("{{title_color}}", &tc.title)
-        .replace("{{desc_color}}", &tc.description)
-        .replace("{{subtitle_color}}", &tc.subtitle)
-        .replace("{{desc_opacity}}", &fmt_num(tc.desc_opacity))
-        .replace("{{subtitle_opacity}}", &fmt_num(tc.subtitle_opacity))
+    Some(
+        layout_svg
+            .replace(DEFS_MARKER, &build_gradient_defs(gradient))
+            .replace(LAYERS_MARKER, &build_gradient_layers(gradient))
+            .replace("{{title_color}}", &tc.title)
+            .replace("{{desc_color}}", &tc.description)
+            .replace("{{subtitle_color}}", &tc.subtitle)
+            .replace("{{desc_opacity}}", &fmt_num(tc.desc_opacity))
+            .replace("{{subtitle_opacity}}", &fmt_num(tc.subtitle_opacity)),
+    )
 }
 
 fn build_colors_map(gradient: &GradientDef) -> HashMap<String, String> {
@@ -631,7 +638,13 @@ fn load_gradients() -> HashMap<String, GradientDef> {
 fn load_file_template(node: &Yaml) -> Option<TemplateEntry> {
     let name = yaml_str(node, "name")?;
     let path = yaml_str(node, "file")?;
-    let svg = yaml_loader::load_text(&path, &format!("template '{name}'")).ok()?;
+    let svg = match yaml_loader::load_text(&path, &format!("template '{name}'")) {
+        Ok(svg) => svg,
+        Err(e) => {
+            tracing::error!("Failed to load template '{name}' from {path}: {e}");
+            return None;
+        }
+    };
 
     let fonts = parse_font_properties(&svg);
     tracing::info!(
@@ -663,8 +676,8 @@ fn build_composed_template(
     layout_svg: &str,
     gradient_key: &str,
     gradient_def: &GradientDef,
-) -> TemplateEntry {
-    let svg = compose_template(layout_svg, gradient_def);
+) -> Option<TemplateEntry> {
+    let svg = compose_template(layout_svg, gradient_def)?;
     let fonts = parse_font_properties(&svg);
     tracing::info!(
         "Composed '{template_name}' (gradient={gradient_key}): title={}px/w{}",
@@ -672,7 +685,7 @@ fn build_composed_template(
         fonts.title.weight,
     );
 
-    TemplateEntry {
+    Some(TemplateEntry {
         name: template_name.to_string(),
         svg,
         colors: build_colors_map(gradient_def),
@@ -680,7 +693,7 @@ fn build_composed_template(
         width_constraints: TextWidthConstraints::default(),
         truncation: true,
         max_scale: 1.0,
-    }
+    })
 }
 
 fn register_entry(
@@ -733,8 +746,14 @@ pub fn load_templates() -> TemplateMap {
             let template_name = format!("gradient-{gradient_name}-{layout_name}");
             let layout_svg = &layouts[layout_name.as_str()];
             let gradient_def = &gradients[gradient_name.as_str()];
-            let entry =
-                build_composed_template(&template_name, layout_svg, gradient_name, gradient_def);
+            let Some(entry) =
+                build_composed_template(&template_name, layout_svg, gradient_name, gradient_def)
+            else {
+                tracing::error!(
+                    "Skipping composed template '{template_name}' due to layout marker errors"
+                );
+                continue;
+            };
             register_entry(
                 entry,
                 &mut templates,
@@ -905,7 +924,7 @@ mod tests {
             desc_opacity: 0.9,
         });
 
-        let result = compose_template(layout, &gradient);
+        let result = compose_template(layout, &gradient).expect("layout has both markers");
         assert!(result.contains("fill=\"#ff0000\""));
         assert!(result.contains("fill=\"#00ff00\""));
         assert!(result.contains("fill=\"#0000ff\""));
@@ -914,6 +933,15 @@ mod tests {
         assert!(result.contains("baseGradient"));
         assert!(!result.contains("{{title_color}}"));
         assert!(!result.contains("<!-- ogis_gradient_defs -->"));
+    }
+
+    #[test]
+    fn test_compose_template_missing_marker_returns_none() {
+        let layout_no_defs = r#"<svg><!-- ogis_background_layers --></svg>"#;
+        let layout_no_layers = r#"<svg><!-- ogis_gradient_defs --></svg>"#;
+        let g = test_gradient(GradientTextColors::default());
+        assert!(compose_template(layout_no_defs, &g).is_none());
+        assert!(compose_template(layout_no_layers, &g).is_none());
     }
 
     #[test]
