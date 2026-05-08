@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#0d3320'}
+- {offset: 100, color: '#1a4a30'}
+direction: [0, 0, 0, 100]
+blobs:
+- name: green
+  cx: 20
+  cy: 30
+  r: 50
+  stops:
+  - {offset: 0, color: '#2e8b57', opacity: 0.8}
+  - {offset: 100, color: '#2e8b57', opacity: 0.0}
+- name: forest
+  cx: 30
+  cy: 55
+  r: 45
+  stops:
+  - {offset: 0, color: '#228b22', opacity: 0.7}
+  - {offset: 100, color: '#228b22', opacity: 0.0}
+- name: dark
+  cx: 15
+  cy: 75
+  r: 40
+  stops:
+  - {offset: 0, color: '#1a5a1a', opacity: 0.6}
+  - {offset: 100, color: '#1a5a1a', opacity: 0.0}
+- name: color_4
+  cx: 40
+  cy: 20
+  r: 35
+  stops:
+  - {offset: 0, color: '#3cb371', opacity: 0.5}
+  - {offset: 100, color: '#3cb371', opacity: 0.0}
+- name: color_5
+  cx: 35
+  cy: 85
+  r: 30
+  stops:
+  - {offset: 0, color: '#66cdaa', opacity: 0.4}
+  - {offset: 100, color: '#66cdaa', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

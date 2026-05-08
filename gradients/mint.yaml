@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#134e4a'}
+- {offset: 100, color: '#115e59'}
+direction: [0, 100, 100, 0]
+blobs:
+- name: aqua
+  cx: 25
+  cy: 35
+  r: 50
+  stops:
+  - {offset: 0, color: '#5eead4', opacity: 0.7}
+  - {offset: 100, color: '#5eead4', opacity: 0.0}
+- name: teal
+  cx: 75
+  cy: 55
+  r: 55
+  stops:
+  - {offset: 0, color: '#2dd4bf'}
+  - {offset: 100, color: '#2dd4bf', opacity: 0.0}
+- name: light_teal
+  cx: 45
+  cy: 80
+  r: 45
+  stops:
+  - {offset: 0, color: '#99f6e4', opacity: 0.5}
+  - {offset: 100, color: '#99f6e4', opacity: 0.0}
+- name: green
+  cx: 60
+  cy: 20
+  r: 40
+  stops:
+  - {offset: 0, color: '#a7f3d0', opacity: 0.6}
+  - {offset: 100, color: '#a7f3d0', opacity: 0.0}
+- name: emerald
+  cx: 10
+  cy: 65
+  r: 35
+  stops:
+  - {offset: 0, color: '#6ee7b7', opacity: 0.5}
+  - {offset: 100, color: '#6ee7b7', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

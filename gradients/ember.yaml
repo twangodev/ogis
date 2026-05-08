@@ -1,0 +1,45 @@
+base_stops:
+- {offset: 0, color: '#0a0a0a'}
+- {offset: 100, color: '#1c1917'}
+direction: [50, 100, 50, 0]
+blobs:
+- name: red
+  cx: 50
+  cy: 100
+  r: 70
+  stops:
+  - {offset: 0, color: '#dc2626', opacity: 0.9}
+  - {offset: 100, color: '#dc2626', opacity: 0.0}
+- name: orange
+  cx: 20
+  cy: 70
+  r: 45
+  stops:
+  - {offset: 0, color: '#ea580c'}
+  - {offset: 100, color: '#ea580c', opacity: 0.0}
+- name: flame
+  cx: 80
+  cy: 75
+  r: 50
+  stops:
+  - {offset: 0, color: '#f97316'}
+  - {offset: 50, color: '#fb923c'}
+  - {offset: 100, color: '#fb923c', opacity: 0.0}
+- name: yellow
+  cx: 40
+  cy: 50
+  r: 40
+  stops:
+  - {offset: 0, color: '#fbbf24', opacity: 0.5}
+  - {offset: 100, color: '#fbbf24', opacity: 0.0}
+- name: dark_red
+  cx: 70
+  cy: 40
+  r: 35
+  stops:
+  - {offset: 0, color: '#991b1b', opacity: 0.6}
+  - {offset: 100, color: '#991b1b', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

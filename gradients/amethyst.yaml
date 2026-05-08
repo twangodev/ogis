@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#4a1c6b'}
+- {offset: 100, color: '#6c3483'}
+direction: [50, 0, 50, 100]
+blobs:
+- name: purple
+  cx: 50
+  cy: 50
+  r: 45
+  stops:
+  - {offset: 0, color: '#9b59b6', opacity: 0.8}
+  - {offset: 100, color: '#9b59b6', opacity: 0.0}
+- name: dark_purple
+  cx: 50
+  cy: 45
+  r: 55
+  stops:
+  - {offset: 0, color: '#8e44ad', opacity: 0.6}
+  - {offset: 100, color: '#8e44ad', opacity: 0.0}
+- name: light_purple
+  cx: 35
+  cy: 55
+  r: 40
+  stops:
+  - {offset: 0, color: '#bb8fce', opacity: 0.5}
+  - {offset: 100, color: '#bb8fce', opacity: 0.0}
+- name: pale
+  cx: 65
+  cy: 40
+  r: 35
+  stops:
+  - {offset: 0, color: '#d7bde2', opacity: 0.4}
+  - {offset: 100, color: '#d7bde2', opacity: 0.0}
+- name: color_5
+  cx: 45
+  cy: 60
+  r: 30
+  stops:
+  - {offset: 0, color: '#a569bd', opacity: 0.5}
+  - {offset: 100, color: '#a569bd', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

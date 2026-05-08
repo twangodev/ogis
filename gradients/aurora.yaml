@@ -1,0 +1,45 @@
+base_stops:
+- {offset: 0, color: '#1e1b4b'}
+- {offset: 100, color: '#312e81'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: violet
+  cx: 30
+  cy: 70
+  r: 60
+  stops:
+  - {offset: 0, color: '#7c3aed'}
+  - {offset: 100, color: '#7c3aed', opacity: 0.0}
+- name: pink
+  cx: 70
+  cy: 50
+  r: 50
+  stops:
+  - {offset: 0, color: '#ec4899'}
+  - {offset: 100, color: '#ec4899', opacity: 0.0}
+- name: orange
+  cx: 50
+  cy: 90
+  r: 60
+  stops:
+  - {offset: 0, color: '#f97316'}
+  - {offset: 50, color: '#fb7185'}
+  - {offset: 100, color: '#fb7185', opacity: 0.0}
+- name: yellow
+  cx: 90
+  cy: 80
+  r: 50
+  stops:
+  - {offset: 0, color: '#fbbf24', opacity: 0.7}
+  - {offset: 100, color: '#f97316', opacity: 0.0}
+- name: blue
+  cx: 10
+  cy: 30
+  r: 40
+  stops:
+  - {offset: 0, color: '#3b82f6', opacity: 0.6}
+  - {offset: 100, color: '#3b82f6', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

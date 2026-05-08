@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#3d0a1a'}
+- {offset: 100, color: '#4d0f22'}
+direction: [50, 0, 50, 100]
+blobs:
+- name: ruby
+  cx: 40
+  cy: 50
+  r: 50
+  stops:
+  - {offset: 0, color: '#e0115f', opacity: 0.8}
+  - {offset: 100, color: '#e0115f', opacity: 0.0}
+- name: crimson
+  cx: 35
+  cy: 45
+  r: 40
+  stops:
+  - {offset: 0, color: '#9b111e', opacity: 0.7}
+  - {offset: 100, color: '#9b111e', opacity: 0.0}
+- name: dark
+  cx: 50
+  cy: 55
+  r: 35
+  stops:
+  - {offset: 0, color: '#7b0a24', opacity: 0.6}
+  - {offset: 100, color: '#7b0a24', opacity: 0.0}
+- name: color_4
+  cx: 25
+  cy: 30
+  r: 38
+  stops:
+  - {offset: 0, color: '#ff4d6d', opacity: 0.5}
+  - {offset: 100, color: '#ff4d6d', opacity: 0.0}
+- name: color_5
+  cx: 55
+  cy: 75
+  r: 32
+  stops:
+  - {offset: 0, color: '#ff758f', opacity: 0.4}
+  - {offset: 100, color: '#ff758f', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

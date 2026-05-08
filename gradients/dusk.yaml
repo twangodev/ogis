@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#1e1b4b'}
+- {offset: 100, color: '#312e81'}
+direction: [0, 0, 0, 100]
+blobs:
+- name: violet
+  cx: 30
+  cy: 40
+  r: 50
+  stops:
+  - {offset: 0, color: '#a78bfa', opacity: 0.75}
+  - {offset: 100, color: '#a78bfa', opacity: 0.0}
+- name: indigo
+  cx: 70
+  cy: 30
+  r: 55
+  stops:
+  - {offset: 0, color: '#818cf8', opacity: 0.6}
+  - {offset: 100, color: '#818cf8', opacity: 0.0}
+- name: light_violet
+  cx: 60
+  cy: 75
+  r: 50
+  stops:
+  - {offset: 0, color: '#c4b5fd', opacity: 0.5}
+  - {offset: 100, color: '#c4b5fd', opacity: 0.0}
+- name: blue
+  cx: 15
+  cy: 70
+  r: 40
+  stops:
+  - {offset: 0, color: '#6366f1', opacity: 0.6}
+  - {offset: 100, color: '#6366f1', opacity: 0.0}
+- name: pale
+  cx: 85
+  cy: 55
+  r: 35
+  stops:
+  - {offset: 0, color: '#ddd6fe', opacity: 0.4}
+  - {offset: 100, color: '#ddd6fe', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

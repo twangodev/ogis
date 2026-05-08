@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#4a2c1a'}
+- {offset: 100, color: '#5c3a24'}
+direction: [0, 0, 100, 0]
+blobs:
+- name: orange
+  cx: 20
+  cy: 50
+  r: 50
+  stops:
+  - {offset: 0, color: '#e07040', opacity: 0.8}
+  - {offset: 100, color: '#e07040', opacity: 0.0}
+- name: rust
+  cx: 50
+  cy: 45
+  r: 45
+  stops:
+  - {offset: 0, color: '#c04000', opacity: 0.7}
+  - {offset: 100, color: '#c04000', opacity: 0.0}
+- name: sienna
+  cx: 80
+  cy: 55
+  r: 50
+  stops:
+  - {offset: 0, color: '#8b4513', opacity: 0.6}
+  - {offset: 100, color: '#8b4513', opacity: 0.0}
+- name: color_4
+  cx: 35
+  cy: 25
+  r: 35
+  stops:
+  - {offset: 0, color: '#d2691e', opacity: 0.5}
+  - {offset: 100, color: '#d2691e', opacity: 0.0}
+- name: color_5
+  cx: 65
+  cy: 80
+  r: 30
+  stops:
+  - {offset: 0, color: '#cd853f', opacity: 0.4}
+  - {offset: 100, color: '#cd853f', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

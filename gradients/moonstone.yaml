@@ -1,0 +1,50 @@
+base_stops:
+- {offset: 0, color: '#8a98a6'}
+- {offset: 100, color: '#6a7a8a'}
+direction: [50, 0, 50, 100]
+blobs:
+- name: silver
+  cx: 50
+  cy: 35
+  r: 50
+  stops:
+  - {offset: 0, color: '#a8b8c8', opacity: 0.8}
+  - {offset: 100, color: '#a8b8c8', opacity: 0.0}
+- name: light
+  cx: 30
+  cy: 55
+  r: 45
+  stops:
+  - {offset: 0, color: '#c0d0e0', opacity: 0.7}
+  - {offset: 100, color: '#c0d0e0', opacity: 0.0}
+- name: slate
+  cx: 70
+  cy: 45
+  r: 45
+  stops:
+  - {offset: 0, color: '#58687a', opacity: 0.6}
+  - {offset: 100, color: '#58687a', opacity: 0.0}
+- name: charcoal
+  cx: 45
+  cy: 75
+  r: 40
+  stops:
+  - {offset: 0, color: '#4a5a6a', opacity: 0.5}
+  - {offset: 100, color: '#4a5a6a', opacity: 0.0}
+- name: ice
+  cx: 60
+  cy: 20
+  r: 35
+  stops:
+  - {offset: 0, color: '#d0dce8', opacity: 0.6}
+  - {offset: 100, color: '#d0dce8', opacity: 0.0}
+noise:
+  coarse_frequency: 0.8
+  coarse_octaves: 5
+  coarse_slope: 3.5
+  fine_frequency: 2.0
+  fine_octaves: 6
+  fine_slope: 4.0
+  coarse_opacity: 0.3
+  fine_opacity: 0.18
+text_colors: {title: '#2d3a4a', description: '#3d4a5a', subtitle: '#4d5a6a', desc_opacity: 0.85, subtitle_opacity: 0.7}

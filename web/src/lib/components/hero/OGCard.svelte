@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SvelteURLSearchParams } from 'svelte/reactivity';
+	import { apiConfig } from '$lib/config/api.svelte';
 
 	type Props = {
 		title: string;
@@ -37,23 +37,18 @@
 
 	// Build imageUrl from all available parameters
 	const imageUrl = $derived.by(() => {
-		const searchParams = new SvelteURLSearchParams();
-		searchParams.set('title', title);
-		searchParams.set('description', description);
-		if (subtitle) searchParams.set('subtitle', subtitle);
-		if (logo) searchParams.set('logo', logo);
-		if (image) searchParams.set('image', image);
-		if (template) searchParams.set('template', template);
-		if (params) {
-			for (const [key, value] of Object.entries(params)) {
-				searchParams.set(key, value);
-			}
-		}
-		// Optimize for display: WebP at 50% scale with quality 80
-		searchParams.set('format', 'webp');
-		searchParams.set('scale', '0.5');
-		searchParams.set('quality', '80');
-		return `https://img.ogis.dev?${searchParams.toString()}`;
+		return apiConfig.generateUrl({
+			title,
+			description,
+			subtitle,
+			logo,
+			image,
+			template,
+			...(params ?? {}),
+			format: 'webp',
+			scale: '0.5',
+			quality: '80'
+		});
 	});
 
 	function getTransform() {

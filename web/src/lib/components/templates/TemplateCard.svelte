@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { RefreshCwIcon, ArrowRightIcon } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { apiConfig } from '$lib/config/api.svelte';
 
 	interface Props {
 		name: string;
@@ -13,7 +14,17 @@
 	let { name, label, description = '', size = 'md', class: className = '' }: Props = $props();
 
 	// Optimize for thumbnails: WebP at 30% scale with quality 75
-	const apiUrl = `https://img.ogis.dev/?template=${name}&title=${encodeURIComponent(label)}&subtitle=Open%20Graph%20Template&description=Beautiful%20images%20for%20your%20links&format=webp&scale=0.3&quality=75`;
+	const apiUrl = $derived(
+		apiConfig.generateUrl({
+			template: name,
+			title: label,
+			subtitle: 'Open Graph Template',
+			description: 'Beautiful images for your links',
+			format: 'webp',
+			scale: '0.3',
+			quality: '75'
+		})
+	);
 
 	let imageLoaded = $state(false);
 	let isHovered = $state(false);

@@ -31,6 +31,7 @@ COPY --from=builder /app/target/release/ogis .
 # Include default templates and fonts in the image. They can be overridden by mounting volumes.
 COPY fonts ./fonts
 COPY templates ./templates
+COPY gradients ./gradients
 COPY fonts.yaml ./fonts.yaml
 COPY templates.yaml ./templates.yaml
 

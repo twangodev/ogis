@@ -1,0 +1,45 @@
+base_stops:
+- {offset: 0, color: '#0c1929'}
+- {offset: 100, color: '#1e3a5f'}
+direction: [0, 100, 100, 0]
+blobs:
+- name: sky
+  cx: 20
+  cy: 20
+  r: 50
+  stops:
+  - {offset: 0, color: '#0ea5e9', opacity: 0.7}
+  - {offset: 100, color: '#0ea5e9', opacity: 0.0}
+- name: cyan
+  cx: 80
+  cy: 60
+  r: 55
+  stops:
+  - {offset: 0, color: '#06b6d4'}
+  - {offset: 100, color: '#06b6d4', opacity: 0.0}
+- name: teal
+  cx: 40
+  cy: 80
+  r: 50
+  stops:
+  - {offset: 0, color: '#14b8a6'}
+  - {offset: 50, color: '#0d9488'}
+  - {offset: 100, color: '#0d9488', opacity: 0.0}
+- name: light_cyan
+  cx: 60
+  cy: 30
+  r: 45
+  stops:
+  - {offset: 0, color: '#22d3ee', opacity: 0.5}
+  - {offset: 100, color: '#22d3ee', opacity: 0.0}
+- name: aqua
+  cx: 90
+  cy: 10
+  r: 35
+  stops:
+  - {offset: 0, color: '#67e8f9', opacity: 0.4}
+  - {offset: 100, color: '#67e8f9', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

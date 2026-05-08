@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#7c2d12'}
+- {offset: 100, color: '#ea580c'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: cyan
+  cx: 75
+  cy: 25
+  r: 45
+  stops:
+  - {offset: 0, color: '#0ea5e9', opacity: 0.7}
+  - {offset: 100, color: '#0ea5e9', opacity: 0.0}
+- name: sky
+  cx: 20
+  cy: 70
+  r: 42
+  stops:
+  - {offset: 0, color: '#38bdf8', opacity: 0.5}
+  - {offset: 100, color: '#38bdf8', opacity: 0.0}
+- name: orange
+  cx: 55
+  cy: 50
+  r: 35
+  stops:
+  - {offset: 0, color: '#fb923c', opacity: 0.6}
+  - {offset: 100, color: '#fb923c', opacity: 0.0}
+- name: light_blue
+  cx: 90
+  cy: 80
+  r: 30
+  stops:
+  - {offset: 0, color: '#7dd3fc', opacity: 0.4}
+  - {offset: 100, color: '#7dd3fc', opacity: 0.0}
+- name: amber
+  cx: 10
+  cy: 35
+  r: 28
+  stops:
+  - {offset: 0, color: '#f97316', opacity: 0.5}
+  - {offset: 100, color: '#f97316', opacity: 0.0}
+noise:
+  coarse_opacity: 0.12
+  fine_opacity: 0.06
+text_colors: {title: '#ffffff', description: '#e8f4fc', subtitle: '#d8ecf8', desc_opacity: 0.85, subtitle_opacity: 0.7}

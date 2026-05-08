@@ -1,768 +1,95 @@
 default: twilight
-
+layouts:
+  left-heavy: templates/layouts/left-heavy.svg
+  centered: templates/layouts/centered.svg
+  split: templates/layouts/split.svg
+  minimal: templates/layouts/minimal.svg
+  right-heavy: templates/layouts/right-heavy.svg
+  stacked: templates/layouts/stacked.svg
+  banner: templates/layouts/banner.svg
+  editorial: templates/layouts/editorial.svg
+  spotlight: templates/layouts/spotlight.svg
+  reverse-split: templates/layouts/reverse-split.svg
+  top-bar: templates/layouts/top-bar.svg
+  bottom-bar: templates/layouts/bottom-bar.svg
 templates:
-  - name: twilight
-    file: templates/twilight.svg
-    colors:
-      background: "#0f0f23"
-      primary: "#764ba2"
-      secondary: "#667eea"
-      title_text: "#ffffff"
-      subtitle_text: "#9ca3af"
-      description_text: "#d1d5db"
-  - name: daybreak
-    file: templates/daybreak.svg
-    colors:
-      background: "#f9fafb"
-      gradient_accent: "#fbbf24"
-      title_text: "#111827"
-      subtitle_text: "#6b7280"
-      description_text: "#4b5563"
-      logo_accent: "#f59e0b"
-      image_accent: "#ea580c"
-  - name: minimal
-    file: templates/minimal.svg
-    colors:
-      background: "#ffffff"
-      border: "#d1d5db"
-      title_text: "#111827"
-      subtitle_text: "#6b7280"
-      description_text: "#9ca3af"
-  - name: stripe
-    file: templates/stripe.svg
-    colors:
-      background: "#fafafa"
-      accent_primary: "#3b82f6"
-      accent_secondary: "#1d4ed8"
-      border: "#e5e7eb"
-      box_background: "#ffffff"
-      title_text: "#111827"
-      subtitle_text: "#6b7280"
-      description_text: "#374151"
-  - name: hero
-    file: templates/hero.svg
-    colors:
-      background: "#1e293b"
-      placeholder_text: "#475569"
-      title_text: "#ffffff"
-      subtitle_text: "#e2e8f0"
-      description_text: "#f1f5f9"
-  - name: modern
-    file: templates/modern.svg
-    colors:
-      gradient_start: "#f8fafc"
-      gradient_end: "#e2e8f0"
-      accent_blue: "#6366f1"
-      accent_pink: "#ec4899"
-      box_background: "#ffffff"
-      border: "#cbd5e1"
-      title_text: "#0f172a"
-      subtitle_text: "#64748b"
-      description_text: "#475569"
-  - name: fish
-    file: templates/fish.svg
-    colors:
-      background: "#0a0615"
-      background_end: "#0f0f23"
-      blob_purple: "#6b21a8"
-      blob_purple_mid: "#581c87"
-      blob_purple_dark: "#4c1d95"
-      waveform_dark: "#5b3a8a"
-      waveform_mid: "#9ca3af"
-      waveform_light: "#d1d5db"
-      text: "#ffffff"
-  - name: gradient-arctic
-    file: templates/gradient-arctic.svg
-    colors:
-      background: "#0c4a6e"
-      blob_cyan: "#67e8f9"
-      blob_light_cyan: "#a5f3fc"
-      blob_sky: "#7dd3fc"
-      blob_ice: "#e0f2fe"
-      blob_teal: "#22d3ee"
-      text: "#ffffff"
-  - name: gradient-aurora
-    file: templates/gradient-aurora.svg
-    colors:
-      background: "#1e1b4b"
-      blob_violet: "#7c3aed"
-      blob_pink: "#ec4899"
-      blob_orange: "#f97316"
-      blob_yellow: "#fbbf24"
-      blob_blue: "#3b82f6"
-      text: "#ffffff"
-  - name: gradient-berry
-    file: templates/gradient-berry.svg
-    colors:
-      background: "#450a0a"
-      blob_rose: "#be123c"
-      blob_crimson: "#9f1239"
-      blob_red: "#e11d48"
-      blob_wine: "#881337"
-      blob_pink: "#fb7185"
-      text: "#ffffff"
-  - name: gradient-candy
-    file: templates/gradient-candy.svg
-    colors:
-      background: "#581c87"
-      blob_pink: "#f472b6"
-      blob_fuchsia: "#e879f9"
-      blob_purple: "#c084fc"
-      blob_rose: "#fb7185"
-      blob_light_pink: "#f0abfc"
-      text: "#ffffff"
-  - name: gradient-copper
-    file: templates/gradient-copper.svg
-    colors:
-      background: "#1c1917"
-      blob_amber: "#b45309"
-      blob_orange: "#d97706"
-      blob_yellow: "#ca8a04"
-      blob_gold: "#fbbf24"
-      blob_brown: "#78350f"
-      text: "#ffffff"
-  - name: gradient-ember
-    file: templates/gradient-ember.svg
-    colors:
-      background: "#0a0a0a"
-      blob_red: "#dc2626"
-      blob_orange: "#ea580c"
-      blob_flame: "#f97316"
-      blob_yellow: "#fbbf24"
-      blob_dark_red: "#991b1b"
-      text: "#ffffff"
-  - name: gradient-forest
-    file: templates/gradient-forest.svg
-    colors:
-      background: "#052e16"
-      blob_green: "#22c55e"
-      blob_emerald: "#10b981"
-      blob_teal: "#14b8a6"
-      blob_lime: "#84cc16"
-      blob_light_lime: "#a3e635"
-      text: "#ffffff"
-  - name: gradient-galaxy
-    file: templates/gradient-galaxy.svg
-    colors:
-      background: "#030712"
-      blob_indigo: "#6366f1"
-      blob_violet: "#8b5cf6"
-      blob_purple: "#a855f7"
-      blob_blue: "#3b82f6"
-      blob_pink: "#ec4899"
-      blob_light_pink: "#f472b6"
-      text: "#ffffff"
-  - name: gradient-lavender
-    file: templates/gradient-lavender.svg
-    colors:
-      background: "#2e1065"
-      blob_violet: "#a78bfa"
-      blob_light_violet: "#c4b5fd"
-      blob_pale_violet: "#ddd6fe"
-      blob_pink: "#f5d0fe"
-      blob_lavender: "#e9d5ff"
-      text: "#ffffff"
-  - name: gradient-midnight
-    file: templates/gradient-midnight.svg
-    colors:
-      background: "#020617"
-      blob_navy: "#1e3a8a"
-      blob_indigo: "#3730a3"
-      blob_violet: "#4f46e5"
-      blob_light_indigo: "#6366f1"
-      blob_periwinkle: "#818cf8"
-      text: "#ffffff"
-  - name: gradient-mint
-    file: templates/gradient-mint.svg
-    colors:
-      background: "#134e4a"
-      blob_aqua: "#5eead4"
-      blob_teal: "#2dd4bf"
-      blob_light_teal: "#99f6e4"
-      blob_green: "#a7f3d0"
-      blob_emerald: "#6ee7b7"
-      text: "#ffffff"
-  - name: gradient-moss
-    file: templates/gradient-moss.svg
-    colors:
-      background: "#1a2e1a"
-      blob_olive: "#4d7c0f"
-      blob_lime: "#65a30d"
-      blob_stone: "#78716c"
-      blob_green: "#84cc16"
-      blob_gray: "#a3a3a3"
-      text: "#ffffff"
-  - name: gradient-neon
-    file: templates/gradient-neon.svg
-    colors:
-      background: "#09090b"
-      blob_cyan: "#06b6d4"
-      blob_fuchsia: "#d946ef"
-      blob_light_cyan: "#22d3ee"
-      blob_purple: "#a855f7"
-      blob_pink: "#f0abfc"
-      text: "#ffffff"
-  - name: gradient-ocean
-    file: templates/gradient-ocean.svg
-    colors:
-      background: "#0c1929"
-      blob_sky: "#0ea5e9"
-      blob_cyan: "#06b6d4"
-      blob_teal: "#14b8a6"
-      blob_light_cyan: "#22d3ee"
-      blob_aqua: "#67e8f9"
-      text: "#ffffff"
-  - name: gradient-peach
-    file: templates/gradient-peach.svg
-    colors:
-      background: "#7c2d12"
-      blob_peach: "#fdba74"
-      blob_light_peach: "#fed7aa"
-      blob_yellow: "#fbbf24"
-      blob_orange: "#fb923c"
-      blob_cream: "#ffedd5"
-      text: "#ffffff"
-  - name: gradient-storm
-    file: templates/gradient-storm.svg
-    colors:
-      background: "#1e293b"
-      blob_slate: "#475569"
-      blob_gray: "#64748b"
-      blob_dark_slate: "#334155"
-      blob_light_gray: "#94a3b8"
-      blob_silver: "#cbd5e1"
-      text: "#ffffff"
-  - name: gradient-sunset
-    file: templates/gradient-sunset.svg
-    colors:
-      background: "#1e1b4b"
-      blob_yellow: "#fbbf24"
-      blob_orange: "#f97316"
-      blob_red: "#ef4444"
-      blob_pink: "#ec4899"
-      blob_rose: "#be185d"
-      text: "#ffffff"
-  - name: gradient-autumn
-    file: templates/gradient-autumn.svg
-    colors:
-      background: "#451a03"
-      blob_orange: "#ea580c"
-      blob_red: "#b91c1c"
-      blob_light_orange: "#f97316"
-      blob_crimson: "#dc2626"
-      blob_yellow: "#fbbf24"
-      text: "#ffffff"
-  - name: gradient-champagne
-    file: templates/gradient-champagne.svg
-    colors:
-      background: "#451a03"
-      blob_cream: "#f7e7ce"
-      blob_gold: "#d4af37"
-      blob_tan: "#c9a66b"
-      blob_yellow: "#fcd34d"
-      blob_ivory: "#fef3c7"
-      text: "#ffffff"
-  - name: gradient-citrus
-    file: templates/gradient-citrus.svg
-    colors:
-      background: "#14532d"
-      blob_yellow: "#ffd93d"
-      blob_green: "#6bcb77"
-      blob_orange: "#ff6b35"
-      blob_lime: "#84cc16"
-      blob_amber: "#fbbf24"
-      text: "#ffffff"
-  - name: gradient-cobalt
-    file: templates/gradient-cobalt.svg
-    colors:
-      background: "#0c1929"
-      blob_blue: "#1d4ed8"
-      blob_blue_mid: "#2563eb"
-      blob_light_blue: "#60a5fa"
-      blob_royal: "#3b82f6"
-      blob_sky: "#93c5fd"
-      text: "#ffffff"
-  - name: gradient-coral
-    file: templates/gradient-coral.svg
-    colors:
-      background: "#134e4a"
-      blob_coral: "#ff6b6b"
-      blob_turquoise: "#4ecdc4"
-      blob_teal: "#2a9d8f"
-      blob_light_coral: "#f8b4b4"
-      blob_aqua: "#99f6e4"
-      text: "#ffffff"
-  - name: gradient-dusk
-    file: templates/gradient-dusk.svg
-    colors:
-      background: "#1e1b4b"
-      blob_violet: "#a78bfa"
-      blob_indigo: "#818cf8"
-      blob_light_violet: "#c4b5fd"
-      blob_blue: "#6366f1"
-      blob_pale: "#ddd6fe"
-      text: "#ffffff"
-  - name: gradient-copper-teal
-    file: templates/gradient-copper-teal.svg
-    colors:
-      background: "#0d5c5c"
-      blob_copper: "#b87333"
-      blob_bronze: "#cd7f32"
-      blob_teal: "#2aa198"
-      blob_peach: "#da8a67"
-      blob_cyan: "#5ccccc"
-      text: "#ffffff"
-  - name: gradient-noir
-    file: templates/gradient-noir.svg
-    colors:
-      background: "#09090b"
-      blob_dark: "#27272a"
-      blob_gray: "#3f3f46"
-      blob_mid: "#52525b"
-      blob_light: "#71717a"
-      blob_silver: "#a1a1aa"
-      text: "#ffffff"
-  - name: gradient-sahara
-    file: templates/gradient-sahara.svg
-    colors:
-      background: "#92400e"
-      blob_tan: "#d4a574"
-      blob_terracotta: "#c2703e"
-      blob_yellow: "#fbbf24"
-      blob_amber: "#f59e0b"
-      blob_sienna: "#8b5a2b"
-      text: "#ffffff"
-  - name: gradient-tropics
-    file: templates/gradient-tropics.svg
-    colors:
-      background: "#0f172a"
-      blob_pink: "#f472b6"
-      blob_cyan: "#22d3ee"
-      blob_lime: "#a3e635"
-      blob_magenta: "#ec4899"
-      blob_light_cyan: "#67e8f9"
-      blob_light_lime: "#bef264"
-      text: "#ffffff"
-  - name: gradient-velvet
-    file: templates/gradient-velvet.svg
-    colors:
-      background: "#2e1065"
-      blob_violet: "#7c3aed"
-      blob_purple: "#5b21b6"
-      blob_light_purple: "#a855f7"
-      blob_orchid: "#c084fc"
-      blob_indigo: "#8b5cf6"
-      text: "#ffffff"
-  - name: gradient-wine
-    file: templates/gradient-wine.svg
-    colors:
-      background: "#1c1917"
-      blob_burgundy: "#881337"
-      blob_rose: "#9f1239"
-      blob_crimson: "#be123c"
-      blob_dark_wine: "#4c0519"
-      blob_light_rose: "#fda4af"
-      text: "#ffffff"
-  # Centered/Hero layout templates
-  - name: gradient-amethyst
-    file: templates/gradient-amethyst.svg
-    colors:
-      background: "#4a1c6b"
-      blob_purple: "#9b59b6"
-      blob_dark_purple: "#8e44ad"
-      blob_light_purple: "#bb8fce"
-      blob_pale: "#d7bde2"
-      text: "#ffffff"
-  - name: gradient-dawn
-    file: templates/gradient-dawn.svg
-    colors:
-      background: "#4a1942"
-      blob_cream: "#ffecd2"
-      blob_peach: "#fcb69f"
-      blob_pink: "#ff9a9e"
-      blob_coral: "#fad0c4"
-      text: "#ffffff"
-  - name: gradient-eclipse
-    file: templates/gradient-eclipse.svg
-    colors:
-      background: "#0f0c29"
-      blob_purple: "#302b63"
-      blob_indigo: "#4a4580"
-      blob_violet: "#544a7d"
-      blob_light: "#667eea"
-      text: "#ffffff"
-  - name: gradient-jade
-    file: templates/gradient-jade.svg
-    colors:
-      background: "#0d4f4a"
-      blob_teal: "#00b09b"
-      blob_green: "#1d976c"
-      blob_emerald: "#0f9b8e"
-      blob_light: "#88d8b0"
-      text: "#ffffff"
-  - name: gradient-lilac
-    file: templates/gradient-lilac.svg
-    colors:
-      background: "#e8e0f0"
-      blob_blue: "#c9d6ff"
-      blob_violet: "#e2d1f9"
-      blob_pink: "#d4b8e0"
-      text: "#3d2952"
-  - name: gradient-lotus
-    file: templates/gradient-lotus.svg
-    colors:
-      background: "#831843"
-      blob_pink: "#f5d0fe"
-      blob_fuchsia: "#e879f9"
-      blob_magenta: "#d946ef"
-      blob_light: "#fae8ff"
-      text: "#ffffff"
-  - name: gradient-opal
-    file: templates/gradient-opal.svg
-    colors:
-      background: "#e0f7fa"
-      blob_aqua: "#a8edea"
-      blob_pink: "#fed6e3"
-      blob_mauve: "#d299c2"
-      text: "#3d3252"
-  - name: gradient-orchid
-    file: templates/gradient-orchid.svg
-    colors:
-      background: "#4a1259"
-      blob_orchid: "#da70d6"
-      blob_purple: "#ba55d3"
-      blob_dark: "#9932cc"
-      blob_light: "#e9b8ff"
-      text: "#ffffff"
-  - name: gradient-quartz
-    file: templates/gradient-quartz.svg
-    colors:
-      background: "#8b3a62"
-      blob_pink: "#f9c4d2"
-      blob_rose: "#f4a0b4"
-      blob_coral: "#e0789c"
-      text: "#ffffff"
-  - name: gradient-sapphire
-    file: templates/gradient-sapphire.svg
-    colors:
-      background: "#0a2351"
-      blob_blue: "#0f52ba"
-      blob_navy: "#1a5276"
-      blob_sky: "#2e86ab"
-      blob_light: "#85c1e9"
-      text: "#ffffff"
-  - name: gradient-saffron
-    file: templates/gradient-saffron.svg
-    colors:
-      background: "#5d3a1a"
-      blob_yellow: "#f4c430"
-      blob_gold: "#e3a857"
-      blob_amber: "#d4881c"
-      blob_light: "#ffecb3"
-      text: "#ffffff"
-  - name: gradient-steel
-    file: templates/gradient-steel.svg
-    colors:
-      background: "#37474f"
-      blob_steel: "#4682b4"
-      blob_teal: "#5f9ea0"
-      blob_slate: "#708090"
-      blob_light: "#b0c4de"
-      text: "#ffffff"
-  - name: gradient-sage-terracotta
-    file: templates/gradient-sage-terracotta.svg
-    colors:
-      background: "#7d8471"
-      blob_terracotta: "#cd5c45"
-      blob_rust: "#e07850"
-      blob_sage: "#b2ac88"
-      blob_tan: "#c4a484"
-      blob_brown: "#a67b5b"
-      text: "#ffffff"
-  # Split layout templates
-  - name: gradient-voltage
-    file: templates/gradient-voltage.svg
-    colors:
-      background: "#4c1d95"
-      blob_yellow: "#facc15"
-      blob_gold: "#eab308"
-      blob_violet: "#a855f7"
-      blob_lemon: "#fde047"
-      blob_purple: "#8b5cf6"
-      text: "#ffffff"
-  - name: gradient-sherbet
-    file: templates/gradient-sherbet.svg
-    colors:
-      background: "#fb923c"
-      blob_mint: "#34d399"
-      blob_emerald: "#10b981"
-      blob_aqua: "#6ee7b7"
-      blob_peach: "#fdba74"
-      blob_light_mint: "#a7f3d0"
-      text: "#ffffff"
-  - name: gradient-cedar
-    file: templates/gradient-cedar.svg
-    colors:
-      background: "#3e2723"
-      blob_tan: "#c19a6b"
-      blob_sienna: "#8b4513"
-      blob_brown: "#654321"
-      text: "#ffffff"
-  - name: gradient-cosmos
-    file: templates/gradient-cosmos.svg
-    colors:
-      background: "#be185d"
-      blob_teal: "#14b8a6"
-      blob_aqua: "#2dd4bf"
-      blob_pink: "#f472b6"
-      blob_cyan: "#5eead4"
-      blob_magenta: "#db2777"
-      text: "#ffffff"
-  - name: gradient-evergreen
-    file: templates/gradient-evergreen.svg
-    colors:
-      background: "#0d3320"
-      blob_green: "#2e8b57"
-      blob_forest: "#228b22"
-      blob_dark: "#1a5a1a"
-      text: "#ffffff"
-  - name: gradient-fig
-    file: templates/gradient-fig.svg
-    colors:
-      background: "#2d1b30"
-      blob_purple: "#5d3954"
-      blob_plum: "#4b3048"
-      blob_wine: "#800040"
-      text: "#ffffff"
-  - name: gradient-garnet
-    file: templates/gradient-garnet.svg
-    colors:
-      background: "#2a0a0a"
-      blob_red: "#9a2a2a"
-      blob_maroon: "#722f37"
-      blob_dark: "#5b1e1e"
-      text: "#ffffff"
-  - name: gradient-ginger
-    file: templates/gradient-ginger.svg
-    colors:
-      background: "#5c3d2e"
-      blob_orange: "#b06500"
-      blob_coral: "#e2725b"
-      blob_rust: "#cf5c36"
-      text: "#ffffff"
-  - name: gradient-hazel
-    file: templates/gradient-hazel.svg
-    colors:
-      background: "#3d3d1d"
-      blob_gold: "#8e7618"
-      blob_brown: "#a67b5b"
-      blob_olive: "#6b8e23"
-      text: "#ffffff"
-  - name: gradient-lagoon
-    file: templates/gradient-lagoon.svg
-    colors:
-      background: "#006666"
-      blob_turquoise: "#40e0d0"
-      blob_teal: "#48d1cc"
-      blob_aqua: "#20b2aa"
-      text: "#ffffff"
-  - name: gradient-maple
-    file: templates/gradient-maple.svg
-    colors:
-      background: "#5c1a1a"
-      blob_orange: "#c04000"
-      blob_tomato: "#ff6347"
-      blob_coral: "#cd5c5c"
-      text: "#ffffff"
-  - name: gradient-horizon
-    file: templates/gradient-horizon.svg
-    colors:
-      background: "#0369a1"
-      blob_orange: "#f97316"
-      blob_sky: "#38bdf8"
-      blob_coral: "#fb923c"
-      blob_peach: "#fdba74"
-      blob_light_blue: "#7dd3fc"
-      text: "#ffffff"
-  - name: gradient-pine
-    file: templates/gradient-pine.svg
-    colors:
-      background: "#0a2a1a"
-      blob_teal: "#01796f"
-      blob_green: "#234f1e"
-      blob_forest: "#145a32"
-      text: "#ffffff"
-  - name: gradient-ruby
-    file: templates/gradient-ruby.svg
-    colors:
-      background: "#3d0a1a"
-      blob_ruby: "#e0115f"
-      blob_crimson: "#9b111e"
-      blob_dark: "#7b0a24"
-      text: "#ffffff"
-  - name: gradient-terra
-    file: templates/gradient-terra.svg
-    colors:
-      background: "#4a2c1a"
-      blob_orange: "#e07040"
-      blob_rust: "#c04000"
-      blob_sienna: "#8b4513"
-      text: "#ffffff"
-  # Minimal layout templates
-  - name: gradient-coral-navy
-    file: templates/gradient-coral-navy.svg
-    colors:
-      background: "#1e3a5f"
-      blob_coral: "#ff6b6b"
-      blob_light_coral: "#ff8787"
-      blob_navy: "#1e40af"
-      blob_peach: "#ffa8a8"
-      blob_blue: "#3b5998"
-      text: "#ffffff"
-  - name: gradient-cloud
-    file: templates/gradient-cloud.svg
-    colors:
-      background: "#8a9cae"
-      blob_light: "#d0dce8"
-      blob_dark: "#6a7a8a"
-      blob_slate: "#586878"
-      blob_silver: "#c0d0e0"
-      blob_charcoal: "#4a5a6a"
-      blob_steel: "#b8c8d8"
-      text: "#2d3748"
-  - name: gradient-duotone
-    file: templates/gradient-duotone.svg
-    colors:
-      background: "#7e22ce"
-      blob_orange: "#f97316"
-      blob_peach: "#fb923c"
-      blob_purple: "#c084fc"
-      blob_apricot: "#fdba74"
-      blob_violet: "#9333ea"
-      text: "#ffffff"
-  - name: gradient-noire
-    file: templates/gradient-noire.svg
-    colors:
-      background: "#0a0a0a"
-      blob_gold: "#eab308"
-      blob_amber: "#ca8a04"
-      blob_yellow: "#fde047"
-      blob_lemon: "#facc15"
-      blob_bronze: "#a16207"
-      text: "#fef3c7"
-  - name: gradient-heather
-    file: templates/gradient-heather.svg
-    colors:
-      background: "#5a4a6a"
-      blob_violet: "#b7a5d3"
-      blob_purple: "#9883b2"
-      blob_mauve: "#806d99"
-      text: "#ffffff"
-  - name: gradient-mauve
-    file: templates/gradient-mauve.svg
-    colors:
-      background: "#5d4555"
-      blob_rose: "#915f6d"
-      blob_pink: "#bc8f8f"
-      blob_lilac: "#c8a2c8"
-      text: "#ffffff"
-  - name: gradient-moonstone
-    file: templates/gradient-moonstone.svg
-    colors:
-      background: "#8a98a6"
-      blob_silver: "#a8b8c8"
-      blob_light: "#c0d0e0"
-      blob_slate: "#58687a"
-      blob_charcoal: "#4a5a6a"
-      blob_ice: "#d0dce8"
-      text: "#2d3a4a"
-  - name: gradient-raven
-    file: templates/gradient-raven.svg
-    colors:
-      background: "#0a0a0a"
-      blob_blue: "#1e40af"
-      blob_navy: "#1d4ed8"
-      blob_sky: "#3b82f6"
-      blob_royal: "#2563eb"
-      blob_dark_blue: "#1e3a8a"
-      text: "#ffffff"
-  - name: gradient-ember-ice
-    file: templates/gradient-ember-ice.svg
-    colors:
-      background: "#7c2d12"
-      blob_cyan: "#0ea5e9"
-      blob_sky: "#38bdf8"
-      blob_orange: "#fb923c"
-      blob_light_blue: "#7dd3fc"
-      blob_amber: "#f97316"
-      text: "#ffffff"
-  - name: gradient-seaglass
-    file: templates/gradient-seaglass.svg
-    colors:
-      background: "#0d9488"
-      blob_sand: "#d4a574"
-      blob_cream: "#e7d4b8"
-      blob_aqua: "#5eead4"
-      blob_tan: "#c9a86c"
-      blob_teal: "#2dd4bf"
-      text: "#ffffff"
-  - name: gradient-shadow
-    file: templates/gradient-shadow.svg
-    colors:
-      background: "#0a0a18"
-      blob_navy: "#1a1a2e"
-      blob_indigo: "#16213e"
-      blob_blue: "#0f3460"
-      text: "#ffffff"
-  - name: gradient-plum-gold
-    file: templates/gradient-plum-gold.svg
-    colors:
-      background: "#4a1942"
-      blob_gold: "#ffd700"
-      blob_amber: "#daa520"
-      blob_plum: "#7b2869"
-      blob_yellow: "#ffec8b"
-      blob_wine: "#8b3a62"
-      text: "#ffffff"
-  - name: gradient-indigo-blush
-    file: templates/gradient-indigo-blush.svg
-    colors:
-      background: "#312e81"
-      blob_blush: "#fda4af"
-      blob_rose: "#fb7185"
-      blob_indigo: "#6366f1"
-      blob_pink: "#fecdd3"
-      blob_violet: "#818cf8"
-      text: "#ffffff"
-  - name: gradient-peach-lavender
-    file: templates/gradient-peach-lavender.svg
-    colors:
-      background: "#e6b8a2"
-      blob_lavender: "#b57edc"
-      blob_purple: "#9370db"
-      blob_peach: "#ffcba4"
-      blob_thistle: "#d8bfd8"
-      blob_cream: "#ffdab9"
-      text: "#4a3728"
-  - name: gradient-thunderstorm
-    file: templates/gradient-thunderstorm.svg
-    colors:
-      background: "#374151"
-      blob_electric: "#38bdf8"
-      blob_sky: "#0ea5e9"
-      blob_gray: "#6b7280"
-      blob_light_blue: "#7dd3fc"
-      blob_slate: "#9ca3af"
-      text: "#ffffff"
-  - name: reddit
-    file: templates/reddit.svg
-    truncation: false
-    max_scale: 2.0
-    colors:
-      background: "#FFFFFF"
-      accent: "#FF4500"
-      subreddit_text: "#FF4500"
-      meta_text: "#878A8C"
-      title_text: "#1A1A1B"
-      description_text: "#1F2937"
-      footer: "#F8F9FA"
+- name: twilight
+  file: templates/twilight.svg
+  colors:
+    background: '#0f0f23'
+    primary: '#764ba2'
+    secondary: '#667eea'
+    title_text: '#ffffff'
+    subtitle_text: '#9ca3af'
+    description_text: '#d1d5db'
+- name: daybreak
+  file: templates/daybreak.svg
+  colors:
+    background: '#f9fafb'
+    gradient_accent: '#fbbf24'
+    title_text: '#111827'
+    subtitle_text: '#6b7280'
+    description_text: '#4b5563'
+    logo_accent: '#f59e0b'
+    image_accent: '#ea580c'
+- name: minimal
+  file: templates/minimal.svg
+  colors:
+    background: '#ffffff'
+    border: '#d1d5db'
+    title_text: '#111827'
+    subtitle_text: '#6b7280'
+    description_text: '#9ca3af'
+- name: stripe
+  file: templates/stripe.svg
+  colors:
+    background: '#fafafa'
+    accent_primary: '#3b82f6'
+    accent_secondary: '#1d4ed8'
+    border: '#e5e7eb'
+    box_background: '#ffffff'
+    title_text: '#111827'
+    subtitle_text: '#6b7280'
+    description_text: '#374151'
+- name: hero
+  file: templates/hero.svg
+  colors:
+    background: '#1e293b'
+    placeholder_text: '#475569'
+    title_text: '#ffffff'
+    subtitle_text: '#e2e8f0'
+    description_text: '#f1f5f9'
+- name: modern
+  file: templates/modern.svg
+  colors:
+    gradient_start: '#f8fafc'
+    gradient_end: '#e2e8f0'
+    accent_blue: '#6366f1'
+    accent_pink: '#ec4899'
+    box_background: '#ffffff'
+    border: '#cbd5e1'
+    title_text: '#0f172a'
+    subtitle_text: '#64748b'
+    description_text: '#475569'
+- name: fish
+  file: templates/fish.svg
+  colors:
+    background: '#0a0615'
+    background_end: '#0f0f23'
+    blob_purple: '#6b21a8'
+    blob_purple_mid: '#581c87'
+    blob_purple_dark: '#4c1d95'
+    waveform_dark: '#5b3a8a'
+    waveform_mid: '#9ca3af'
+    waveform_light: '#d1d5db'
+    text: '#ffffff'
+- name: reddit
+  file: templates/reddit.svg
+  colors:
+    background: '#FFFFFF'
+    accent: '#FF4500'
+    subreddit_text: '#FF4500'
+    meta_text: '#878A8C'
+    title_text: '#1A1A1B'
+    description_text: '#1F2937'
+    footer: '#F8F9FA'

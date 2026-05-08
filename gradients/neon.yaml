@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#09090b'}
+- {offset: 100, color: '#18181b'}
+direction: [0, 0, 100, 100]
+blobs:
+- name: cyan
+  cx: 15
+  cy: 60
+  r: 50
+  stops:
+  - {offset: 0, color: '#06b6d4', opacity: 0.9}
+  - {offset: 100, color: '#06b6d4', opacity: 0.0}
+- name: fuchsia
+  cx: 85
+  cy: 40
+  r: 50
+  stops:
+  - {offset: 0, color: '#d946ef'}
+  - {offset: 100, color: '#d946ef', opacity: 0.0}
+- name: light_cyan
+  cx: 50
+  cy: 85
+  r: 55
+  stops:
+  - {offset: 0, color: '#22d3ee', opacity: 0.6}
+  - {offset: 100, color: '#22d3ee', opacity: 0.0}
+- name: purple
+  cx: 40
+  cy: 25
+  r: 40
+  stops:
+  - {offset: 0, color: '#a855f7', opacity: 0.7}
+  - {offset: 100, color: '#a855f7', opacity: 0.0}
+- name: pink
+  cx: 70
+  cy: 70
+  r: 35
+  stops:
+  - {offset: 0, color: '#f0abfc', opacity: 0.5}
+  - {offset: 100, color: '#f0abfc', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}

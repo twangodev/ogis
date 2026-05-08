@@ -1,0 +1,44 @@
+base_stops:
+- {offset: 0, color: '#134e4a'}
+- {offset: 100, color: '#0f766e'}
+direction: [0, 100, 100, 0]
+blobs:
+- name: coral
+  cx: 70
+  cy: 40
+  r: 50
+  stops:
+  - {offset: 0, color: '#ff6b6b', opacity: 0.8}
+  - {offset: 100, color: '#ff6b6b', opacity: 0.0}
+- name: turquoise
+  cx: 30
+  cy: 70
+  r: 55
+  stops:
+  - {offset: 0, color: '#4ecdc4', opacity: 0.7}
+  - {offset: 100, color: '#4ecdc4', opacity: 0.0}
+- name: teal
+  cx: 85
+  cy: 75
+  r: 45
+  stops:
+  - {offset: 0, color: '#2a9d8f', opacity: 0.6}
+  - {offset: 100, color: '#2a9d8f', opacity: 0.0}
+- name: light_coral
+  cx: 20
+  cy: 25
+  r: 40
+  stops:
+  - {offset: 0, color: '#f8b4b4', opacity: 0.5}
+  - {offset: 100, color: '#f8b4b4', opacity: 0.0}
+- name: aqua
+  cx: 55
+  cy: 15
+  r: 35
+  stops:
+  - {offset: 0, color: '#99f6e4', opacity: 0.5}
+  - {offset: 100, color: '#99f6e4', opacity: 0.0}
+noise:
+  coarse_opacity: 0.18
+  fine_opacity: 0.1
+text_colors: {title: '#ffffff', description: '#ffffff', subtitle: '#ffffff', desc_opacity: 0.85, subtitle_opacity: 0.9}
