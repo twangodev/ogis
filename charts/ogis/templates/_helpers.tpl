@@ -62,6 +62,13 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+HMAC secret name — user-provided existingSecret if set, else chart-managed.
+*/}}
+{{- define "ogis.hmacSecretName" -}}
+{{- default (printf "%s-hmac" (include "ogis.fullname" .)) .Values.hmac.existingSecret }}
+{{- end }}
+
+{{/*
 Composed env list for the ogis container.
 */}}
 {{- define "ogis.env" -}}
@@ -82,6 +89,13 @@ Composed env list for the ogis container.
 {{- with .Values.config.defaults.logo }}
 - name: OGIS_DEFAULT_LOGO
   value: {{ . | quote }}
+{{- end }}
+{{- if .Values.hmac.enabled }}
+- name: OGIS_HMAC_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "ogis.hmacSecretName" . }}
+      key: {{ .Values.hmac.existingSecretKey | default "secret" }}
 {{- end }}
 {{- with .Values.extraEnv }}
 {{ toYaml . }}

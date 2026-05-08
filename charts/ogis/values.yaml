@@ -122,6 +122,15 @@ tolerations: []
 
 affinity: {}
 
+# HMAC request signing. When enabled, sets OGIS_HMAC_SECRET on the container.
+hmac:
+  enabled: false
+  # Secret value. Avoid passing via `--set`; prefer `existingSecret`.
+  value: ""
+  # Use a pre-existing Secret instead of letting the chart create one.
+  existingSecret: ""
+  existingSecretKey: secret
+
 # Application config. Anything left empty is omitted; the binary's own
 # defaults from src/config.rs apply. Use `extraEnv` for OGIS_* knobs not
 # surfaced here (OGIS_LOGO_*, OGIS_CACHE_*, OGIS_OTEL_*, etc.).
