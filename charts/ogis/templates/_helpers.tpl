@@ -69,6 +69,14 @@ HMAC secret name — user-provided existingSecret if set, else chart-managed.
 {{- end }}
 
 {{/*
+Cache-backend env. Memory backend contributes nothing today. When Redis or
+memcached lands, extend this single helper — that's the chart's promised
+abstraction boundary for cache backends.
+*/}}
+{{- define "ogis.cacheEnv" -}}
+{{- end }}
+
+{{/*
 Composed env list for the ogis container.
 */}}
 {{- define "ogis.env" -}}
@@ -97,6 +105,7 @@ Composed env list for the ogis container.
       name: {{ include "ogis.hmacSecretName" . }}
       key: {{ .Values.hmac.existingSecretKey | default "secret" }}
 {{- end }}
+{{- include "ogis.cacheEnv" . }}
 {{- with .Values.extraEnv }}
 {{ toYaml . }}
 {{- end }}

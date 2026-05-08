@@ -122,6 +122,11 @@ tolerations: []
 
 affinity: {}
 
+# Cache backend. Today only `memory` is supported. The structure here is the
+# extension point for future Redis/memcached backends — additive, not breaking.
+cache:
+  backend: memory
+
 # HMAC request signing. When enabled, sets OGIS_HMAC_SECRET on the container.
 hmac:
   enabled: false
