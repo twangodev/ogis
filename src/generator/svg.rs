@@ -111,7 +111,16 @@ fn override_colors(
     let Some(template_colors) = templates.colors.get(template_name) else {
         return content.to_string();
     };
+    apply_color_overrides(content, template_colors, color_overrides)
+}
 
+/// Apply color overrides given an explicit colors map (for the gradient cache path
+/// where the caller already has the map and wants to apply it to a partial SVG).
+pub(crate) fn apply_color_overrides(
+    content: &str,
+    template_colors: &HashMap<String, String>,
+    color_overrides: &HashMap<String, String>,
+) -> String {
     let mut result = content.to_string();
     for (color_name, new_hex) in color_overrides {
         if let Some(default_hex) = template_colors.get(color_name) {
@@ -131,7 +140,34 @@ pub fn generate_svg(
     truncation: bool,
 ) -> Result<String, GeneratorError> {
     let template_content = get_template(templates, template_name)?;
-    let content = override_colors(template_content, template_name, templates, color_overrides);
+    generate_svg_from(
+        text,
+        images,
+        template_content,
+        template_name,
+        templates,
+        color_overrides,
+        fontdb,
+        truncation,
+    )
+}
+
+/// Like [`generate_svg`] but the caller supplies the SVG content directly.
+/// Used by the gradient-cache path on the foreground-only SVG fragment, so the
+/// rest of the pipeline (truncation, text/image substitution, color overrides)
+/// runs against just the foreground half.
+#[allow(clippy::too_many_arguments)]
+pub fn generate_svg_from(
+    text: TextContent,
+    images: Images,
+    svg_content: &str,
+    template_name: &str,
+    templates: &TemplateMap,
+    color_overrides: &HashMap<String, String>,
+    fontdb: &Arc<usvg::fontdb::Database>,
+    truncation: bool,
+) -> Result<String, GeneratorError> {
+    let content = override_colors(svg_content, template_name, templates, color_overrides);
 
     // Apply truncation if enabled for this template
     let (truncated_title, truncated_description, truncated_subtitle) = if truncation {
@@ -223,6 +259,7 @@ mod tests {
             font_properties: HashMap::new(),
             truncation: HashMap::new(),
             max_scale: HashMap::new(),
+            gradient_splits: HashMap::new(),
         };
 
         let result = get_template_fonts(&templates, "test");
@@ -243,6 +280,7 @@ mod tests {
             font_properties: HashMap::new(),
             truncation: HashMap::new(),
             max_scale: HashMap::new(),
+            gradient_splits: HashMap::new(),
         };
 
         let constraints = get_width_constraints(&templates, "test");
