@@ -90,6 +90,34 @@ impl ImageSettings {
     }
 }
 
+/// Gradient template prerender cache settings
+#[derive(Clone, Debug, Args)]
+pub struct GradientCacheSettings {
+    /// Gradient cache maximum size (default: 512MB; clamped to [64MB, 2GB])
+    #[arg(long, default_value = "512MB", env = "OGIS_GRADIENT_CACHE_MAX_BYTES")]
+    pub max_bytes: ByteSize,
+
+    /// Comma-separated list of gradient template names to prerender at startup
+    /// (lazy fallback handles anything not listed). Example:
+    /// "gradient-aurora-centered,gradient-noir-banner"
+    #[arg(
+        long,
+        env = "OGIS_GRADIENT_WARMUP_TEMPLATES",
+        value_delimiter = ',',
+        default_value = ""
+    )]
+    pub warmup_templates: Vec<String>,
+}
+
+impl GradientCacheSettings {
+    /// Effective cache size, clamped to [64MB, 2GB].
+    pub fn effective_max_bytes(&self) -> u64 {
+        const MIN_BYTES: u64 = 64 * 1024 * 1024;
+        const MAX_BYTES: u64 = 2 * 1024 * 1024 * 1024;
+        self.max_bytes.as_u64().clamp(MIN_BYTES, MAX_BYTES)
+    }
+}
+
 /// HMAC authentication settings
 #[derive(Clone, Debug, Args)]
 pub struct HmacSettings {
@@ -162,6 +190,9 @@ pub struct Config {
 
     #[command(flatten)]
     pub image: ImageSettings,
+
+    #[command(flatten)]
+    pub gradient_cache: GradientCacheSettings,
 
     #[command(flatten)]
     pub hmac: HmacSettings,
