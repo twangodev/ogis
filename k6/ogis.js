@@ -38,6 +38,11 @@ export function setup() {
     gradientLayouts: config.gradientLayouts,
     gradientSample: config.gradientSample,
   });
+  if (templates.length === 0) {
+    throw new Error(
+      `[setup] filtered template list is empty — adjust INCLUDE_STATIC / INCLUDE_GRADIENTS / GRADIENT_LAYOUTS / GRADIENT_SAMPLE so at least one template is selected (server returned ${all.length} total)`
+    );
+  }
   console.log(
     `[setup] using ${templates.length} template(s): ${
       templates.filter((t) => !t.startsWith('gradient-')).length
@@ -55,7 +60,7 @@ function selectTemplate(templates) {
 }
 
 function buildUrl(template, extraParams = '') {
-  const base = `${config.baseUrl}/?template=${template}&title=${encodeURIComponent(randomTitle())}&description=${encodeURIComponent(randomDescription())}`;
+  const base = `${config.baseUrl}/?template=${encodeURIComponent(template)}&title=${encodeURIComponent(randomTitle())}&description=${encodeURIComponent(randomDescription())}`;
   return extraParams ? `${base}${extraParams}` : base;
 }
 
@@ -70,8 +75,13 @@ function recordResponse(template, durationMs) {
   const metric = templateMetrics[template];
   if (metric) {
     metric.add(durationMs);
-  } else {
+  } else if (template.startsWith('gradient-')) {
     gradientAggregate.add(durationMs);
+  } else {
+    // Static template that wasn't in templates.yaml at init time (server has
+    // drifted ahead of the file) — log once instead of silently bucketing into
+    // the gradient aggregate, which would mask the drift.
+    console.warn(`[record] unknown non-gradient template '${template}' — not tallied; regen templates.yaml`);
   }
   if (template === DEFAULT_TEMPLATE) {
     defaultMetrics.add(durationMs);
