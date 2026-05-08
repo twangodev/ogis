@@ -75,7 +75,87 @@ pub struct RenderOutput {
     pub content_type: &'static str,
 }
 
-/// Render SVG to image with given options
+/// Rasterize SVG to a Pixmap at the given scale.
+///
+/// The pixmap is allocated transparent (no fill). Callers that need an opaque
+/// background (e.g. JPEG output of a non-cached path) should fill before drawing
+/// or composite onto an opaque base.
+pub fn render_to_pixmap(
+    svg_data: &str,
+    fontdb: &Arc<usvg::fontdb::Database>,
+    scale: f32,
+) -> Result<tiny_skia::Pixmap, GeneratorError> {
+    let usvg_options = usvg::Options {
+        fontdb: Arc::clone(fontdb),
+        ..Default::default()
+    };
+
+    let tree = usvg::Tree::from_str(svg_data, &usvg_options)
+        .map_err(|e| GeneratorError::SvgParse(e.to_string()))?;
+
+    let size = tree.size();
+
+    let scaled_width = ((size.width() * scale).round() as u32).max(1);
+    let scaled_height = ((size.height() * scale).round() as u32).max(1);
+
+    let mut pixmap = tiny_skia::Pixmap::new(scaled_width, scaled_height)
+        .ok_or(GeneratorError::PixmapCreation)?;
+
+    let transform = tiny_skia::Transform::from_scale(scale, scale);
+    resvg::render(&tree, transform, &mut pixmap.as_mut());
+
+    Ok(pixmap)
+}
+
+/// Composite a foreground pixmap onto a background pixmap at the request scale.
+///
+/// `bg` is rendered at scale 1.0 (cached); `fg` is rendered at `request_scale`.
+/// The output is allocated at `fg`'s dimensions. If `request_scale != 1.0`, the
+/// background is downscaled with bilinear filtering.
+pub fn composite(
+    bg: &tiny_skia::Pixmap,
+    fg: &tiny_skia::Pixmap,
+    request_scale: f32,
+) -> Result<tiny_skia::Pixmap, GeneratorError> {
+    let mut output =
+        tiny_skia::Pixmap::new(fg.width(), fg.height()).ok_or(GeneratorError::PixmapCreation)?;
+
+    let bg_paint = tiny_skia::PixmapPaint {
+        quality: tiny_skia::FilterQuality::Bilinear,
+        ..Default::default()
+    };
+    let bg_transform = if (request_scale - 1.0).abs() > f32::EPSILON {
+        tiny_skia::Transform::from_scale(request_scale, request_scale)
+    } else {
+        tiny_skia::Transform::identity()
+    };
+    output.draw_pixmap(0, 0, bg.as_ref(), &bg_paint, bg_transform, None);
+
+    output.draw_pixmap(
+        0,
+        0,
+        fg.as_ref(),
+        &tiny_skia::PixmapPaint::default(),
+        tiny_skia::Transform::identity(),
+        None,
+    );
+
+    Ok(output)
+}
+
+/// Encode a pixmap to the requested output format.
+pub fn encode(
+    pixmap: &tiny_skia::Pixmap,
+    options: &RenderOptions,
+) -> Result<RenderOutput, GeneratorError> {
+    let bytes = encode_pixmap(pixmap, options)?;
+    Ok(RenderOutput {
+        bytes,
+        content_type: options.format.content_type(),
+    })
+}
+
+/// Render SVG to image with given options (single-pass; used for static templates).
 pub fn render(
     svg_data: &str,
     fontdb: &Arc<usvg::fontdb::Database>,
@@ -90,31 +170,21 @@ pub fn render(
         .map_err(|e| GeneratorError::SvgParse(e.to_string()))?;
 
     let size = tree.size();
-
-    // Calculate scaled dimensions (ensure at least 1 pixel)
     let scaled_width = ((size.width() * options.scale).round() as u32).max(1);
     let scaled_height = ((size.height() * options.scale).round() as u32).max(1);
 
-    // Create pixmap at scaled size
     let mut pixmap = tiny_skia::Pixmap::new(scaled_width, scaled_height)
         .ok_or(GeneratorError::PixmapCreation)?;
 
-    // For JPEG (no alpha), fill with white background
+    // For JPEG (no alpha), fill with white so transparent regions encode as white.
     if options.format == OutputFormat::Jpeg {
         pixmap.fill(tiny_skia::Color::WHITE);
     }
 
-    // Apply scale transform when rendering
     let transform = tiny_skia::Transform::from_scale(options.scale, options.scale);
     resvg::render(&tree, transform, &mut pixmap.as_mut());
 
-    // Encode to requested format
-    let bytes = encode_pixmap(&pixmap, options)?;
-
-    Ok(RenderOutput {
-        bytes,
-        content_type: options.format.content_type(),
-    })
+    encode(&pixmap, options)
 }
 
 /// Encode pixmap to the specified format
@@ -276,5 +346,57 @@ mod tests {
         let fontdb = Arc::new(usvg::fontdb::Database::new());
         let result = render("not valid svg", &fontdb, &RenderOptions::default());
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_composite_layers_fg_over_bg_at_native_scale() {
+        // Build a 4x4 opaque red bg and a 4x4 fg with a single transparent
+        // pixel and a single opaque green pixel. After composite, the green
+        // pixel must show; everything else stays red.
+        let mut bg = tiny_skia::Pixmap::new(4, 4).unwrap();
+        bg.fill(tiny_skia::Color::from_rgba8(255, 0, 0, 255));
+
+        let mut fg = tiny_skia::Pixmap::new(4, 4).unwrap();
+        // tiny_skia stores pixels as premultiplied RGBA. Set pixel at (1, 2)
+        // to opaque green directly via raw data.
+        let idx = ((2 * 4) + 1) * 4;
+        fg.data_mut()[idx] = 0; // R (premultiplied)
+        fg.data_mut()[idx + 1] = 255; // G (premultiplied)
+        fg.data_mut()[idx + 2] = 0; // B
+        fg.data_mut()[idx + 3] = 255; // A
+
+        let result = composite(&bg, &fg, 1.0).unwrap();
+        let pixel = |x: u32, y: u32| {
+            let i = ((y * 4) + x) as usize * 4;
+            (
+                result.data()[i],
+                result.data()[i + 1],
+                result.data()[i + 2],
+                result.data()[i + 3],
+            )
+        };
+        assert_eq!(pixel(1, 2), (0, 255, 0, 255), "green fg pixel wins");
+        assert_eq!(pixel(0, 0), (255, 0, 0, 255), "red bg shows through");
+        assert_eq!(pixel(3, 3), (255, 0, 0, 255), "red bg shows through");
+    }
+
+    #[test]
+    fn test_composite_downscales_bg_when_request_scale_below_one() {
+        // 4x4 bg, 2x2 fg at scale 0.5 → output is 2x2. The bg should be
+        // downscaled (bilinear) to 2x2 before fg overlays.
+        let mut bg = tiny_skia::Pixmap::new(4, 4).unwrap();
+        bg.fill(tiny_skia::Color::from_rgba8(100, 100, 100, 255));
+        let fg = tiny_skia::Pixmap::new(2, 2).unwrap(); // transparent
+
+        let result = composite(&bg, &fg, 0.5).unwrap();
+        assert_eq!(result.width(), 2);
+        assert_eq!(result.height(), 2);
+        // All pixels should reflect the gray bg (no fg contribution).
+        let i = 0;
+        let pix = (result.data()[i], result.data()[i + 1], result.data()[i + 2]);
+        assert!(
+            pix.0 > 80 && pix.0 < 120,
+            "expected mid-gray after bilinear downscale, got {pix:?}"
+        );
     }
 }
