@@ -111,7 +111,7 @@
 	];
 
 	// Cycling state
-	let currentStartIndex = $state(Math.floor(Math.random() * cards.length));
+	let currentStartIndex = $state(0);
 	let hoveredCard = $state<number | null>(null);
 	let isPaused = $state(false);
 	let cycleInterval: ReturnType<typeof setInterval> | null = null;
@@ -148,6 +148,7 @@
 	}
 
 	onMount(() => {
+		currentStartIndex = Math.floor(Math.random() * cards.length);
 		startCycle();
 		return () => stopCycle();
 	});

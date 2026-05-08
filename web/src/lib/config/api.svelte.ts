@@ -12,13 +12,25 @@ function buildUrl(base: string, params: OgisParams): string {
 	return query ? `${base}/?${query}` : `${base}/`;
 }
 
+function normalize(value: string): string {
+	return value.trim().replace(/\/+$/, '') || DEFAULT_API_URL;
+}
+
 function createApiConfig() {
 	let baseUrl = $state(DEFAULT_API_URL);
 
 	if (typeof window !== 'undefined') {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		if (stored) {
-			baseUrl = stored;
+			const normalized = normalize(stored);
+			baseUrl = normalized;
+			if (normalized !== stored) {
+				if (normalized === DEFAULT_API_URL) {
+					localStorage.removeItem(STORAGE_KEY);
+				} else {
+					localStorage.setItem(STORAGE_KEY, normalized);
+				}
+			}
 		}
 	}
 
@@ -27,7 +39,7 @@ function createApiConfig() {
 			return baseUrl;
 		},
 		set baseUrl(value: string) {
-			const normalized = value.replace(/\/+$/, '') || DEFAULT_API_URL;
+			const normalized = normalize(value);
 			baseUrl = normalized;
 			if (typeof window !== 'undefined') {
 				if (normalized === DEFAULT_API_URL) {

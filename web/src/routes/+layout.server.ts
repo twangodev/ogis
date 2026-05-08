@@ -27,23 +27,46 @@ interface TemplatesYaml {
 	templates: TemplateEntry[];
 }
 
-export async function load() {
+interface ParsedTemplates {
+	allTemplates: TemplateEntry[];
+	gradientDefs: Record<string, GradientDef>;
+	defaultTemplate: string;
+}
+
+let parsedCache: ParsedTemplates | null = null;
+
+function loadParsedTemplates(): ParsedTemplates {
+	if (parsedCache) return parsedCache;
+
 	const repoRoot = resolve(process.cwd(), '..');
 
 	// Read templates.yaml from repo root
-	const yamlPath = resolve(repoRoot, 'templates.yaml');
-	const yamlContent = readFileSync(yamlPath, 'utf-8');
-	const data = parse(yamlContent) as TemplatesYaml;
+	let data: TemplatesYaml = { default: '', templates: [] };
+	try {
+		const yamlPath = resolve(repoRoot, 'templates.yaml');
+		const yamlContent = readFileSync(yamlPath, 'utf-8');
+		data = parse(yamlContent) as TemplatesYaml;
+	} catch (err) {
+		console.error('Failed to load templates.yaml', err);
+	}
 
 	// Read gradient definitions from gradients/ directory
 	const gradientsDir = resolve(repoRoot, 'gradients');
 	const gradientDefs: Record<string, GradientDef> = {};
-	for (const file of readdirSync(gradientsDir)) {
-		if (file.endsWith('.yaml') || file.endsWith('.yml')) {
-			const name = file.replace(/\.ya?ml$/, '');
-			const content = readFileSync(resolve(gradientsDir, file), 'utf-8');
-			gradientDefs[name] = parse(content) as GradientDef;
+	try {
+		for (const file of readdirSync(gradientsDir)) {
+			if (file.endsWith('.yaml') || file.endsWith('.yml')) {
+				const name = file.replace(/\.ya?ml$/, '');
+				try {
+					const content = readFileSync(resolve(gradientsDir, file), 'utf-8');
+					gradientDefs[name] = parse(content) as GradientDef;
+				} catch (err) {
+					console.error(`Failed to parse gradient '${name}'`, err);
+				}
+			}
 		}
+	} catch (err) {
+		console.error('Failed to read gradients directory', err);
 	}
 
 	// Auto-generate all layout × gradient combinations
@@ -59,7 +82,18 @@ export async function load() {
 	);
 
 	// Combine: composed templates + file-based templates from YAML
-	const allTemplates = [...composedTemplates, ...data.templates];
+	const allTemplates = [...composedTemplates, ...(data.templates ?? [])];
+
+	parsedCache = {
+		allTemplates,
+		gradientDefs,
+		defaultTemplate: data.default
+	};
+	return parsedCache;
+}
+
+export async function load() {
+	const { allTemplates, gradientDefs, defaultTemplate } = loadParsedTemplates();
 
 	// Get color keys for a template entry
 	function getColorKeys(t: TemplateEntry): string[] {
@@ -93,7 +127,7 @@ export async function load() {
 			all: allTemplates.map(formatTemplate),
 			base: base.map(formatTemplate),
 			gradients: gradients.map(formatTemplate),
-			default: data.default
+			default: defaultTemplate
 		},
 		stats
 	};

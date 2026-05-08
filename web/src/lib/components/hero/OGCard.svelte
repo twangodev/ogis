@@ -44,7 +44,7 @@
 			logo,
 			image,
 			template,
-			...params,
+			...(params ?? {}),
 			format: 'webp',
 			scale: '0.5',
 			quality: '80'
