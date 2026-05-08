@@ -100,7 +100,7 @@ export async function load() {
 		if (t.colors) return Object.keys(t.colors);
 		if (t.gradient && gradientDefs[t.gradient]) {
 			const grad = gradientDefs[t.gradient];
-			return ['background', ...grad.blobs.map((b) => `blob_${b.name}`), 'text'];
+			return ['background', ...(grad.blobs ?? []).map((b) => `blob_${b.name}`), 'text'];
 		}
 		return [];
 	}

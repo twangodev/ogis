@@ -268,11 +268,11 @@ fn parse_noise_def(node: &Yaml) -> NoiseDef {
         coarse_opacity: yaml_num_or(node, "coarse_opacity", d.coarse_opacity),
         fine_opacity: yaml_num_or(node, "fine_opacity", d.fine_opacity),
         coarse_frequency: yaml_num_or(node, "coarse_frequency", d.coarse_frequency),
-        coarse_octaves: yaml_int_or(node, "coarse_octaves", d.coarse_octaves as i64) as u32,
+        coarse_octaves: yaml_int_or(node, "coarse_octaves", d.coarse_octaves as i64).max(0) as u32,
         coarse_slope: yaml_num_or(node, "coarse_slope", d.coarse_slope),
         coarse_intercept: yaml_num_or(node, "coarse_intercept", d.coarse_intercept),
         fine_frequency: yaml_num_or(node, "fine_frequency", d.fine_frequency),
-        fine_octaves: yaml_int_or(node, "fine_octaves", d.fine_octaves as i64) as u32,
+        fine_octaves: yaml_int_or(node, "fine_octaves", d.fine_octaves as i64).max(0) as u32,
         fine_slope: yaml_num_or(node, "fine_slope", d.fine_slope),
         fine_intercept: yaml_num_or(node, "fine_intercept", d.fine_intercept),
     }
