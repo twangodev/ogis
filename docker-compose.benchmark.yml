@@ -1,10 +1,59 @@
+x-k6-base: &k6-base
+  image: grafana/k6:latest
+  user: "${UID:-1000}:${GID:-1000}"
+  volumes:
+    - .:/work
+  working_dir: /work
+
+x-k6-env: &k6-env
+  MODE: ${MODE:-baseline}
+  BASELINE_TEMPLATE: ${BASELINE_TEMPLATE:-minimal}
+  VUS: ${VUS:-10}
+  DURATION: ${DURATION:-60s}
+  REQUESTS_PER_TEMPLATE: ${REQUESTS_PER_TEMPLATE:-50}
+
 services:
   ogis:
-    image: twango/ogis:latest
+    image: ${OGIS_IMAGE:-ogis:bench}
+    build: .
     ports:
       - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+      start_period: 3s
 
   vercel-og:
     build: ./comparisons/vercel-og
     ports:
       - "3001:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+      start_period: 3s
+
+  k6:
+    <<: *k6-base
+    profiles: [bench]
+    depends_on:
+      ogis:
+        condition: service_healthy
+    environment:
+      <<: *k6-env
+      BASE_URL: http://ogis:3000
+    command: ["run", "k6/ogis.js"]
+
+  k6-vercel-og:
+    <<: *k6-base
+    profiles: [bench-vercel-og]
+    depends_on:
+      vercel-og:
+        condition: service_healthy
+    environment:
+      <<: *k6-env
+      BASE_URL: http://vercel-og:3000
+    command: ["run", "k6/vercel-og.js"]

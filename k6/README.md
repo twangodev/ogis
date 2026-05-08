@@ -16,12 +16,14 @@ Performance benchmarks comparing OG image generation solutions.
 
 ## Setup
 
-Install [k6](https://k6.io/docs/get-started/installation/), then run:
+Run via Docker (no host install required):
 
 ```bash
-k6 run ogis.js
-k6 run vercel-og.js
+docker compose -f docker-compose.benchmark.yml --profile bench run --rm k6
+docker compose -f docker-compose.benchmark.yml --profile bench-vercel-og run --rm k6-vercel-og
 ```
+
+Results land in `k6/results/`. Override defaults with `MODE`, `VUS`, `DURATION`, `BASELINE_TEMPLATE` env vars.
 
 ## Results
 
