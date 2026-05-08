@@ -3,7 +3,7 @@ use crate::yaml_loader;
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use saphyr::Yaml;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 // ---------------------------------------------------------------------------
 // Public types — consumed by the rest of the codebase
@@ -48,6 +48,22 @@ pub struct TemplateMap {
     pub font_properties: HashMap<String, TemplateFonts>,
     pub truncation: HashMap<String, bool>,
     pub max_scale: HashMap<String, f32>,
+    /// Per-template gradient/foreground split (only populated for gradient-* templates).
+    /// Static templates (e.g. twilight, fish) leave this absent and render via the
+    /// single-pass path.
+    pub gradient_splits: HashMap<String, GradientSplit>,
+}
+
+/// Pre-split SVG halves for gradient templates that flow through the cache path.
+#[derive(Debug, Clone)]
+pub struct GradientSplit {
+    /// Gradient-only SVG: defs + background fill rects, no logo, no text.
+    pub gradient_svg: String,
+    /// Foreground-only SVG: logo group + text groups, no defs, transparent base.
+    pub fg_svg: String,
+    /// Subset of color names from `colors[template]` whose default hex appears
+    /// in the gradient SVG. Only these affect the cache key.
+    pub gradient_color_keys: HashSet<String>,
 }
 
 impl TemplateMap {
@@ -151,6 +167,8 @@ struct TemplateEntry {
     width_constraints: TextWidthConstraints,
     truncation: bool,
     max_scale: f32,
+    /// Present only for gradient templates (composed from a layout + gradient YAML).
+    gradient_split: Option<GradientSplit>,
 }
 
 // ---------------------------------------------------------------------------
@@ -461,9 +479,31 @@ fn build_gradient_layers(gradient: &GradientDef) -> String {
 // Template composition — combines a layout SVG with a gradient definition
 // ---------------------------------------------------------------------------
 
-fn compose_template(layout_svg: &str, gradient: &GradientDef) -> Option<String> {
-    const DEFS_MARKER: &str = "<!-- ogis_gradient_defs -->";
-    const LAYERS_MARKER: &str = "<!-- ogis_background_layers -->";
+const DEFS_MARKER: &str = "<!-- ogis_gradient_defs -->";
+const LAYERS_MARKER: &str = "<!-- ogis_background_layers -->";
+
+/// Apply the per-gradient text-color/opacity token substitutions. Used by both
+/// the merged composition path and the foreground split.
+fn substitute_text_tokens(content: &str, tc: &GradientTextColors) -> String {
+    content
+        .replace("{{title_color}}", &tc.title)
+        .replace("{{desc_color}}", &tc.description)
+        .replace("{{subtitle_color}}", &tc.subtitle)
+        .replace("{{desc_opacity}}", &fmt_num(tc.desc_opacity))
+        .replace("{{subtitle_opacity}}", &fmt_num(tc.subtitle_opacity))
+}
+
+/// Find the byte offset just after the `<svg ...>` opening tag.
+fn svg_opening_end(layout_svg: &str) -> Option<usize> {
+    let close = layout_svg.find('>')?;
+    Some(close + 1)
+}
+
+/// Compose a layout SVG with a gradient definition into:
+/// - the merged SVG (as before, kept for back-compat / tests),
+/// - a gradient-only SVG (defs + bg fills, no foreground),
+/// - a foreground-only SVG (no defs, no bg fills — logo + text groups only).
+fn compose_template(layout_svg: &str, gradient: &GradientDef) -> Option<(String, String, String)> {
     if !layout_svg.contains(DEFS_MARKER) {
         tracing::error!("Layout missing marker {DEFS_MARKER}");
         return None;
@@ -474,16 +514,51 @@ fn compose_template(layout_svg: &str, gradient: &GradientDef) -> Option<String> 
     }
 
     let tc = &gradient.text_colors;
-    Some(
-        layout_svg
-            .replace(DEFS_MARKER, &build_gradient_defs(gradient))
-            .replace(LAYERS_MARKER, &build_gradient_layers(gradient))
-            .replace("{{title_color}}", &tc.title)
-            .replace("{{desc_color}}", &tc.description)
-            .replace("{{subtitle_color}}", &tc.subtitle)
-            .replace("{{desc_opacity}}", &fmt_num(tc.desc_opacity))
-            .replace("{{subtitle_opacity}}", &fmt_num(tc.subtitle_opacity)),
-    )
+    let gradient_defs = build_gradient_defs(gradient);
+    let gradient_layers = build_gradient_layers(gradient);
+
+    let merged = substitute_text_tokens(
+        &layout_svg
+            .replace(DEFS_MARKER, &gradient_defs)
+            .replace(LAYERS_MARKER, &gradient_layers),
+        tc,
+    );
+
+    // Split at the LAYERS_MARKER. Everything before+including the marker is
+    // background (with markers expanded); everything after is foreground.
+    let layers_pos = layout_svg.find(LAYERS_MARKER)?;
+    let after_layers = layers_pos + LAYERS_MARKER.len();
+    let pre_layers = &layout_svg[..after_layers];
+    let post_layers = &layout_svg[after_layers..];
+
+    // Background-only SVG: pre_layers (with markers replaced) + closing </svg>.
+    // The pre_layers slice already contains the <svg> opening, the <defs> block,
+    // and the LAYERS_MARKER itself, which we expand to the gradient fills.
+    let bg_svg = format!(
+        "{}\n</svg>",
+        pre_layers
+            .replace(DEFS_MARKER, &gradient_defs)
+            .replace(LAYERS_MARKER, &gradient_layers)
+    );
+
+    // Foreground-only SVG: <svg> opening tag + post_layers (which already ends
+    // with </svg>). No defs, no bg fills — pixmap stays transparent except for
+    // logo + text. Apply text-color token substitution.
+    let opening_end = svg_opening_end(layout_svg)?;
+    let svg_opening = &layout_svg[..opening_end];
+    let fg_svg = substitute_text_tokens(&format!("{svg_opening}\n{post_layers}"), tc);
+
+    Some((merged, bg_svg, fg_svg))
+}
+
+/// For each color name in `colors`, return the names whose default hex value
+/// actually appears in `bg_svg`. Used to filter cache-key fragmentation.
+fn compute_gradient_color_keys(bg_svg: &str, colors: &HashMap<String, String>) -> HashSet<String> {
+    colors
+        .iter()
+        .filter(|(_, hex)| bg_svg.contains(hex.as_str()))
+        .map(|(name, _)| name.clone())
+        .collect()
 }
 
 fn build_colors_map(gradient: &GradientDef) -> HashMap<String, String> {
@@ -667,6 +742,7 @@ fn load_file_template(node: &Yaml) -> Option<TemplateEntry> {
         width_constraints: parse_width_constraints(node),
         truncation: yaml_bool_or(node, "truncation", true),
         max_scale: yaml_num_or(node, "max_scale", 1.0),
+        gradient_split: None,
     })
 }
 
@@ -677,7 +753,7 @@ fn build_composed_template(
     gradient_key: &str,
     gradient_def: &GradientDef,
 ) -> Option<TemplateEntry> {
-    let svg = compose_template(layout_svg, gradient_def)?;
+    let (svg, bg_svg, fg_svg) = compose_template(layout_svg, gradient_def)?;
     let fonts = parse_font_properties(&svg);
     tracing::info!(
         "Composed '{template_name}' (gradient={gradient_key}): title={}px/w{}",
@@ -685,17 +761,26 @@ fn build_composed_template(
         fonts.title.weight,
     );
 
+    let colors = build_colors_map(gradient_def);
+    let gradient_color_keys = compute_gradient_color_keys(&bg_svg, &colors);
+
     Some(TemplateEntry {
         name: template_name.to_string(),
         svg,
-        colors: build_colors_map(gradient_def),
+        colors,
         fonts,
         width_constraints: TextWidthConstraints::default(),
         truncation: true,
         max_scale: 1.0,
+        gradient_split: Some(GradientSplit {
+            gradient_svg: bg_svg,
+            fg_svg,
+            gradient_color_keys,
+        }),
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 fn register_entry(
     entry: TemplateEntry,
     templates: &mut HashMap<String, String>,
@@ -704,6 +789,7 @@ fn register_entry(
     font_properties: &mut HashMap<String, TemplateFonts>,
     truncation: &mut HashMap<String, bool>,
     max_scale: &mut HashMap<String, f32>,
+    gradient_splits: &mut HashMap<String, GradientSplit>,
 ) {
     if !entry.colors.is_empty() {
         colors.insert(entry.name.clone(), entry.colors);
@@ -712,6 +798,9 @@ fn register_entry(
     font_properties.insert(entry.name.clone(), entry.fonts);
     truncation.insert(entry.name.clone(), entry.truncation);
     max_scale.insert(entry.name.clone(), entry.max_scale);
+    if let Some(split) = entry.gradient_split {
+        gradient_splits.insert(entry.name.clone(), split);
+    }
     templates.insert(entry.name, entry.svg);
 }
 
@@ -722,6 +811,7 @@ pub fn load_templates() -> TemplateMap {
     let mut font_properties = HashMap::new();
     let mut truncation = HashMap::new();
     let mut max_scale = HashMap::new();
+    let mut gradient_splits = HashMap::new();
 
     let doc = yaml_loader::load_yaml("templates.yaml");
 
@@ -762,6 +852,7 @@ pub fn load_templates() -> TemplateMap {
                 &mut font_properties,
                 &mut truncation,
                 &mut max_scale,
+                &mut gradient_splits,
             );
         }
     }
@@ -778,6 +869,7 @@ pub fn load_templates() -> TemplateMap {
                     &mut font_properties,
                     &mut truncation,
                     &mut max_scale,
+                    &mut gradient_splits,
                 );
             }
         }
@@ -797,6 +889,7 @@ pub fn load_templates() -> TemplateMap {
         font_properties,
         truncation,
         max_scale,
+        gradient_splits,
     };
 
     if !template_map.templates.contains_key(&template_map.default) {
@@ -924,15 +1017,58 @@ mod tests {
             desc_opacity: 0.9,
         });
 
-        let result = compose_template(layout, &gradient).expect("layout has both markers");
-        assert!(result.contains("fill=\"#ff0000\""));
-        assert!(result.contains("fill=\"#00ff00\""));
-        assert!(result.contains("fill=\"#0000ff\""));
-        assert!(result.contains("opacity=\"0.9\""));
-        assert!(result.contains("opacity=\"0.7\""));
-        assert!(result.contains("baseGradient"));
-        assert!(!result.contains("{{title_color}}"));
-        assert!(!result.contains("<!-- ogis_gradient_defs -->"));
+        let (merged, _bg, _fg) =
+            compose_template(layout, &gradient).expect("layout has both markers");
+        assert!(merged.contains("fill=\"#ff0000\""));
+        assert!(merged.contains("fill=\"#00ff00\""));
+        assert!(merged.contains("fill=\"#0000ff\""));
+        assert!(merged.contains("opacity=\"0.9\""));
+        assert!(merged.contains("opacity=\"0.7\""));
+        assert!(merged.contains("baseGradient"));
+        assert!(!merged.contains("{{title_color}}"));
+        assert!(!merged.contains("<!-- ogis_gradient_defs -->"));
+    }
+
+    #[test]
+    fn test_compose_template_split_separates_bg_and_fg() {
+        let layout = r#"<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+<!-- ogis_gradient_defs -->
+  </defs>
+
+<!-- ogis_background_layers -->
+
+  <g id="ogis_logo"></g>
+  <text fill="{{title_color}}">title</text>
+</svg>"#;
+
+        let gradient = test_gradient(GradientTextColors {
+            title: "#ff0000".to_string(),
+            description: "#ffffff".to_string(),
+            subtitle: "#ffffff".to_string(),
+            subtitle_opacity: 0.9,
+            desc_opacity: 0.85,
+        });
+
+        let (_merged, bg, fg) =
+            compose_template(layout, &gradient).expect("layout has both markers");
+
+        // BG must contain gradient defs and bg fills, NOT the logo group or text.
+        assert!(bg.contains("baseGradient"));
+        assert!(bg.contains("blob1"));
+        assert!(!bg.contains("ogis_logo"));
+        assert!(!bg.contains("title_color"));
+        assert!(!bg.contains("{{"));
+        assert!(bg.ends_with("</svg>"));
+
+        // FG must contain the logo group and text, NOT the gradient defs.
+        assert!(fg.contains("ogis_logo"));
+        assert!(fg.contains("fill=\"#ff0000\""));
+        assert!(!fg.contains("baseGradient"));
+        assert!(!fg.contains("ogis_gradient_defs"));
+        assert!(!fg.contains("ogis_background_layers"));
+        assert!(fg.starts_with("<svg"));
+        assert!(fg.trim_end().ends_with("</svg>"));
     }
 
     #[test]
@@ -942,6 +1078,17 @@ mod tests {
         let g = test_gradient(GradientTextColors::default());
         assert!(compose_template(layout_no_defs, &g).is_none());
         assert!(compose_template(layout_no_layers, &g).is_none());
+    }
+
+    #[test]
+    fn test_compute_gradient_color_keys_filters_to_bg() {
+        let bg = r##"<svg><stop stop-color="#111111"/></svg>"##;
+        let mut colors = HashMap::new();
+        colors.insert("background".to_string(), "#111111".to_string());
+        colors.insert("text".to_string(), "#ffffff".to_string()); // not in bg
+        let keys = compute_gradient_color_keys(bg, &colors);
+        assert!(keys.contains("background"));
+        assert!(!keys.contains("text"));
     }
 
     #[test]

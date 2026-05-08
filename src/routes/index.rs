@@ -2,7 +2,7 @@ use super::timing::{CacheableDuration, ServerTiming};
 use crate::{
     AppState,
     error::ApiError,
-    generator::{self, GeneratorError, Images, RenderOutput, TextContent},
+    generator::{self, GeneratorError, GradientCacheOutcome, Images, RenderOutput, TextContent},
     params::OgParams,
     telemetry,
 };
@@ -19,6 +19,7 @@ struct RenderResult {
     output: RenderOutput,
     template_time: Duration,
     render_time: Duration,
+    cache_outcome: GradientCacheOutcome,
 }
 
 /// Extract domain from URL (no path or query params)
@@ -233,6 +234,7 @@ pub async fn generate(
     let template_name_owned = template_name.to_string();
     let templates = state.templates.clone();
     let fontdb = state.fontdb.clone();
+    let gradient_cache = state.gradient_cache.clone();
 
     let render_result = tokio::task::spawn_blocking(move || {
         let text = TextContent {
@@ -242,26 +244,29 @@ pub async fn generate(
             extra: text_overrides,
         };
 
-        let template_start = Instant::now();
-        let svg_data = generator::generate_svg(
+        let render_start = Instant::now();
+        let (output, cache_outcome) = generator::render_with_gradient_cache(
             text,
             images,
             &template_name_owned,
             &templates,
             &color_overrides,
             &fontdb,
+            &render_options,
             truncation,
+            &gradient_cache,
         )?;
-        let template_time = template_start.elapsed();
-
-        let render_start = Instant::now();
-        let output = generator::render(&svg_data, &fontdb, &render_options)?;
         let render_time = render_start.elapsed();
 
         Ok::<_, GeneratorError>(RenderResult {
             output,
-            template_time,
+            // Template generation is now interleaved with rendering inside
+            // render_with_gradient_cache; report it as zero so the
+            // Server-Timing header still parses, and the render bucket
+            // reflects the full work.
+            template_time: Duration::ZERO,
             render_time,
+            cache_outcome,
         })
     })
     .await;
@@ -288,6 +293,10 @@ pub async fn generate(
                         KeyValue::new("format", format_str),
                         KeyValue::new("scale_bucket", telemetry::scale_bucket(scale)),
                     ],
+                );
+                m.gradient_cache_hit.add(
+                    1,
+                    &[KeyValue::new("result", result.cache_outcome.as_label())],
                 );
             }
 

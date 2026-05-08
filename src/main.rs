@@ -31,6 +31,7 @@ pub struct AppState {
     pub hmac_validator: Option<Arc<auth::HmacValidator>>,
     pub docs: config::DocsSettings,
     pub render_semaphore: Arc<Semaphore>,
+    pub gradient_cache: Arc<generator::GradientCache>,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -96,6 +97,13 @@ async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Er
         .unwrap_or(4);
     tracing::info!("Render concurrency: {}", render_concurrency);
 
+    let gradient_cache_bytes = config.gradient_cache.effective_max_bytes();
+    tracing::info!(
+        "Gradient cache budget: {} MB",
+        gradient_cache_bytes / (1024 * 1024)
+    );
+    let gradient_cache = Arc::new(generator::GradientCache::new(gradient_cache_bytes));
+
     let state = AppState {
         fontdb: Arc::new(fontdb),
         templates: Arc::new(templates),
@@ -108,7 +116,12 @@ async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Er
         hmac_validator,
         docs: config.docs,
         render_semaphore: Arc::new(Semaphore::new(render_concurrency)),
+        gradient_cache,
     };
+
+    // Spawn gradient-cache warm-up in the background; the listener binds
+    // immediately and the lazy fallback handles anything not warmed.
+    spawn_gradient_warmup(&state, &config.gradient_cache.warmup_templates);
 
     let app = routes::create_router(state);
 
@@ -127,4 +140,60 @@ async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Er
 
     tracing::info!("Server shutdown complete");
     Ok(())
+}
+
+/// Spawn a background task that prerenders the listed gradient templates into
+/// the cache. Skips empty / unknown / non-gradient names with a warning.
+fn spawn_gradient_warmup(state: &AppState, names: &[String]) {
+    // Trim then filter so comma-separated env input like "a, b" doesn't keep
+    // leading whitespace and silently miss valid template names.
+    let names: Vec<String> = names
+        .iter()
+        .map(|n| n.trim().to_string())
+        .filter(|n| !n.is_empty())
+        .collect();
+    if names.is_empty() {
+        return;
+    }
+
+    let gradient_cache = state.gradient_cache.clone();
+    let templates = state.templates.clone();
+    let fontdb = state.fontdb.clone();
+
+    tokio::task::spawn_blocking(move || {
+        let total = names.len();
+        tracing::info!("Gradient cache warm-up starting: {total} template(s)");
+        let mut warmed = 0_usize;
+        let mut skipped = 0_usize;
+        for name in &names {
+            let Some(split) = templates.gradient_splits.get(name) else {
+                tracing::warn!("Warm-up: template '{name}' has no gradient split; skipping");
+                skipped += 1;
+                continue;
+            };
+            let key = generator::gradient_cache::build_key(
+                name,
+                &split.gradient_color_keys,
+                &std::collections::HashMap::new(),
+            );
+            let result = gradient_cache.get_or_render(key, || {
+                generator::render_to_pixmap(&split.gradient_svg, &fontdb, 1.0)
+            });
+            match result {
+                Ok(_) => {
+                    warmed += 1;
+                }
+                Err(e) => {
+                    tracing::error!("Warm-up render failed for '{name}': {e}");
+                    skipped += 1;
+                }
+            }
+        }
+        tracing::info!(
+            "Gradient cache warm-up complete: {warmed}/{total} warmed, {skipped} skipped"
+        );
+        if let Some(metrics) = telemetry::get_metrics() {
+            metrics.gradient_cache_warmup_completed.add(1, &[]);
+        }
+    });
 }

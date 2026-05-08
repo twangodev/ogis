@@ -11,16 +11,20 @@ export const defaultChecks = {
 };
 
 /**
- * Create a test runner function with customizable URL generation and response handling
+ * Create a test runner function with customizable URL generation and response handling.
+ *
+ * The returned function takes the standard k6 `data` argument (populated from
+ * `setup()`) and forwards it to `getUrl` so dynamic content like the live
+ * template list is reachable.
  *
  * @param {Object} options
- * @param {Function} options.getUrl - Function that returns the URL to request
- * @param {Function} [options.onResponse] - Optional callback to handle response (e.g., record metrics)
+ * @param {Function} options.getUrl - `(data) => string` returning the URL to request
+ * @param {Function} [options.onResponse] - Optional callback to handle response
  * @param {Object} [options.checks] - Optional custom checks (defaults to defaultChecks)
  */
 export function createTestRunner({ getUrl, onResponse, checks }) {
-  return function () {
-    const url = getUrl();
+  return function (data) {
+    const url = getUrl(data);
     const res = http.get(url);
 
     if (onResponse) {
@@ -29,7 +33,7 @@ export function createTestRunner({ getUrl, onResponse, checks }) {
 
     check(res, checks || defaultChecks);
 
-    if (config.mode === 'concurrent') {
+    if (config.mode === 'concurrent' || config.mode === 'cache_pressure') {
       sleep(0.1);
     }
   };
