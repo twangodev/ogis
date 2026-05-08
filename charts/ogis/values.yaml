@@ -122,6 +122,11 @@ tolerations: []
 
 affinity: {}
 
+# PodDisruptionBudget. Auto-skipped when only one replica is desired.
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
 # NetworkPolicy. K8s-side belt to the in-process SSRF blocklist.
 networkPolicy:
   enabled: false
