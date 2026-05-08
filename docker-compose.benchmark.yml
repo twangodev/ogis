@@ -31,6 +31,7 @@ services:
         condition: service_healthy
     environment:
       MODE: ${MODE:-baseline}
+      BASELINE_TEMPLATE: ${BASELINE_TEMPLATE:-minimal}
       BASE_URL: http://ogis:3000
       VUS: ${VUS:-10}
       DURATION: ${DURATION:-60s}
@@ -49,6 +50,7 @@ services:
         condition: service_healthy
     environment:
       MODE: ${MODE:-baseline}
+      BASELINE_TEMPLATE: ${BASELINE_TEMPLATE:-minimal}
       BASE_URL: http://vercel-og:3000
       VUS: ${VUS:-10}
       DURATION: ${DURATION:-60s}

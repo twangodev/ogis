@@ -8,7 +8,7 @@ const templates = loadTemplates();
 const templateMetrics = createTemplateMetrics(templates);
 const defaultMetrics = createDefaultMetrics();
 
-const DEFAULT_TEMPLATE = 'minimal';
+const DEFAULT_TEMPLATE = __ENV.BASELINE_TEMPLATE || 'minimal';
 
 export const options = createOptions(templates);
 
@@ -28,7 +28,7 @@ function buildUrl(template) {
 export const baseline = createTestRunner({
   getUrl: () => buildUrl(DEFAULT_TEMPLATE),
   onResponse: (res) => {
-    templateMetrics[DEFAULT_TEMPLATE].add(res.timings.duration);
+    templateMetrics[DEFAULT_TEMPLATE]?.add(res.timings.duration);
     defaultMetrics.add(res.timings.duration);
   },
 });
