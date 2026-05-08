@@ -97,6 +97,7 @@ jobs:
 
   ts-build:
     name: TS Build
+    needs: [ts-lint]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -181,7 +182,7 @@ jobs:
 
   docker:
     name: Docker Build & Push
-    needs: [rust-clippy, rust-build, release-please]
+    needs: [rust-format, rust-clippy, rust-build, release-please]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
@@ -250,7 +251,7 @@ jobs:
 
   ts-publish:
     name: Publish TypeScript SDK
-    needs: [ts-test, should-release]
+    needs: [ts-build, ts-test, should-release]
     runs-on: ubuntu-latest
     environment: npm
     permissions:
