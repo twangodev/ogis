@@ -77,7 +77,7 @@ pub fn render_with_gradient_cache(
     )?;
     let fg_pm = render_to_pixmap(&fg_svg, fontdb, options.scale)?;
 
-    // 3. Composite (downscaling bg if request_scale != 1.0) and encode.
+    // 3. Composite (bilinear-resampling bg to the request scale) and encode.
     let composed = composite(&bg_pm, &fg_pm, options.scale)?;
     let output = encode(&composed, options)?;
     Ok((output, outcome))

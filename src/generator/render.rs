@@ -111,7 +111,8 @@ pub fn render_to_pixmap(
 ///
 /// `bg` is rendered at scale 1.0 (cached); `fg` is rendered at `request_scale`.
 /// The output is allocated at `fg`'s dimensions. If `request_scale != 1.0`, the
-/// background is downscaled with bilinear filtering.
+/// background is bilinear-resampled to match — downscaled when the request
+/// scale is below 1.0, upscaled when above.
 pub fn composite(
     bg: &tiny_skia::Pixmap,
     fg: &tiny_skia::Pixmap,
