@@ -10,6 +10,12 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "charts/ogis": {
+      "release-type": "helm",
+      "package-name": "ogis",
+      "include-component-in-tag": true,
+      "component": "chart"
     }
   }
 }
