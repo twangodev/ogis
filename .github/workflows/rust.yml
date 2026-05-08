@@ -33,6 +33,30 @@ jobs:
       - name: Run Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
+  helm-lint:
+    name: Helm Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: azure/setup-helm@v5
+
+      - name: Lint chart
+        run: helm lint charts/ogis --strict
+
+      - name: Render default values
+        run: helm template ogis charts/ogis > /dev/null
+
+      - name: Render with all features enabled
+        run: |
+          helm template ogis charts/ogis \
+            --set hmac.enabled=true --set hmac.value=test \
+            --set ingress.enabled=true --set ingress.className=nginx \
+            --set autoscaling.enabled=true \
+            --set networkPolicy.enabled=true \
+            --set podDisruptionBudget.enabled=true \
+            --set replicaCount=2 > /dev/null
+
   rust-build:
     name: Rust Build
     runs-on: ubuntu-latest
@@ -159,6 +183,9 @@ jobs:
       major: ${{ steps.release.outputs.major }}
       minor: ${{ steps.release.outputs.minor }}
       patch: ${{ steps.release.outputs.patch }}
+      chart_release_created: ${{ steps.release.outputs['charts/ogis--release_created'] }}
+      chart_tag_name: ${{ steps.release.outputs['charts/ogis--tag_name'] }}
+      chart_version: ${{ steps.release.outputs['charts/ogis--version'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -248,6 +275,30 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ vars.DOCKERHUB_USERNAME }}/ogis
           short-description: ${{ github.event.repository.description }}
+
+  helm-publish:
+    name: Helm Publish
+    needs: [helm-lint, release-please]
+    if: needs.release-please.outputs.chart_release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: azure/setup-helm@v5
+
+      - name: Log in to GitHub Container Registry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GITHUB_TOKEN" | helm registry login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Package chart
+        run: helm package charts/ogis
+
+      - name: Push chart to GHCR
+        run: helm push ogis-${{ needs.release-please.outputs.chart_version }}.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
 
   ts-publish:
     name: Publish TypeScript SDK
