@@ -3,6 +3,7 @@
   "packages": {
     ".": {
       "release-type": "rust",
+      "exclude-paths": ["charts/ogis"],
       "extra-files": [
         {
           "type": "json",
@@ -13,7 +14,6 @@
     },
     "charts/ogis": {
       "release-type": "helm",
-      "package-name": "ogis",
       "include-component-in-tag": true,
       "component": "chart"
     }
