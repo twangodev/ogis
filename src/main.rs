@@ -145,7 +145,13 @@ async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Er
 /// Spawn a background task that prerenders the listed gradient templates into
 /// the cache. Skips empty / unknown / non-gradient names with a warning.
 fn spawn_gradient_warmup(state: &AppState, names: &[String]) {
-    let names: Vec<String> = names.iter().filter(|n| !n.is_empty()).cloned().collect();
+    // Trim then filter so comma-separated env input like "a, b" doesn't keep
+    // leading whitespace and silently miss valid template names.
+    let names: Vec<String> = names
+        .iter()
+        .map(|n| n.trim().to_string())
+        .filter(|n| !n.is_empty())
+        .collect();
     if names.is_empty() {
         return;
     }
