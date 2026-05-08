@@ -60,3 +60,30 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Composed env list for the ogis container.
+*/}}
+{{- define "ogis.env" -}}
+- name: RUST_LOG
+  value: {{ .Values.config.logLevel | quote }}
+{{- with .Values.config.defaults.title }}
+- name: OGIS_DEFAULT_TITLE
+  value: {{ . | quote }}
+{{- end }}
+{{- with .Values.config.defaults.description }}
+- name: OGIS_DEFAULT_DESCRIPTION
+  value: {{ . | quote }}
+{{- end }}
+{{- with .Values.config.defaults.subtitle }}
+- name: OGIS_DEFAULT_SUBTITLE
+  value: {{ . | quote }}
+{{- end }}
+{{- with .Values.config.defaults.logo }}
+- name: OGIS_DEFAULT_LOGO
+  value: {{ . | quote }}
+{{- end }}
+{{- with .Values.extraEnv }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}

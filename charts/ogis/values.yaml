@@ -121,3 +121,23 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Application config. Anything left empty is omitted; the binary's own
+# defaults from src/config.rs apply. Use `extraEnv` for OGIS_* knobs not
+# surfaced here (OGIS_LOGO_*, OGIS_CACHE_*, OGIS_OTEL_*, etc.).
+config:
+  logLevel: info
+  defaults:
+    title: ""
+    description: ""
+    subtitle: ""
+    logo: ""
+
+# Extra environment variables passed to the container. The escape hatch for
+# any OGIS_* knob not surfaced under `config:`.
+extraEnv: []
+# - name: OGIS_CACHE_MAX_BYTES
+#   value: "4GB"
+
+# Extra envFrom sources (configmaps/secrets).
+extraEnvFrom: []
