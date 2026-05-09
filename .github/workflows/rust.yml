@@ -312,6 +312,11 @@ jobs:
         env:
           MODE: ${{ matrix.mode }}
           BASE_URL: http://localhost:${{ matrix.port }}
+          # sequential mode now uses a length-independent iteration cap (the
+          # gradient-cache refactor moved template discovery into setup()).
+          # 4000 covers ogis's 80-template × 50-req-per-template default and
+          # caps vercel-og at ~2 min instead of running through 20k iterations.
+          SEQUENTIAL_MAX_ITERATIONS: "4000"
 
       - name: Add summary
         if: always()
