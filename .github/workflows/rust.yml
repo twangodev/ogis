@@ -357,3 +357,4 @@ jobs:
           body: "Auto-generated PR to sync OpenAPI spec from Rust source."
           branch: chore/sync-openapi
           delete-branch: true
+          sign-commits: true
