@@ -1,0 +1,30 @@
+apiVersion: v2
+name: ogis
+description: A fast, free, and beautiful platform for open graph image generation
+type: application
+
+version: 0.1.0
+appVersion: "0.2.0"
+
+kubeVersion: ">=1.23.0-0"
+
+home: https://ogis.dev
+sources:
+  - https://github.com/twangodev/ogis
+
+icon: https://ogis.dev/logo-light.png
+
+keywords:
+  - opengraph
+  - og-image
+  - svg
+  - png
+  - rust
+
+maintainers:
+  - name: twango
+    url: https://github.com/twangodev
+
+annotations:
+  artifacthub.io/license: AGPL-3.0
+  artifacthub.io/category: integration-delivery
