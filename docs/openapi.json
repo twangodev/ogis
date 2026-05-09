@@ -188,6 +188,28 @@
           }
         }
       }
+    },
+    "/templates": {
+      "get": {
+        "tags": [
+          "monitoring"
+        ],
+        "summary": "List all registered template names.",
+        "description": "Useful for benchmarking and tooling that needs to enumerate every template\nthe running server can generate without coupling to the on-disk layout.",
+        "operationId": "list_templates",
+        "responses": {
+          "200": {
+            "description": "List of template names",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplatesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -348,6 +370,26 @@
         "additionalProperties": {
           "type": "string",
           "description": "Additional parameters (used for color customization)"
+        }
+      },
+      "TemplatesResponse": {
+        "type": "object",
+        "required": [
+          "default",
+          "templates"
+        ],
+        "properties": {
+          "default": {
+            "type": "string",
+            "description": "Name of the template returned when the request supplies no `template` param."
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "All template names registered at startup (file-based + auto-composed gradients)."
+          }
         }
       }
     }
