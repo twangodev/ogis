@@ -7,7 +7,9 @@ import { createSummaryHandler } from './lib/summary.js';
 const baseUrl = __ENV.BASE_URL || 'http://localhost:3001';
 const defaultMetrics = createDefaultMetrics();
 
-export const options = createOptions(['default']);
+// createOptions() takes an optional thresholds-override map (no longer takes a
+// templates list — the gradient-cache-aware refactor moved that into setup()).
+export const options = createOptions();
 
 function buildUrl() {
   return `${baseUrl}/?title=${encodeURIComponent(randomTitle())}&description=${encodeURIComponent(randomDescription())}`;
