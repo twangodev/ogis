@@ -1,6 +1,6 @@
 {
   "name": "ogis",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "TypeScript client for OGIS OpenGraph image generation service",
   "main": "dist/index.js",
