@@ -65,7 +65,11 @@ Create the name of the service account to use
 HMAC secret name — user-provided existingSecret if set, else chart-managed.
 */}}
 {{- define "ogis.hmacSecretName" -}}
-{{- default (printf "%s-hmac" (include "ogis.fullname" .)) .Values.hmac.existingSecret }}
+{{- if .Values.hmac.existingSecret -}}
+{{- .Values.hmac.existingSecret }}
+{{- else -}}
+{{- printf "%s-hmac" (include "ogis.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end -}}
 {{- end }}
 
 {{/*
