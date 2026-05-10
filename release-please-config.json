@@ -3,27 +3,13 @@
   "packages": {
     ".": {
       "release-type": "rust",
-      "component": "ogis"
+      "component": "ogis",
+      "include-component-in-tag": false
     },
     "packages/typescript": {
       "release-type": "node",
       "component": "ogis-typescript"
-    },
-    "web": {
-      "release-type": "node",
-      "component": "ogis-web",
-      "skip-github-release": true
     }
   },
-  "plugins": [
-    {
-      "type": "linked-versions",
-      "groupName": "ogis",
-      "components": ["ogis", "ogis-typescript"]
-    },
-    {
-      "type": "node-workspace",
-      "merge": false
-    }
-  ]
+  "plugins": ["node-workspace"]
 }
