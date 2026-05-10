@@ -103,7 +103,7 @@ Composed env list for the ogis container.
   valueFrom:
     secretKeyRef:
       name: {{ include "ogis.hmacSecretName" . }}
-      key: {{ .Values.hmac.existingSecretKey | default "secret" }}
+      key: {{ if .Values.hmac.existingSecret }}{{ .Values.hmac.existingSecretKey | default "secret" }}{{ else }}secret{{ end }}
 {{- end }}
 {{- include "ogis.cacheEnv" . }}
 {{- with .Values.extraEnv }}
