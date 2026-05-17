@@ -56,11 +56,6 @@
           "icon": "house"
         },
         {
-          "anchor": "Playground",
-          "href": "https://ogis.dev/playground",
-          "icon": "palette"
-        },
-        {
           "anchor": "GitHub",
           "href": "https://github.com/twangodev/ogis",
           "icon": "github"
