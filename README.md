@@ -110,8 +110,6 @@ No SDK needed - just construct the URL:
 
 ## Templates
 
-Browse all templates at [ogis.dev/playground](https://ogis.dev/playground).
-
 <table>
   <tbody>
   <tr>
@@ -158,7 +156,7 @@ All parameters are optional and passed as query parameters or SDK options.
 | `logo` | URL to logo image | `https://example.com/logo.png` |
 | `image` | URL to background/hero image | `https://example.com/hero.jpg` |
 
-Templates may support additional color customization parameters. See the [playground](https://ogis.dev/playground) for template-specific options.
+Templates may support additional color customization parameters.
 
 ## Self-Hosting
 
