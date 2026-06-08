@@ -67,7 +67,7 @@ jobs:
         run: cargo tarpaulin --out xml --output-dir ./coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           flags: rust
           fail_ci_if_error: false
@@ -137,7 +137,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           flags: typescript
           fail_ci_if_error: false
@@ -293,7 +293,7 @@ jobs:
           OGIS_IMAGE: twango/ogis:latest
 
       - name: Start services
-        uses: hoverkraft-tech/compose-action@v2
+        uses: hoverkraft-tech/compose-action@v3
         with:
           compose-file: docker-compose.benchmark.yml
         env:
