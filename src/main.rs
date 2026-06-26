@@ -8,6 +8,7 @@ mod params;
 mod routes;
 mod telemetry;
 mod templates;
+mod wire;
 mod yaml_loader;
 
 use std::sync::Arc;

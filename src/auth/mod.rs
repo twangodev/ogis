@@ -1,3 +1,4 @@
+pub mod blob;
 mod hmac;
 mod middleware;
 

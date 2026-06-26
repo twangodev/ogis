@@ -20,6 +20,7 @@ pub enum ErrorCode {
     ValidationInvalidScale,
     ValidationInvalidQuality,
     AuthInvalidSignatureFormat,
+    InvalidCompressedUrl,
 
     // Auth errors (401)
     AuthMissingSignature,
@@ -386,6 +387,24 @@ impl From<GeneratorError> for ApiError {
             GeneratorError::PixmapCreation => ApiError::render_failed("Failed to create pixmap"),
             GeneratorError::Xml(msg) => ApiError::render_failed(&msg),
             GeneratorError::TextMeasurement(msg) => ApiError::render_failed(&msg),
+        }
+    }
+}
+
+impl From<crate::wire::WireError> for ApiError {
+    fn from(e: crate::wire::WireError) -> Self {
+        use crate::wire::WireError;
+        match e {
+            WireError::Unauthorized => ApiError::new(
+                StatusCode::UNAUTHORIZED,
+                ErrorCode::AuthMissingSignature,
+                "Authentication required or invalid signature",
+            ),
+            other => ApiError::new(
+                StatusCode::BAD_REQUEST,
+                ErrorCode::InvalidCompressedUrl,
+                other.to_string(),
+            ),
         }
     }
 }
