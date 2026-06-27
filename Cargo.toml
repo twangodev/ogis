@@ -28,6 +28,7 @@ reqwest = { version = "0.12", features = ["default-tls", "stream"] }
 resvg = "0.45.1"
 saphyr = "0.0.6"
 serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
 sha2 = "0.10"
 thiserror = "2.0.18"
 tiny-skia = "0.11.4"
@@ -44,4 +45,3 @@ utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 webp = "0.3.1"
 
 [dev-dependencies]
-serde_json = "1.0.149"
