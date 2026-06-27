@@ -1,3 +1,127 @@
-use super::WireError;
-pub fn encode_container(_body: &[u8]) -> String { todo!() }
-pub fn decode_container(_blob: &str, _max: usize) -> Result<(u8, Vec<u8>), WireError> { todo!() }
+use base64::Engine;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+use std::io::Read;
+
+use super::{FORMAT_VERSION, WireError};
+
+const MODE_RAW: u8 = 0;
+const MODE_BROTLI: u8 = 1;
+
+fn container_bytes(mode: u8, payload: &[u8]) -> Vec<u8> {
+    let mut v = Vec::with_capacity(payload.len() + 1);
+    v.push((FORMAT_VERSION << 4) | mode);
+    v.extend_from_slice(payload);
+    v
+}
+
+fn brotli_compress(input: &[u8]) -> Vec<u8> {
+    let params = brotli::enc::BrotliEncoderParams {
+        quality: 11,
+        ..Default::default()
+    };
+    let mut out = Vec::new();
+    let mut reader = input;
+    brotli::BrotliCompress(&mut reader, &mut out, &params)
+        .expect("brotli compress is infallible into a Vec");
+    out
+}
+
+/// Encode `body` as the smaller of {raw, brotli} containers, base64url-nopad.
+pub fn encode_container(body: &[u8]) -> String {
+    let raw = URL_SAFE_NO_PAD.encode(container_bytes(MODE_RAW, body));
+    let bro = URL_SAFE_NO_PAD.encode(container_bytes(MODE_BROTLI, &brotli_compress(body)));
+    if bro.len() < raw.len() { bro } else { raw }
+}
+
+/// Decode a blob to `(version, uncompressed body)`, bounding the decompressed size.
+pub fn decode_container(blob: &str, max_decoded: usize) -> Result<(u8, Vec<u8>), WireError> {
+    let bytes = URL_SAFE_NO_PAD
+        .decode(blob.as_bytes())
+        .map_err(|_| WireError::BadBase64)?;
+    let (&header, payload) = bytes.split_first().ok_or(WireError::Truncated)?;
+    let version = header >> 4;
+    let mode = header & 0x0f;
+    if version != FORMAT_VERSION {
+        return Err(WireError::BadVersion(version));
+    }
+    let body = match mode {
+        MODE_RAW => {
+            if payload.len() > max_decoded {
+                return Err(WireError::TooLarge);
+            }
+            payload.to_vec()
+        }
+        MODE_BROTLI => decompress_bounded(payload, max_decoded)?,
+        other => return Err(WireError::BadMode(other)),
+    };
+    Ok((version, body))
+}
+
+fn decompress_bounded(input: &[u8], max: usize) -> Result<Vec<u8>, WireError> {
+    let mut decompressor = brotli::Decompressor::new(input, 4096);
+    let mut out = Vec::new();
+    let mut buf = [0u8; 4096];
+    loop {
+        let n = decompressor
+            .read(&mut buf)
+            .map_err(|_| WireError::BadBrotli)?;
+        if n == 0 {
+            break;
+        }
+        if out.len() + n > max {
+            return Err(WireError::TooLarge);
+        }
+        out.extend_from_slice(&buf[..n]);
+    }
+    Ok(out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn roundtrips_small_and_large_bodies() {
+        for body in [
+            vec![],
+            b"hi".to_vec(),
+            vec![7u8; 500],
+            (0..255).collect::<Vec<u8>>(),
+        ] {
+            let blob = encode_container(&body);
+            let (version, out) = decode_container(&blob, 100_000).unwrap();
+            assert_eq!(version, FORMAT_VERSION);
+            assert_eq!(out, body);
+        }
+    }
+
+    #[test]
+    fn picks_smaller_encoding() {
+        // Highly compressible → brotli should win and decode back.
+        let body = vec![0u8; 2000];
+        let blob = encode_container(&body);
+        assert!(blob.len() < 2000 * 4 / 3);
+        assert_eq!(decode_container(&blob, 100_000).unwrap().1, body);
+    }
+
+    #[test]
+    fn rejects_oversized_decompressed_body() {
+        let body = vec![0u8; 5000]; // compresses tiny, inflates past the cap
+        let blob = encode_container(&body);
+        assert!(matches!(
+            decode_container(&blob, 1000),
+            Err(WireError::TooLarge)
+        ));
+    }
+
+    #[test]
+    fn rejects_bad_version_and_mode() {
+        // header 0x2X = version 2 (unsupported)
+        let bytes = [0x20u8, 0, 0];
+        let blob = base64::Engine::encode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, bytes);
+        assert!(matches!(
+            decode_container(&blob, 1000),
+            Err(WireError::BadVersion(2))
+        ));
+    }
+}
