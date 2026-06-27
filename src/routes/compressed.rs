@@ -50,6 +50,26 @@ fn drop_dead_template(
     params
 }
 
+#[utoipa::path(
+    get,
+    path = "/c/{blob}",
+    params(
+        ("blob" = String, Path, description = "Base64url-encoded compressed parameter blob, produced by an ogis SDK")
+    ),
+    responses(
+        (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
+        (status = 400, description = "Invalid compressed URL - malformed blob or unsupported version"),
+        (status = 401, description = "Authentication required - missing signature"),
+        (status = 403, description = "Forbidden - invalid signature or SSRF blocked"),
+        (status = 404, description = "Template not found"),
+        (status = 422, description = "Unprocessable - invalid image URL, unsupported format, or image too large"),
+        (status = 500, description = "Internal server error"),
+        (status = 502, description = "Bad gateway - upstream image fetch failed"),
+        (status = 503, description = "Service unavailable - server overloaded"),
+        (status = 504, description = "Gateway timeout - image fetch timed out")
+    ),
+    tag = "image"
+)]
 pub async fn generate_compressed(
     State(state): State<AppState>,
     Path(blob): Path<String>,
@@ -57,6 +77,27 @@ pub async fn generate_compressed(
     handle(state, blob, None).await
 }
 
+#[utoipa::path(
+    get,
+    path = "/c/{blob}/{sig}",
+    params(
+        ("blob" = String, Path, description = "Base64url-encoded compressed parameter blob, produced by an ogis SDK"),
+        ("sig" = String, Path, description = "HMAC-SHA256 signature (first 8 hex characters) authorising this blob")
+    ),
+    responses(
+        (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
+        (status = 400, description = "Invalid compressed URL - malformed blob or unsupported version"),
+        (status = 401, description = "Authentication required - missing or short signature"),
+        (status = 403, description = "Forbidden - invalid signature or SSRF blocked"),
+        (status = 404, description = "Template not found"),
+        (status = 422, description = "Unprocessable - invalid image URL, unsupported format, or image too large"),
+        (status = 500, description = "Internal server error"),
+        (status = 502, description = "Bad gateway - upstream image fetch failed"),
+        (status = 503, description = "Service unavailable - server overloaded"),
+        (status = 504, description = "Gateway timeout - image fetch timed out")
+    ),
+    tag = "image"
+)]
 pub async fn generate_compressed_signed(
     State(state): State<AppState>,
     Path((blob, sig)): Path<(String, String)>,

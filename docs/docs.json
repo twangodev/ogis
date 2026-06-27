@@ -44,7 +44,10 @@
           "api-reference/overview",
           "api-reference/authentication",
           "api-reference/generate-image",
-          "GET /health"
+          "api-reference/compressed-urls",
+          "GET /health",
+          "GET /c/{blob}",
+          "GET /c/{blob}/{sig}"
         ]
       }
     ],
