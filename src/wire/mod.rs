@@ -4,6 +4,9 @@ pub mod container;
 pub mod registry;
 pub mod varint;
 
+#[cfg(test)]
+mod golden;
+
 use crate::params::OgParams;
 use crate::templates::TemplateMap;
 use registry::Registry;
