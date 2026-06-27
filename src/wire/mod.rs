@@ -14,6 +14,7 @@ use registry::Registry;
 pub const FORMAT_VERSION: u8 = 1;
 pub const MAX_COLORS: usize = 32;
 pub const MAX_EXTRA: usize = 32;
+pub const MAX_ENCODED_LEN: usize = 8192;
 
 #[derive(Debug, thiserror::Error)]
 pub enum WireError {

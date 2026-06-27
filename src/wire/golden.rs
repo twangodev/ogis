@@ -40,6 +40,7 @@ fn full_pipeline_roundtrips_unsigned() {
         assert!(sig.is_none());
         let out = decode(&blob, None, reg, None, 1000, 100_000).unwrap();
         assert_eq!(out.title, p.title, "case {name}");
+        assert_eq!(out.description, p.description, "case {name}");
         assert_eq!(out.template, p.template, "case {name}");
     }
 }
@@ -65,17 +66,23 @@ fn full_pipeline_roundtrips_signed() {
 #[test]
 fn golden_vectors_decode_stably() {
     let reg = Registry::load();
-    // (blob, expected title) pinned from a known-good build.
-    let vectors: &[(&str, &str)] = &[(
+    // (blob, expected title, expected template) pinned from a known-good build.
+    let vectors: &[(&str, &str, Option<&str>)] = &[(
         "ERtNACCM1GOtsTAbodK_qfK8DuX8HB8pH4W1CAKHHDh8fvAkT63CZFozSrm8QCKZQPXtLWXTd4iMjPdMfxCr4Aoq",
         "Understanding Rust Ownership",
+        Some("twilight"),
     )];
-    for (blob, title) in vectors {
+    for (blob, title, template) in vectors {
         let out = decode(blob, None, reg, None, 1000, 100_000).unwrap();
         assert_eq!(
             out.title.as_deref(),
             Some(*title),
-            "golden blob {blob} drifted"
+            "golden blob {blob} drifted (title)"
+        );
+        assert_eq!(
+            out.template.as_deref(),
+            *template,
+            "golden blob {blob} drifted (template)"
         );
     }
 }

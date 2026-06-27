@@ -2,7 +2,7 @@ use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use std::io::Read;
 
-use super::{FORMAT_VERSION, WireError};
+use super::{FORMAT_VERSION, MAX_ENCODED_LEN, WireError};
 
 const MODE_RAW: u8 = 0;
 const MODE_BROTLI: u8 = 1;
@@ -35,6 +35,9 @@ pub fn encode_container(body: &[u8]) -> String {
 
 /// Decode a blob to `(version, uncompressed body)`, bounding the decompressed size.
 pub fn decode_container(blob: &str, max_decoded: usize) -> Result<(u8, Vec<u8>), WireError> {
+    if blob.len() > MAX_ENCODED_LEN {
+        return Err(WireError::TooLarge);
+    }
     let bytes = URL_SAFE_NO_PAD
         .decode(blob.as_bytes())
         .map_err(|_| WireError::BadBase64)?;
@@ -122,6 +125,23 @@ mod tests {
         assert!(matches!(
             decode_container(&blob, 1000),
             Err(WireError::BadVersion(2))
+        ));
+        // header 0x12 = version 1, mode 2 (unsupported mode)
+        let bytes2 = [0x12u8, 0, 0];
+        let blob2 =
+            base64::Engine::encode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, bytes2);
+        assert!(matches!(
+            decode_container(&blob2, 1000),
+            Err(WireError::BadMode(2))
+        ));
+    }
+
+    #[test]
+    fn rejects_blob_over_length_cap() {
+        let blob = "A".repeat(MAX_ENCODED_LEN + 1);
+        assert!(matches!(
+            decode_container(&blob, 100_000),
+            Err(WireError::TooLarge)
         ));
     }
 }

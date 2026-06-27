@@ -59,8 +59,8 @@ fn drop_dead_template(
     responses(
         (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
         (status = 400, description = "Invalid compressed URL - malformed blob or unsupported version"),
-        (status = 401, description = "Authentication required - missing signature"),
-        (status = 403, description = "Forbidden - invalid signature or SSRF blocked"),
+        (status = 401, description = "Authentication required - missing or invalid signature"),
+        (status = 403, description = "Forbidden - SSRF blocked (private IP)"),
         (status = 404, description = "Template not found"),
         (status = 422, description = "Unprocessable - invalid image URL, unsupported format, or image too large"),
         (status = 500, description = "Internal server error"),
@@ -87,8 +87,8 @@ pub async fn generate_compressed(
     responses(
         (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
         (status = 400, description = "Invalid compressed URL - malformed blob or unsupported version"),
-        (status = 401, description = "Authentication required - missing or short signature"),
-        (status = 403, description = "Forbidden - invalid signature or SSRF blocked"),
+        (status = 401, description = "Authentication required - missing or invalid signature"),
+        (status = 403, description = "Forbidden - SSRF blocked (private IP)"),
         (status = 404, description = "Template not found"),
         (status = 422, description = "Unprocessable - invalid image URL, unsupported format, or image too large"),
         (status = 500, description = "Internal server error"),

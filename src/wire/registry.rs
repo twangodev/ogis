@@ -24,9 +24,21 @@ impl Registry {
                 serde_json::from_str(TEMPLATE_IDS_JSON).expect("template-ids.json");
             let color_to_id: HashMap<String, u16> =
                 serde_json::from_str(COLOR_IDS_JSON).expect("color-ids.json");
+            let id_to_template = invert(&template_to_id);
+            let id_to_color = invert(&color_to_id);
+            debug_assert_eq!(
+                id_to_template.len(),
+                template_to_id.len(),
+                "template registry has duplicate ids"
+            );
+            debug_assert_eq!(
+                id_to_color.len(),
+                color_to_id.len(),
+                "color registry has duplicate ids"
+            );
             Registry {
-                id_to_template: invert(&template_to_id),
-                id_to_color: invert(&color_to_id),
+                id_to_template,
+                id_to_color,
                 template_to_id,
                 color_to_id,
             }
@@ -79,6 +91,30 @@ mod tests {
                 committed.insert(n.clone(), next);
                 next += 1;
             }
+        }
+    }
+
+    #[test]
+    fn registries_have_no_duplicate_or_gap_ids() {
+        let template_map: HashMap<String, u16> = serde_json::from_str(TEMPLATE_IDS_JSON).unwrap();
+        let color_map: HashMap<String, u16> = serde_json::from_str(COLOR_IDS_JSON).unwrap();
+        for (label, map) in [("template", &template_map), ("color", &color_map)] {
+            if map.is_empty() {
+                continue;
+            }
+            let inverted: HashMap<u16, String> = map.iter().map(|(k, v)| (*v, k.clone())).collect();
+            assert_eq!(
+                inverted.len(),
+                map.len(),
+                "{label} registry has duplicate ids"
+            );
+            let max_id = *map.values().max().unwrap();
+            assert_eq!(
+                max_id as usize,
+                map.len() - 1,
+                "{label} registry ids are not contiguous 0..N (max={max_id}, count={})",
+                map.len()
+            );
         }
     }
 

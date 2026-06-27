@@ -8,6 +8,11 @@ fn test_state() -> crate::AppState {
     crate::build_state(&config).expect("build_state failed in test")
 }
 
+fn test_state_with_hmac(secret: &str) -> crate::AppState {
+    let config = crate::config::Config::parse_from(["ogis", "--secret", secret]);
+    crate::build_state(&config).expect("build_state failed in test")
+}
+
 #[tokio::test]
 async fn c_route_renders_png() {
     let state = test_state();
@@ -57,4 +62,54 @@ async fn c_route_rejects_garbage_with_400() {
         .await
         .unwrap();
     assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn c_route_signed_hmac() {
+    let secret = b"testsecret";
+    let state = test_state_with_hmac("testsecret");
+    let reg = crate::wire::registry::Registry::load();
+    let templates = crate::templates::load_templates();
+    let p = crate::params::OgParams {
+        title: Some("Hello".into()),
+        description: None,
+        subtitle: None,
+        logo: None,
+        image: None,
+        template: None,
+        signature: None,
+        format: None,
+        scale: None,
+        quality: None,
+        extra: std::collections::HashMap::new(),
+    };
+    let (blob, sig) = crate::wire::encode(&p, reg, &templates, Some(secret)).unwrap();
+    let sig = sig.unwrap();
+
+    // Signed request → 200 + image/png
+    let app = crate::routes::create_router(state.clone());
+    let res = app
+        .oneshot(
+            Request::builder()
+                .uri(format!("/c/{blob}/{sig}"))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.headers().get("content-type").unwrap(), "image/png");
+
+    // Missing sig → 401
+    let app2 = crate::routes::create_router(state);
+    let res2 = app2
+        .oneshot(
+            Request::builder()
+                .uri(format!("/c/{blob}"))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(res2.status(), StatusCode::UNAUTHORIZED);
 }
