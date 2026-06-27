@@ -1,6 +1,7 @@
 pub mod docs;
 pub mod health;
 pub mod index;
+pub mod render;
 pub mod templates;
 pub mod timing;
 
