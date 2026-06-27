@@ -61,7 +61,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .block_on(run_server(config))
 }
 
-async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Error>> {
+/// Assemble an `AppState` from a `Config`.  Does NOT start telemetry, bind
+/// the listener, or launch warm-up tasks - those remain in `run_server`.
+pub(crate) fn build_state(config: &config::Config) -> Result<AppState, Box<dyn std::error::Error>> {
     // Load fonts
     let fontdb = fonts::load_fonts();
 
@@ -105,20 +107,24 @@ async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Er
     );
     let gradient_cache = Arc::new(generator::GradientCache::new(gradient_cache_bytes));
 
-    let state = AppState {
+    Ok(AppState {
         fontdb: Arc::new(fontdb),
         templates: Arc::new(templates),
         max_input_length: config.max_input_length,
-        defaults: config.defaults,
+        defaults: config.defaults.clone(),
         image: ImageState {
             fetcher: image_fetcher,
             fallback: config.image.fallback,
         },
         hmac_validator,
-        docs: config.docs,
+        docs: config.docs.clone(),
         render_semaphore: Arc::new(Semaphore::new(render_concurrency)),
         gradient_cache,
-    };
+    })
+}
+
+async fn run_server(config: config::Config) -> Result<(), Box<dyn std::error::Error>> {
+    let state = build_state(&config)?;
 
     // Spawn gradient-cache warm-up in the background; the listener binds
     // immediately and the lazy fallback handles anything not warmed.
