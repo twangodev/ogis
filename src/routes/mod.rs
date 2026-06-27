@@ -1,3 +1,4 @@
+pub mod compressed;
 pub mod docs;
 pub mod health;
 pub mod index;
