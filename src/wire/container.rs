@@ -6,6 +6,11 @@ use super::{FORMAT_VERSION, MAX_ENCODED_LEN, WireError};
 
 const MODE_RAW: u8 = 0;
 const MODE_BROTLI: u8 = 1;
+/// Brotli window (log2) the encoder pins and the decoder accepts. 18 = 256 KiB,
+/// ample for our <=~134 KB bodies; a larger *declared* window only inflates the
+/// decoder's ring-buffer allocation (up to 16 MiB at lgwin 24), so it is rejected
+/// before decompression. Pinned pre-launch; SDKs MUST encode with window <= this.
+const MAX_WINDOW_BITS: u8 = 18;
 
 fn container_bytes(mode: u8, payload: &[u8]) -> Vec<u8> {
     let mut v = Vec::with_capacity(payload.len() + 1);
@@ -17,6 +22,7 @@ fn container_bytes(mode: u8, payload: &[u8]) -> Vec<u8> {
 fn brotli_compress(input: &[u8]) -> Vec<u8> {
     let params = brotli::enc::BrotliEncoderParams {
         quality: 11,
+        lgwin: MAX_WINDOW_BITS as i32,
         ..Default::default()
     };
     let mut out = Vec::new();
@@ -54,10 +60,37 @@ pub fn decode_container(blob: &str, max_decoded: usize) -> Result<(u8, Vec<u8>),
             }
             payload.to_vec()
         }
-        MODE_BROTLI => decompress_bounded(payload, max_decoded)?,
+        MODE_BROTLI => {
+            // Reject an oversized declared window before the decoder allocates its
+            // ring buffer (a tiny blob can otherwise force up to a 16 MiB alloc).
+            if brotli_window_bits(payload) > MAX_WINDOW_BITS {
+                return Err(WireError::TooLarge);
+            }
+            decompress_bounded(payload, max_decoded)?
+        }
         other => return Err(WireError::BadMode(other)),
     };
     Ok((version, body))
+}
+
+/// Read the brotli WBITS (window size, log2) from the stream's first byte
+/// (RFC 7932 §9.1, non-large-window form). Used to reject an oversized declared
+/// window before the decoder allocates its ring buffer.
+fn brotli_window_bits(payload: &[u8]) -> u8 {
+    let b = payload.first().copied().unwrap_or(0);
+    let bit = |i: u8| (b >> i) & 1;
+    if bit(0) == 0 {
+        return 16;
+    }
+    let n = bit(1) | (bit(2) << 1) | (bit(3) << 2);
+    if n != 0 {
+        return 17 + n; // 18..=24
+    }
+    let m = bit(4) | (bit(5) << 1) | (bit(6) << 2);
+    if m != 0 {
+        return 8 + m; // 9..=15
+    }
+    17
 }
 
 fn decompress_bounded(input: &[u8], max: usize) -> Result<Vec<u8>, WireError> {
@@ -113,6 +146,18 @@ mod tests {
         let blob = encode_container(&body);
         assert!(matches!(
             decode_container(&blob, 1000),
+            Err(WireError::TooLarge)
+        ));
+    }
+
+    #[test]
+    fn rejects_oversized_brotli_window() {
+        // A brotli payload whose first byte declares a 24-bit (16 MiB) window must be
+        // rejected by the window check BEFORE decompression allocates the ring buffer.
+        // 0x0F => WBITS 24 (first bit 1, next 3 bits = 0b111 = 7 => 17+7).
+        let blob = URL_SAFE_NO_PAD.encode(container_bytes(MODE_BROTLI, &[0x0F, 0x00, 0x00]));
+        assert!(matches!(
+            decode_container(&blob, 100_000),
             Err(WireError::TooLarge)
         ));
     }

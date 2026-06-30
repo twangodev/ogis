@@ -62,7 +62,7 @@ fn full_pipeline_roundtrips_signed() {
 fn golden_vectors_decode_stably() {
     // (blob, expected title, expected template) pinned from a known-good build.
     let vectors: &[(&str, &str, Option<&str>)] = &[(
-        "ERtUACCM1GOtsTDr04lKEGxiExpTFDb3iSBwyIHD54EneQkFO2BnOLgtxwjgXuonIIj-t8-yCXvYGinvmT6DrYITKQc",
+        "ERNUACCM1GOtsTDr04lKEGxiExpTFDb3iSBwyIHD54EneQkFO2BnOLgtxwjgXuonIIj-t8-yCXvYGinvmT6DrYITKQc",
         "Understanding Rust Ownership",
         Some("twilight"),
     )];
