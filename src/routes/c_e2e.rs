@@ -145,3 +145,70 @@ async fn c_route_admits_boundary_values() {
         .unwrap();
     assert_eq!(res.status(), StatusCode::OK);
 }
+
+#[tokio::test]
+async fn c_route_invalid_signature_returns_401() {
+    // A present-but-wrong signature (well-formed 8-char base64url, but not the real
+    // MAC) → 401 through the full route — locking the InvalidSignature handler path,
+    // and that /c/ returns 401 (not the query route's 403) for a bad signature.
+    let state = test_state_with_hmac("testsecret");
+    let p = crate::params::OgParams {
+        title: Some("Hello".into()),
+        description: None,
+        subtitle: None,
+        logo: None,
+        image: None,
+        template: None,
+        signature: None,
+        format: None,
+        scale: None,
+        quality: None,
+        extra: std::collections::HashMap::new(),
+    };
+    let (blob, _) = crate::wire::encode(&p, None).unwrap();
+    let app = crate::routes::create_router(state);
+    let res = app
+        .oneshot(
+            Request::builder()
+                .uri(format!("/c/{blob}/AAAAAAAA")) // 8 base64url chars, wrong MAC
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
+}
+
+#[tokio::test]
+async fn c_route_unknown_template_renders_default() {
+    // An unknown literal template name renders the runtime default (200), NOT 404 —
+    // spec §5.2: /c/ deliberately diverges from the query route so published URLs for
+    // a since-discontinued template degrade gracefully instead of breaking.
+    let state = test_state();
+    let p = crate::params::OgParams {
+        title: Some("Hello".into()),
+        description: None,
+        subtitle: None,
+        logo: None,
+        image: None,
+        template: Some("not-a-real-template-xyz".into()),
+        signature: None,
+        format: None,
+        scale: None,
+        quality: None,
+        extra: std::collections::HashMap::new(),
+    };
+    let (blob, _) = crate::wire::encode(&p, None).unwrap();
+    let app = crate::routes::create_router(state);
+    let res = app
+        .oneshot(
+            Request::builder()
+                .uri(format!("/c/{blob}"))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.headers().get("content-type").unwrap(), "image/png");
+}
