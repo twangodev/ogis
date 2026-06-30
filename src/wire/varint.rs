@@ -1,6 +1,7 @@
 use super::WireError;
 
 /// Append `v` as an unsigned LEB128 varint.
+#[allow(dead_code)] // encoder reference; the server only decodes today
 pub fn write_varint(out: &mut Vec<u8>, mut v: u64) {
     loop {
         let mut byte = (v & 0x7f) as u8;

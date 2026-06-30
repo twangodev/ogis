@@ -12,6 +12,7 @@ const MODE_BROTLI: u8 = 1;
 /// before decompression. Pinned pre-launch; SDKs MUST encode with window <= this.
 const MAX_WINDOW_BITS: u8 = 18;
 
+#[allow(dead_code)] // encoder reference; the server only decodes today
 fn container_bytes(mode: u8, payload: &[u8]) -> Vec<u8> {
     let mut v = Vec::with_capacity(payload.len() + 1);
     v.push((FORMAT_VERSION << 4) | mode);
@@ -19,6 +20,7 @@ fn container_bytes(mode: u8, payload: &[u8]) -> Vec<u8> {
     v
 }
 
+#[allow(dead_code)] // encoder reference; the server only decodes today
 fn brotli_compress(input: &[u8]) -> Vec<u8> {
     let params = brotli::enc::BrotliEncoderParams {
         quality: 11,
@@ -33,6 +35,7 @@ fn brotli_compress(input: &[u8]) -> Vec<u8> {
 }
 
 /// Encode `body` as the smaller of {raw, brotli} containers, base64url-nopad.
+#[allow(dead_code)] // encoder reference; the server only decodes today
 pub fn encode_container(body: &[u8]) -> String {
     let raw = URL_SAFE_NO_PAD.encode(container_bytes(MODE_RAW, body));
     let bro = URL_SAFE_NO_PAD.encode(container_bytes(MODE_BROTLI, &brotli_compress(body)));

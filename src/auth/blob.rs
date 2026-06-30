@@ -18,6 +18,7 @@ fn mac(secret: &[u8], version: u8, body: &[u8]) -> HmacSha256 {
 }
 
 /// Sign `[version] ++ body`, returning the 8-char base64url segment.
+#[allow(dead_code)] // encoder reference; the server only verifies
 pub fn sign(secret: &[u8], version: u8, body: &[u8]) -> String {
     let tag = mac(secret, version, body).finalize().into_bytes();
     URL_SAFE_NO_PAD.encode(&tag[..SIG_LEN])

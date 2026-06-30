@@ -49,6 +49,7 @@ pub enum WireError {
 }
 
 /// Encode `params` to `(blob, optional sig)`. `secret` present ⇒ sign.
+#[allow(dead_code)] // encoder reference; the server only decodes today
 pub fn encode(
     p: &OgParams,
     secret: Option<&[u8]>,

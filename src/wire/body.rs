@@ -20,11 +20,13 @@ const B_EXTRA: u16 = 1 << 10;
 // Reserved: bit 9 (retired colors block) + bits 11..=15 (incl. the continuation flag).
 const RESERVED_MASK: u16 = 0b1111_1010_0000_0000;
 
+#[allow(dead_code)] // encoder reference; the server only decodes today
 fn write_str(out: &mut Vec<u8>, s: &str) {
     write_varint(out, s.len() as u64);
     out.extend_from_slice(s.as_bytes());
 }
 
+#[allow(dead_code)] // encoder reference; the server only decodes today
 fn write_url(out: &mut Vec<u8>, s: &str) {
     if let Some(rest) = s.strip_prefix("https://") {
         out.push(1);
@@ -38,6 +40,7 @@ fn write_url(out: &mut Vec<u8>, s: &str) {
     }
 }
 
+#[allow(dead_code)] // encoder reference; the server only decodes today
 pub fn pack_body(p: &OgParams) -> Result<Vec<u8>, WireError> {
     // Color overrides are literal name=value entries, wire-indistinguishable from
     // text overrides; the color-vs-text split happens at render time (extract_colors).
