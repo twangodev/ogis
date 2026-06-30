@@ -8,9 +8,14 @@ use crate::{error::ApiError, wire};
 
 /// Decompressed-size cap derived from per-field limits (spec §8.1).
 pub(crate) fn max_decoded_len(max_input_length: usize) -> usize {
-    // 6 max-length fields (template name + 5 text/URL) + MAX_EXTRA*(key+value),
-    // plus header/overhead. Colors fold into the extra block (no separate term).
-    max_input_length * (6 + 2 * wire::MAX_EXTRA) + 64
+    // Worst-case schema-pack body. Data: 6 max-length fields (template + 3 text +
+    // 2 URL) and MAX_EXTRA extra entries (key+value). Framing: presence(2) +
+    // format/scale/quality(4) + 6 field length-varints (<=2 B each, for
+    // max_input_length <= 16383) + 2 URL scheme tags(2) + extra count(1) +
+    // MAX_EXTRA*(2 length-varints, <=2 B each). Colors fold into the extra block.
+    let data = max_input_length * (6 + 2 * wire::MAX_EXTRA);
+    let framing = 2 + 4 + 6 * 2 + 2 + 1 + wire::MAX_EXTRA * 4;
+    data + framing
 }
 
 async fn handle(state: AppState, blob: String, sig: Option<String>) -> Response {
@@ -109,10 +114,36 @@ mod tests {
     use super::*;
 
     #[test]
-    fn max_decoded_grows_and_admits_full_payload() {
-        // Monotonic in input length, and large enough for the 5 full-length
-        // text/URL fields (so a legitimate max-size request is never falsely capped).
-        assert!(max_decoded_len(1000) > max_decoded_len(100));
-        assert!(max_decoded_len(1000) >= 5 * 1000);
+    fn admits_a_maximal_legal_body() {
+        // A request with every field at max_input_length and MAX_EXTRA full-length
+        // extra entries must pack within the decode cap, so a maximal legal /c/ URL
+        // is never falsely 400'd at decompression. (Was under-provisioned at +64.)
+        let max = 1000usize;
+        let big = "x".repeat(max);
+        let mut p = crate::params::OgParams {
+            title: Some(big.clone()),
+            description: Some(big.clone()),
+            subtitle: Some(big.clone()),
+            logo: Some(big.clone()),
+            image: Some(big.clone()),
+            template: Some(big.clone()),
+            signature: None,
+            format: Some("webp".into()),
+            scale: Some(2.0),
+            quality: Some(50),
+            extra: std::collections::HashMap::new(),
+        };
+        for i in 0..crate::wire::MAX_EXTRA {
+            p.extra
+                .insert(format!("{i:04}{}", "k".repeat(max - 4)), big.clone());
+        }
+        let body = crate::wire::body::pack_body(&p).unwrap();
+        assert!(
+            body.len() <= max_decoded_len(max),
+            "maximal body {} exceeds decode cap {}",
+            body.len(),
+            max_decoded_len(max)
+        );
+        assert!(max_decoded_len(1000) > max_decoded_len(100)); // still monotonic
     }
 }
