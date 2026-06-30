@@ -23,14 +23,17 @@ pub fn read_varint(input: &mut &[u8]) -> Result<u64, WireError> {
     loop {
         let byte = *input.first().ok_or(WireError::Truncated)?;
         *input = &input[1..];
-        result |= ((byte & 0x7f) as u64) << shift;
+        let payload = (byte & 0x7f) as u64;
+        // Reject values that would overflow u64: a shift past bit 63, or a final
+        // (10th) group carrying more than the single bit that fits at bit 63.
+        if shift >= 64 || (shift == 63 && payload > 1) {
+            return Err(WireError::Malformed);
+        }
+        result |= payload << shift;
         if byte & 0x80 == 0 {
             return Ok(result);
         }
         shift += 7;
-        if shift >= 64 {
-            return Err(WireError::Malformed);
-        }
     }
 }
 
@@ -70,6 +73,20 @@ mod tests {
     fn truncated_varint_errors() {
         let mut slice = &[0x80u8][..]; // continuation bit set, no follow-up
         assert!(matches!(read_varint(&mut slice), Err(WireError::Truncated)));
+    }
+
+    #[test]
+    fn overflowing_varint_rejected() {
+        // A 10th byte carrying payload > 1 overflows u64 (its bits shift past 63);
+        // it must be rejected as Malformed, not silently wrapped. Here: nine 0x80
+        // continuation bytes then 0x02 — currently wraps to 0.
+        let bytes = [0x80u8, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02];
+        let mut slice = &bytes[..];
+        assert!(matches!(read_varint(&mut slice), Err(WireError::Malformed)));
+        // The maximal legal u64 (10 bytes, final 0x01) still decodes.
+        let max = [0xffu8, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01];
+        let mut s = &max[..];
+        assert_eq!(read_varint(&mut s).unwrap(), u64::MAX);
     }
 
     #[test]
