@@ -42,8 +42,10 @@ pub enum WireError {
     TooLarge,
     #[error("brotli error")]
     BadBrotli,
-    #[error("unauthorized")]
-    Unauthorized,
+    #[error("missing signature")]
+    MissingSignature,
+    #[error("invalid signature")]
+    InvalidSignature,
 }
 
 /// Encode `params` to `(blob, optional sig)`. `secret` present ⇒ sign.
@@ -67,7 +69,7 @@ pub fn decode(
     let (version, body) = container::decode_container(blob, max_decoded)?;
     match (secret, sig) {
         (Some(s), Some(seg)) => crate::auth::blob::verify(s, version, &body, seg)?,
-        (Some(_), None) => return Err(WireError::Unauthorized),
+        (Some(_), None) => return Err(WireError::MissingSignature),
         (None, _) => {} // auth disabled
     }
     body::unpack_body(&body, max_field_len)

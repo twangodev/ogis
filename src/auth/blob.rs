@@ -27,13 +27,13 @@ pub fn sign(secret: &[u8], version: u8, body: &[u8]) -> String {
 pub fn verify(secret: &[u8], version: u8, body: &[u8], seg: &str) -> Result<(), WireError> {
     let provided = URL_SAFE_NO_PAD
         .decode(seg.as_bytes())
-        .map_err(|_| WireError::Unauthorized)?;
+        .map_err(|_| WireError::InvalidSignature)?;
     if provided.len() != SIG_LEN {
-        return Err(WireError::Unauthorized);
+        return Err(WireError::InvalidSignature);
     }
     mac(secret, version, body)
         .verify_truncated_left(&provided)
-        .map_err(|_| WireError::Unauthorized)
+        .map_err(|_| WireError::InvalidSignature)
 }
 
 #[cfg(test)]
@@ -60,11 +60,11 @@ mod tests {
     fn malformed_segment_rejected() {
         assert!(matches!(
             verify(b"s", 1, b"b", "!!!"),
-            Err(WireError::Unauthorized)
+            Err(WireError::InvalidSignature)
         ));
         assert!(matches!(
             verify(b"s", 1, b"b", "AAAA"),
-            Err(WireError::Unauthorized)
+            Err(WireError::InvalidSignature)
         )); // 3 bytes ≠ 6
     }
 }
