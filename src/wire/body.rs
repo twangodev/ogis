@@ -368,14 +368,20 @@ mod tests {
     fn bad_format_code_rejected() {
         // presence=B_FORMAT, format code 3 (only 1=jpeg / 2=webp valid).
         let bytes = [0x40, 0x00, 0x03];
-        assert!(matches!(unpack_body(&bytes, 1000), Err(WireError::BadFormat)));
+        assert!(matches!(
+            unpack_body(&bytes, 1000),
+            Err(WireError::BadFormat)
+        ));
     }
 
     #[test]
     fn field_over_max_length_rejected() {
         // presence=B_TITLE, varint len=1000 with max_field_len=10.
         let bytes = [0x01, 0x00, 0xE8, 0x07];
-        assert!(matches!(unpack_body(&bytes, 10), Err(WireError::FieldTooLong)));
+        assert!(matches!(
+            unpack_body(&bytes, 10),
+            Err(WireError::FieldTooLong)
+        ));
     }
 
     #[test]
@@ -425,6 +431,9 @@ mod tests {
         let out = roundtrip(&p);
         assert_eq!(out.extra.get("accent").map(String::as_str), Some("1a2b3c"));
         assert_eq!(out.extra.get("subreddit").map(String::as_str), Some("rust"));
-        assert_eq!(out.extra.get("accent_x").map(String::as_str), Some("ABCDEF"));
+        assert_eq!(
+            out.extra.get("accent_x").map(String::as_str),
+            Some("ABCDEF")
+        );
     }
 }

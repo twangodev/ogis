@@ -50,10 +50,7 @@ pub enum WireError {
 
 /// Encode `params` to `(blob, optional sig)`. `secret` present ⇒ sign.
 #[allow(dead_code)] // encoder reference; the server only decodes today
-pub fn encode(
-    p: &OgParams,
-    secret: Option<&[u8]>,
-) -> Result<(String, Option<String>), WireError> {
+pub fn encode(p: &OgParams, secret: Option<&[u8]>) -> Result<(String, Option<String>), WireError> {
     let body = body::pack_body(p)?;
     let sig = secret.map(|s| crate::auth::blob::sign(s, FORMAT_VERSION, &body));
     Ok((container::encode_container(&body), sig))

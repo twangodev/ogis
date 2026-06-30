@@ -90,7 +90,8 @@ fn golden_encode_stably() {
     let (_, p) = cases().into_iter().nth(1).unwrap(); // typical
     let (blob, sig) = encode(&p, None).unwrap();
     assert_eq!(
-        blob, "ERNUACCM1GOtsTDr04lKEGxiExpTFDb3iSBwyIHD54EneQkFO2BnOLgtxwjgXuonIIj-t8-yCXvYGinvmT6DrYITKQc",
+        blob,
+        "ERNUACCM1GOtsTDr04lKEGxiExpTFDb3iSBwyIHD54EneQkFO2BnOLgtxwjgXuonIIj-t8-yCXvYGinvmT6DrYITKQc",
         "encoder output drifted"
     );
     assert!(sig.is_none());
