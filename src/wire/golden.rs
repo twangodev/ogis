@@ -1,4 +1,5 @@
 use crate::params::OgParams;
+use crate::templates::load_templates;
 use crate::wire::{decode, encode};
 use std::collections::HashMap;
 
@@ -79,4 +80,43 @@ fn golden_vectors_decode_stably() {
             "golden blob {blob} drifted (template)"
         );
     }
+}
+
+/// Frozen (params → blob) byte-exact vector. Encode is deterministic, so a body
+/// layout or compression change that would break already-published URLs fails
+/// here (the other direction of `golden_vectors_decode_stably`).
+#[test]
+fn golden_encode_stably() {
+    let (_, p) = cases().into_iter().nth(1).unwrap(); // typical
+    let (blob, sig) = encode(&p, None).unwrap();
+    assert_eq!(
+        blob, "ERNUACCM1GOtsTDr04lKEGxiExpTFDb3iSBwyIHD54EneQkFO2BnOLgtxwjgXuonIIj-t8-yCXvYGinvmT6DrYITKQc",
+        "encoder output drifted"
+    );
+    assert!(sig.is_none());
+}
+
+/// Frozen signature vector: pins the HMAC domain (`[version] ++ body`), the
+/// 6-byte truncation, and base64url-nopad encoding for a fixed (secret, body).
+/// A drift here would 401 every previously-published signed `/c/<blob>/<sig>`.
+#[test]
+fn golden_signature_stably() {
+    let (_, p) = cases().into_iter().nth(1).unwrap(); // typical
+    let secret = b"golden-secret";
+    let (blob, sig) = encode(&p, Some(secret)).unwrap();
+    let sig = sig.unwrap();
+    assert_eq!(sig, "S5n2Ss-m", "signature scheme drifted");
+    assert!(decode(&blob, Some(&sig), Some(secret), 1000, 100_000).is_ok());
+}
+
+/// Default-template drift is breaking: a template-bit-clear `/c/` URL renders the
+/// runtime default, so changing `templates.yaml: default` re-maps every published
+/// omitted-template URL. Pin it.
+#[test]
+fn default_template_is_pinned() {
+    assert_eq!(
+        load_templates().default,
+        "twilight",
+        "changing the default template re-maps every omitted-template /c/ URL"
+    );
 }

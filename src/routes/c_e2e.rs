@@ -109,3 +109,39 @@ async fn c_route_signed_hmac() {
         .unwrap();
     assert_eq!(res2.status(), StatusCode::UNAUTHORIZED);
 }
+
+#[tokio::test]
+async fn c_route_admits_boundary_values() {
+    // A request at validation boundaries (title length == max_input_length, quality
+    // at its upper bound) must render 200 through the full route, so a future
+    // tightening of a bound that would 400 an already-published URL fails CI
+    // (spec §9 "boundary blob → 200" vectors). Note: decode() alone skips validate,
+    // so this MUST go through the route.
+    let state = test_state();
+    let max = state.max_input_length;
+    let p = crate::params::OgParams {
+        title: Some("x".repeat(max)),
+        description: None,
+        subtitle: None,
+        logo: None,
+        image: None,
+        template: None,
+        signature: None,
+        format: None,
+        scale: None,
+        quality: Some(100), // upper bound of 1..=100
+        extra: std::collections::HashMap::new(),
+    };
+    let (blob, _) = crate::wire::encode(&p, None).unwrap();
+    let app = crate::routes::create_router(state);
+    let res = app
+        .oneshot(
+            Request::builder()
+                .uri(format!("/c/{blob}"))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+}

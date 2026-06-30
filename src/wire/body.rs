@@ -338,6 +338,67 @@ mod tests {
     }
 
     #[test]
+    fn reserved_bit_11_rejected() {
+        // bits 11..=14 are reserved for future optional fields (not only bit 15).
+        let bytes = 0x0800u16.to_le_bytes();
+        assert!(matches!(
+            unpack_body(&bytes, 1000),
+            Err(WireError::ReservedBit)
+        ));
+    }
+
+    #[test]
+    fn invalid_utf8_rejected() {
+        // presence=B_TITLE, varint len=1, then a lone 0xFF (invalid UTF-8).
+        let bytes = [0x01, 0x00, 0x01, 0xFF];
+        assert!(matches!(unpack_body(&bytes, 1000), Err(WireError::BadUtf8)));
+    }
+
+    #[test]
+    fn bad_scheme_tag_rejected() {
+        // presence=B_LOGO, scheme tag 3 (only 0/1/2 valid) + empty string.
+        let bytes = [0x08, 0x00, 0x03, 0x00];
+        assert!(matches!(
+            unpack_body(&bytes, 1000),
+            Err(WireError::BadSchemeTag)
+        ));
+    }
+
+    #[test]
+    fn bad_format_code_rejected() {
+        // presence=B_FORMAT, format code 3 (only 1=jpeg / 2=webp valid).
+        let bytes = [0x40, 0x00, 0x03];
+        assert!(matches!(unpack_body(&bytes, 1000), Err(WireError::BadFormat)));
+    }
+
+    #[test]
+    fn field_over_max_length_rejected() {
+        // presence=B_TITLE, varint len=1000 with max_field_len=10.
+        let bytes = [0x01, 0x00, 0xE8, 0x07];
+        assert!(matches!(unpack_body(&bytes, 10), Err(WireError::FieldTooLong)));
+    }
+
+    #[test]
+    fn too_many_extra_entries_rejected() {
+        // presence=B_EXTRA, count=65 > MAX_EXTRA(64).
+        let bytes = [0x00, 0x04, 65];
+        assert!(matches!(
+            unpack_body(&bytes, 1000),
+            Err(WireError::TooManyEntries)
+        ));
+    }
+
+    #[test]
+    fn trailing_bytes_rejected() {
+        // valid empty body (presence=0) + one extra byte.
+        let bytes = [0x00, 0x00, 0xFF];
+        assert!(matches!(
+            unpack_body(&bytes, 1000),
+            Err(WireError::TrailingBytes)
+        ));
+    }
+
+    #[test]
     fn many_extra_overrides_roundtrip() {
         // Colors fold into the extra block, so MAX_EXTRA (64) must accommodate the
         // old MAX_COLORS+MAX_EXTRA total. 40 entries (> the old 32 cap) round-trips.
