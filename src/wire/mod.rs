@@ -1,19 +1,15 @@
 //! Compressed-URL (`/c/<blob>`) wire codec. See design/compressed-urls.md.
 pub mod body;
 pub mod container;
-pub mod registry;
 pub mod varint;
 
 #[cfg(test)]
 mod golden;
 
 use crate::params::OgParams;
-use crate::templates::TemplateMap;
-use registry::Registry;
 
 pub const FORMAT_VERSION: u8 = 1;
-pub const MAX_COLORS: usize = 32;
-pub const MAX_EXTRA: usize = 32;
+pub const MAX_EXTRA: usize = 64;
 pub const MAX_ENCODED_LEN: usize = 8192;
 
 #[derive(Debug, thiserror::Error)]
@@ -42,8 +38,6 @@ pub enum WireError {
     FieldTooLong,
     #[error("too many entries")]
     TooManyEntries,
-    #[error("unknown color id")]
-    UnknownColor,
     #[error("decompressed body too large")]
     TooLarge,
     #[error("brotli error")]
@@ -55,11 +49,9 @@ pub enum WireError {
 /// Encode `params` to `(blob, optional sig)`. `secret` present ⇒ sign.
 pub fn encode(
     p: &OgParams,
-    reg: &Registry,
-    templates: &TemplateMap,
     secret: Option<&[u8]>,
 ) -> Result<(String, Option<String>), WireError> {
-    let body = body::pack_body(p, reg, templates)?;
+    let body = body::pack_body(p)?;
     let sig = secret.map(|s| crate::auth::blob::sign(s, FORMAT_VERSION, &body));
     Ok((container::encode_container(&body), sig))
 }
@@ -68,7 +60,6 @@ pub fn encode(
 pub fn decode(
     blob: &str,
     sig: Option<&str>,
-    reg: &Registry,
     secret: Option<&[u8]>,
     max_field_len: usize,
     max_decoded: usize,
@@ -79,5 +70,5 @@ pub fn decode(
         (Some(_), None) => return Err(WireError::Unauthorized),
         (None, _) => {} // auth disabled
     }
-    body::unpack_body(&body, reg, max_field_len)
+    body::unpack_body(&body, max_field_len)
 }

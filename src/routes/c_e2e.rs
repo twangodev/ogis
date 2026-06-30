@@ -16,8 +16,6 @@ fn test_state_with_hmac(secret: &str) -> crate::AppState {
 #[tokio::test]
 async fn c_route_renders_png() {
     let state = test_state();
-    let reg = crate::wire::registry::Registry::load();
-    let templates = crate::templates::load_templates();
     let p = crate::params::OgParams {
         title: Some("Hello".into()),
         description: None,
@@ -31,7 +29,7 @@ async fn c_route_renders_png() {
         quality: None,
         extra: std::collections::HashMap::new(),
     };
-    let (blob, _) = crate::wire::encode(&p, reg, &templates, None).unwrap();
+    let (blob, _) = crate::wire::encode(&p, None).unwrap();
 
     let app = crate::routes::create_router(state);
     let res = app
@@ -68,8 +66,6 @@ async fn c_route_rejects_garbage_with_400() {
 async fn c_route_signed_hmac() {
     let secret = b"testsecret";
     let state = test_state_with_hmac("testsecret");
-    let reg = crate::wire::registry::Registry::load();
-    let templates = crate::templates::load_templates();
     let p = crate::params::OgParams {
         title: Some("Hello".into()),
         description: None,
@@ -83,7 +79,7 @@ async fn c_route_signed_hmac() {
         quality: None,
         extra: std::collections::HashMap::new(),
     };
-    let (blob, sig) = crate::wire::encode(&p, reg, &templates, Some(secret)).unwrap();
+    let (blob, sig) = crate::wire::encode(&p, Some(secret)).unwrap();
     let sig = sig.unwrap();
 
     // Signed request → 200 + image/png

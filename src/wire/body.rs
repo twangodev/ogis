@@ -1,11 +1,9 @@
 use crate::generator::OutputFormat;
 use crate::params::OgParams;
-use crate::templates::TemplateMap;
 use std::collections::HashMap;
 
-use super::registry::Registry;
 use super::varint::{read_bytes, read_varint, write_varint};
-use super::{MAX_COLORS, MAX_EXTRA, WireError};
+use super::{MAX_EXTRA, WireError};
 
 const B_TITLE: u16 = 1 << 0;
 const B_DESC: u16 = 1 << 1;
@@ -16,22 +14,11 @@ const B_TEMPLATE: u16 = 1 << 5;
 const B_FORMAT: u16 = 1 << 6;
 const B_SCALE: u16 = 1 << 7;
 const B_QUALITY: u16 = 1 << 8;
-const B_COLORS: u16 = 1 << 9;
+// Bit 9 was the colors block; retired in the literal-name format. Color overrides
+// now live in the extra block (B_EXTRA) as name=value entries.
 const B_EXTRA: u16 = 1 << 10;
-const RESERVED_MASK: u16 = 0b1111_1000_0000_0000; // bits 11..=15 (incl. continuation)
-
-fn is_six_lower_hex(s: &str) -> bool {
-    s.len() == 6 && s.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
-}
-
-fn hex6_to_rgb(s: &str) -> [u8; 3] {
-    let n = u32::from_str_radix(s, 16).unwrap(); // validated by is_six_lower_hex
-    [(n >> 16) as u8, (n >> 8) as u8, n as u8]
-}
-
-fn rgb_to_hex6(rgb: &[u8; 3]) -> String {
-    format!("{:02x}{:02x}{:02x}", rgb[0], rgb[1], rgb[2])
-}
+// Reserved: bit 9 (retired colors block) + bits 11..=15 (incl. the continuation flag).
+const RESERVED_MASK: u16 = 0b1111_1010_0000_0000;
 
 fn write_str(out: &mut Vec<u8>, s: &str) {
     write_varint(out, s.len() as u64);
@@ -51,29 +38,17 @@ fn write_url(out: &mut Vec<u8>, s: &str) {
     }
 }
 
-pub fn pack_body(
-    p: &OgParams,
-    reg: &Registry,
-    templates: &TemplateMap,
-) -> Result<Vec<u8>, WireError> {
-    let resolved = p.template.as_deref().unwrap_or(&templates.default);
-    let template_colors = templates.colors.get(resolved);
-
-    // Partition extra into a typed colors block (only template colors with exactly
-    // 6-lowercase-hex values) and a verbatim extra block - matching extract_colors().
-    let mut colors: Vec<(u16, [u8; 3])> = Vec::new();
-    let mut extras: Vec<(&str, &str)> = Vec::new();
-    for (k, v) in &p.extra {
-        let packable = template_colors.is_some_and(|c| c.contains_key(k)) && is_six_lower_hex(v);
-        match packable.then(|| reg.color_id(k)).flatten() {
-            Some(id) => colors.push((id, hex6_to_rgb(v))),
-            None => extras.push((k.as_str(), v.as_str())),
-        }
-    }
-    if colors.len() > MAX_COLORS || extras.len() > MAX_EXTRA {
+pub fn pack_body(p: &OgParams) -> Result<Vec<u8>, WireError> {
+    // Color overrides are literal name=value entries, wire-indistinguishable from
+    // text overrides; the color-vs-text split happens at render time (extract_colors).
+    let mut extras: Vec<(&str, &str)> = p
+        .extra
+        .iter()
+        .map(|(k, v)| (k.as_str(), v.as_str()))
+        .collect();
+    if extras.len() > MAX_EXTRA {
         return Err(WireError::TooManyEntries);
     }
-    colors.sort_by_key(|(id, _)| *id);
     extras.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
 
     let format_code: Option<u8> = match p.format.as_deref().and_then(OutputFormat::from_str) {
@@ -100,7 +75,6 @@ pub fn pack_body(
     presence |= (format_code.is_some() as u16) * B_FORMAT;
     presence |= (scale_mu.is_some() as u16) * B_SCALE;
     presence |= (quality.is_some() as u16) * B_QUALITY;
-    presence |= ((!colors.is_empty()) as u16) * B_COLORS;
     presence |= ((!extras.is_empty()) as u16) * B_EXTRA;
 
     let mut out = Vec::new();
@@ -131,13 +105,6 @@ pub fn pack_body(
     }
     if let Some(i) = &p.image {
         write_url(&mut out, i);
-    }
-    if !colors.is_empty() {
-        out.push(colors.len() as u8);
-        for (id, rgb) in &colors {
-            out.extend_from_slice(&id.to_le_bytes());
-            out.extend_from_slice(rgb);
-        }
     }
     if !extras.is_empty() {
         out.push(extras.len() as u8);
@@ -177,11 +144,7 @@ fn read_url(input: &mut &[u8], max: usize) -> Result<String, WireError> {
     })
 }
 
-pub fn unpack_body(
-    bytes: &[u8],
-    reg: &Registry,
-    max_field_len: usize,
-) -> Result<OgParams, WireError> {
+pub fn unpack_body(bytes: &[u8], max_field_len: usize) -> Result<OgParams, WireError> {
     let mut input = bytes;
     let presence = read_u16(&mut input)?;
     if presence & RESERVED_MASK != 0 {
@@ -237,18 +200,6 @@ pub fn unpack_body(
         p.image = Some(read_url(&mut input, max_field_len)?);
     }
 
-    if presence & B_COLORS != 0 {
-        let n = read_u8(&mut input)? as usize;
-        if n > MAX_COLORS {
-            return Err(WireError::TooManyEntries);
-        }
-        for _ in 0..n {
-            let id = read_u16(&mut input)?;
-            let rgb: [u8; 3] = read_bytes(&mut input, 3)?.try_into().unwrap();
-            let name = reg.color_name(id).ok_or(WireError::UnknownColor)?;
-            p.extra.insert(name.to_string(), rgb_to_hex6(&rgb));
-        }
-    }
     if presence & B_EXTRA != 0 {
         let n = read_u8(&mut input)? as usize;
         if n > MAX_EXTRA {
@@ -270,8 +221,6 @@ pub fn unpack_body(
 mod tests {
     use super::*;
     use crate::params::OgParams;
-    use crate::templates::load_templates;
-    use crate::wire::registry::Registry;
     use std::collections::HashMap;
 
     fn blank() -> OgParams {
@@ -291,10 +240,8 @@ mod tests {
     }
 
     fn roundtrip(p: &OgParams) -> OgParams {
-        let reg = Registry::load();
-        let t = load_templates();
-        let bytes = pack_body(p, reg, &t).unwrap();
-        unpack_body(&bytes, reg, 1000).unwrap()
+        let bytes = pack_body(p).unwrap();
+        unpack_body(&bytes, 1000).unwrap()
     }
 
     #[test]
@@ -368,40 +315,52 @@ mod tests {
 
     #[test]
     fn reserved_bit_rejected() {
-        let reg = Registry::load();
         // presence with bit 15 set, nothing else
         let bytes = 0x8000u16.to_le_bytes();
         assert!(matches!(
-            unpack_body(&bytes, reg, 1000),
+            unpack_body(&bytes, 1000),
             Err(WireError::ReservedBit)
         ));
     }
 
     #[test]
-    fn template_color_packs_other_extra_verbatim() {
-        // Pick a real template + one of its color names from the loaded set.
-        let t = load_templates();
-        let (tpl, color_key) = t
-            .colors
-            .iter()
-            .find_map(|(name, palette)| palette.keys().next().map(|k| (name.clone(), k.clone())))
-            .expect("a template with at least one color");
+    fn retired_colors_bit_rejected() {
+        // bit 9 was the colors block; it is retired in the literal-name format
+        // and must now be decode-rejected as reserved.
+        let bytes = 0x0200u16.to_le_bytes();
+        assert!(matches!(
+            unpack_body(&bytes, 1000),
+            Err(WireError::ReservedBit)
+        ));
+    }
 
+    #[test]
+    fn many_extra_overrides_roundtrip() {
+        // Colors fold into the extra block, so MAX_EXTRA (64) must accommodate the
+        // old MAX_COLORS+MAX_EXTRA total. 40 entries (> the old 32 cap) round-trips.
         let mut p = blank();
-        p.template = Some(tpl);
-        p.extra.insert(color_key.clone(), "1a2b3c".into()); // packs into colors block
-        p.extra.insert("subreddit".into(), "rust".into()); // verbatim text override
-        p.extra.insert(color_key.clone() + "_x", "ABCDEF".into()); // unknown key → verbatim, case kept
+        for i in 0..40 {
+            p.extra.insert(format!("k{i:02}"), format!("v{i}"));
+        }
+        let out = roundtrip(&p);
+        assert_eq!(out.extra.len(), 40);
+        assert_eq!(out.extra.get("k07").map(String::as_str), Some("v7"));
+    }
+
+    #[test]
+    fn color_and_text_overrides_roundtrip_verbatim() {
+        // Color overrides and text overrides are both plain extra entries now;
+        // values (including case) are preserved verbatim. The color-vs-text split
+        // is a render-time concern (extract_colors), not a wire concern.
+        let mut p = blank();
+        p.template = Some("twilight".into());
+        p.extra.insert("accent".into(), "1a2b3c".into()); // a color-looking override
+        p.extra.insert("subreddit".into(), "rust".into()); // a text override
+        p.extra.insert("accent_x".into(), "ABCDEF".into()); // case preserved verbatim
 
         let out = roundtrip(&p);
-        assert_eq!(
-            out.extra.get(&color_key).map(String::as_str),
-            Some("1a2b3c")
-        );
+        assert_eq!(out.extra.get("accent").map(String::as_str), Some("1a2b3c"));
         assert_eq!(out.extra.get("subreddit").map(String::as_str), Some("rust"));
-        assert_eq!(
-            out.extra.get(&(color_key + "_x")).map(String::as_str),
-            Some("ABCDEF")
-        );
+        assert_eq!(out.extra.get("accent_x").map(String::as_str), Some("ABCDEF"));
     }
 }
