@@ -42,8 +42,6 @@ pub enum WireError {
     FieldTooLong,
     #[error("too many entries")]
     TooManyEntries,
-    #[error("unknown template id")]
-    UnknownTemplate,
     #[error("unknown color id")]
     UnknownColor,
     #[error("decompressed body too large")]

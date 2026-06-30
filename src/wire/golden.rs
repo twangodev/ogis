@@ -68,7 +68,7 @@ fn golden_vectors_decode_stably() {
     let reg = Registry::load();
     // (blob, expected title, expected template) pinned from a known-good build.
     let vectors: &[(&str, &str, Option<&str>)] = &[(
-        "ERtNACCM1GOtsTAbodK_qfK8DuX8HB8pH4W1CAKHHDh8fvAkT63CZFozSrm8QCKZQPXtLWXTd4iMjPdMfxCr4Aoq",
+        "ERtUACCM1GOtsTDr04lKEGxiExpTFDb3iSBwyIHD54EneQkFO2BnOLgtxwjgXuonIIj-t8-yCXvYGinvmT6DrYITKQc",
         "Understanding Rust Ownership",
         Some("twilight"),
     )];

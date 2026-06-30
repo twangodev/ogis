@@ -106,8 +106,7 @@ pub fn pack_body(
     let mut out = Vec::new();
     out.extend_from_slice(&presence.to_le_bytes());
     if let Some(name) = &p.template {
-        let id = reg.template_id(name).ok_or(WireError::UnknownTemplate)?;
-        out.extend_from_slice(&id.to_le_bytes());
+        write_str(&mut out, name);
     }
     if let Some(code) = format_code {
         out.push(code);
@@ -204,9 +203,7 @@ pub fn unpack_body(
     };
 
     if presence & B_TEMPLATE != 0 {
-        let id = read_u16(&mut input)?;
-        let name = reg.template_name(id).ok_or(WireError::UnknownTemplate)?;
-        p.template = Some(name.to_string());
+        p.template = Some(read_string(&mut input, max_field_len)?);
     }
     if presence & B_FORMAT != 0 {
         p.format = Some(
@@ -339,6 +336,19 @@ mod tests {
         let mut p = blank();
         p.title = Some("日本語 🚀".into());
         assert_eq!(roundtrip(&p).title.as_deref(), Some("日本語 🚀"));
+    }
+
+    #[test]
+    fn unregistered_template_name_roundtrips_as_literal() {
+        // Literal-name encoding: ANY template name round-trips, even one that is
+        // in no registry (e.g. a user/tenant template). There is no ID to look up
+        // and no UnknownTemplate rejection at encode time.
+        let mut p = blank();
+        p.template = Some("acme-promo-not-in-any-registry".into());
+        assert_eq!(
+            roundtrip(&p).template.as_deref(),
+            Some("acme-promo-not-in-any-registry"),
+        );
     }
 
     #[test]
