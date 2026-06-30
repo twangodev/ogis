@@ -186,7 +186,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully generated PNG image (1200x630)",
+            "description": "Generated image. Content-Type and dimensions depend on the encoded format/scale: image/png at 1200x630 by default, or image/jpeg / image/webp when the blob specifies.",
             "content": {
               "image/png": {}
             }
@@ -246,7 +246,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully generated PNG image (1200x630)",
+            "description": "Generated image. Content-Type and dimensions depend on the encoded format/scale: image/png at 1200x630 by default, or image/jpeg / image/webp when the blob specifies.",
             "content": {
               "image/png": {}
             }

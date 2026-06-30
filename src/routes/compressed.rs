@@ -68,7 +68,7 @@ fn drop_dead_template(
         ("blob" = String, Path, description = "Base64url-encoded compressed parameter blob, produced by an ogis SDK")
     ),
     responses(
-        (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
+        (status = 200, description = "Generated image. Content-Type and dimensions depend on the encoded format/scale: image/png at 1200x630 by default, or image/jpeg / image/webp when the blob specifies.", content_type = "image/png"),
         (status = 400, description = "Invalid compressed URL - malformed blob or unsupported version"),
         (status = 401, description = "Authentication required - missing or invalid signature"),
         (status = 403, description = "Forbidden - SSRF blocked (private IP)"),
@@ -95,7 +95,7 @@ pub async fn generate_compressed(
         ("sig" = String, Path, description = "base64url-nopad of the leading 6 bytes of HMAC-SHA256 over [version byte ++ uncompressed body] (8 characters)")
     ),
     responses(
-        (status = 200, description = "Successfully generated PNG image (1200x630)", content_type = "image/png"),
+        (status = 200, description = "Generated image. Content-Type and dimensions depend on the encoded format/scale: image/png at 1200x630 by default, or image/jpeg / image/webp when the blob specifies.", content_type = "image/png"),
         (status = 400, description = "Invalid compressed URL - malformed blob or unsupported version"),
         (status = 401, description = "Authentication required - missing or invalid signature"),
         (status = 403, description = "Forbidden - SSRF blocked (private IP)"),
