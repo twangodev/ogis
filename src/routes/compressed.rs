@@ -19,13 +19,13 @@ pub(crate) fn max_decoded_len(max_input_length: usize) -> usize {
 }
 
 async fn handle(state: AppState, blob: String, sig: Option<String>) -> Response {
-    let secret: Option<Vec<u8>> = state.hmac_validator.as_ref().map(|v| v.secret().to_vec());
+    let secret: Option<&[u8]> = state.hmac_validator.as_ref().map(|v| v.secret());
     let max_decoded = max_decoded_len(state.max_input_length);
 
     let params = match wire::decode(
         &blob,
         sig.as_deref(),
-        secret.as_deref(),
+        secret,
         state.max_input_length,
         max_decoded,
     ) {
