@@ -8,13 +8,20 @@ use crate::{error::ApiError, wire};
 
 /// Decompressed-size cap derived from per-field limits (spec §8.1).
 pub(crate) fn max_decoded_len(max_input_length: usize) -> usize {
+    // Width of a length-varint for a field of up to `max_input_length` bytes
+    // (2 bytes at the default 1000, but 3+ once the limit exceeds 16383).
+    let mut vw = 1;
+    let mut n = max_input_length;
+    while n >= 128 {
+        n >>= 7;
+        vw += 1;
+    }
     // Worst-case schema-pack body. Data: 6 max-length fields (template + 3 text +
     // 2 URL) and MAX_EXTRA extra entries (key+value). Framing: presence(2) +
-    // format/scale/quality(4) + 6 field length-varints (<=2 B each, for
-    // max_input_length <= 16383) + 2 URL scheme tags(2) + extra count(1) +
-    // MAX_EXTRA*(2 length-varints, <=2 B each). Colors fold into the extra block.
+    // format/scale/quality(4) + 6 field length-varints + 2 URL scheme tags(2) +
+    // extra count(1) + MAX_EXTRA*(2 length-varints). Colors fold into the extra block.
     let data = max_input_length * (6 + 2 * wire::MAX_EXTRA);
-    let framing = 2 + 4 + 6 * 2 + 2 + 1 + wire::MAX_EXTRA * 4;
+    let framing = 2 + 4 + 6 * vw + 2 + 1 + wire::MAX_EXTRA * 2 * vw;
     data + framing
 }
 
@@ -111,12 +118,10 @@ pub async fn generate_compressed_signed(
 mod tests {
     use super::*;
 
-    #[test]
-    fn admits_a_maximal_legal_body() {
+    fn assert_admits_maximal(max: usize) {
         // A request with every field at max_input_length and MAX_EXTRA full-length
         // extra entries must pack within the decode cap, so a maximal legal /c/ URL
-        // is never falsely 400'd at decompression. (Was under-provisioned at +64.)
-        let max = 1000usize;
+        // is never falsely 400'd at decompression.
         let big = "x".repeat(max);
         let mut p = crate::params::OgParams {
             title: Some(big.clone()),
@@ -138,10 +143,16 @@ mod tests {
         let body = crate::wire::body::pack_body(&p).unwrap();
         assert!(
             body.len() <= max_decoded_len(max),
-            "maximal body {} exceeds decode cap {}",
+            "maximal body {} exceeds decode cap {} (max_input_length={max})",
             body.len(),
-            max_decoded_len(max)
+            max_decoded_len(max),
         );
+    }
+
+    #[test]
+    fn admits_a_maximal_legal_body() {
+        assert_admits_maximal(1000); // 2-byte length varints
+        assert_admits_maximal(20_000); // 3-byte length varints (> 16383) — was under-provisioned
         assert!(max_decoded_len(1000) > max_decoded_len(100)); // still monotonic
     }
 }

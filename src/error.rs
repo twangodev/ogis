@@ -395,17 +395,17 @@ impl From<crate::wire::WireError> for ApiError {
     fn from(e: crate::wire::WireError) -> Self {
         use crate::wire::WireError;
         match e {
-            WireError::MissingSignature => ApiError::new(
-                StatusCode::UNAUTHORIZED,
-                ErrorCode::AuthMissingSignature,
-                "Signature required but not provided",
-            ),
-            // Present-but-invalid signature: 401 (not the query route's 403) per spec §8.
+            // Reuse the query route's constructor (401 + field "signature") so the
+            // JSON contract matches for the same AUTH_MISSING_SIGNATURE condition.
+            WireError::MissingSignature => ApiError::auth_missing_signature(),
+            // Present-but-invalid signature: 401 (not the query route's 403) per spec §8,
+            // but keep the `signature` field for contract consistency.
             WireError::InvalidSignature => ApiError::new(
                 StatusCode::UNAUTHORIZED,
                 ErrorCode::AuthInvalidSignature,
                 "Invalid signature",
-            ),
+            )
+            .with_field("signature"),
             other => ApiError::new(
                 StatusCode::BAD_REQUEST,
                 ErrorCode::InvalidCompressedUrl,
