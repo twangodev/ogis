@@ -1,0 +1,273 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <!-- Base background gradient -->
+        <linearGradient id="baseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0a0a0c"/>
+            <stop offset="100%" stop-color="#121215"/>
+        </linearGradient>
+
+        <!-- Emerald backdrop glow behind the node graph -->
+        <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#059669" stop-opacity="0.11"/>
+            <stop offset="55%" stop-color="#059669" stop-opacity="0.05"/>
+            <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Node glows -->
+        <radialGradient id="heroGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#34d399" stop-opacity="0.32"/>
+            <stop offset="45%" stop-color="#34d399" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#34d399" stop-opacity="0.28"/>
+            <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Film grain -->
+        <filter id="noiseCoarse" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="3"/>
+            <feColorMatrix type="saturate" values="0"/>
+            <feComponentTransfer><feFuncA type="linear" slope="1.5" intercept="-0.3"/></feComponentTransfer>
+        </filter>
+        <filter id="noiseFine" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="5"/>
+            <feColorMatrix type="saturate" values="0"/>
+            <feComponentTransfer><feFuncA type="linear" slope="2" intercept="-0.5"/></feComponentTransfer>
+        </filter>
+
+        <!-- Vignette for the hairline grid -->
+        <radialGradient id="vignetteGradient" cx="45%" cy="42%" r="72%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+            <stop offset="55%" stop-color="#ffffff" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.08"/>
+        </radialGradient>
+        <mask id="gridVignette" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630">
+            <rect width="1200" height="630" fill="url(#vignetteGradient)"/>
+        </mask>
+
+        <!-- Left-edge fade so the graph vignettes out before the text column -->
+        <linearGradient id="fadeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+            <stop offset="22%" stop-color="#ffffff" stop-opacity="0.7"/>
+            <stop offset="45%" stop-color="#ffffff" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+        </linearGradient>
+        <mask id="graphFade" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630">
+            <rect x="600" y="0" width="600" height="630" fill="url(#fadeGradient)"/>
+        </mask>
+    </defs>
+
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="url(#baseGradient)"/>
+
+    <!-- Backdrop glow, bleeding off the right edge -->
+    <circle cx="1020" cy="330" r="430" fill="url(#bgGlow)"/>
+
+    <!-- Hairline grid, 60px pitch, vignetted -->
+    <g mask="url(#gridVignette)" opacity="0.5">
+        <path d="M60 0V630M120 0V630M180 0V630M240 0V630M300 0V630M360 0V630M420 0V630M480 0V630M540 0V630M600 0V630M660 0V630M720 0V630M780 0V630M840 0V630M900 0V630M960 0V630M1020 0V630M1080 0V630M1140 0V630M0 60H1200M0 120H1200M0 180H1200M0 240H1200M0 300H1200M0 360H1200M0 420H1200M0 480H1200M0 540H1200M0 600H1200"
+              stroke="#27272a" stroke-width="1" fill="none"/>
+    </g>
+
+    <!-- Relationship graph: one lit traversal inside a dormant index -->
+seed=11 nodes=40 (dropped 4 slot-straddlers) edges=55+4lit
+    <g mask="url(#graphFade)">
+        <!-- Ambient (dormant) edges -->
+        <g stroke="#64748b" stroke-width="1" fill="none">
+            <line x1="1040" y1="320" x2="991" y2="385" stroke-opacity="0.14"/>
+            <line x1="1040" y1="320" x2="1139" y2="534" stroke-opacity="0.26"/>
+            <line x1="1040" y1="320" x2="975" y2="317" stroke-opacity="0.14"/>
+            <line x1="884" y1="324" x2="915" y2="399" stroke-opacity="0.26"/>
+            <line x1="884" y1="324" x2="926" y2="271" stroke-opacity="0.14"/>
+            <line x1="884" y1="324" x2="833" y2="271" stroke-opacity="0.22"/>
+            <line x1="978" y1="485" x2="1043" y2="511" stroke-opacity="0.14"/>
+            <line x1="978" y1="485" x2="927" y2="510" stroke-opacity="0.18"/>
+            <line x1="1080" y1="429" x2="1121" y2="378" stroke-opacity="0.18"/>
+            <line x1="1080" y1="429" x2="1150" y2="445" stroke-opacity="0.22"/>
+            <line x1="991" y1="385" x2="915" y2="399" stroke-opacity="0.18"/>
+            <line x1="991" y1="385" x2="975" y2="317" stroke-opacity="0.18"/>
+            <line x1="991" y1="385" x2="927" y2="510" stroke-opacity="0.26"/>
+            <line x1="654" y1="145" x2="893" y2="168" stroke-opacity="0.18"/>
+            <line x1="654" y1="145" x2="877" y2="80" stroke-opacity="0.26"/>
+            <line x1="654" y1="145" x2="722" y2="192" stroke-opacity="0.18"/>
+            <line x1="654" y1="145" x2="660" y2="98" stroke-opacity="0.22"/>
+            <line x1="915" y1="399" x2="1150" y2="445" stroke-opacity="0.26"/>
+            <line x1="915" y1="399" x2="927" y2="510" stroke-opacity="0.18"/>
+            <line x1="799" y1="168" x2="773" y2="87" stroke-opacity="0.22"/>
+            <line x1="799" y1="168" x2="893" y2="168" stroke-opacity="0.26"/>
+            <line x1="799" y1="168" x2="722" y2="192" stroke-opacity="0.22"/>
+            <line x1="799" y1="168" x2="793" y2="217" stroke-opacity="0.26"/>
+            <line x1="1177" y1="262" x2="1115" y2="273" stroke-opacity="0.26"/>
+            <line x1="1177" y1="262" x2="1171" y2="329" stroke-opacity="0.22"/>
+            <line x1="773" y1="87" x2="686" y2="275" stroke-opacity="0.14"/>
+            <line x1="773" y1="87" x2="736" y2="47" stroke-opacity="0.26"/>
+            <line x1="773" y1="87" x2="877" y2="80" stroke-opacity="0.18"/>
+            <line x1="721" y1="353" x2="686" y2="275" stroke-opacity="0.26"/>
+            <line x1="721" y1="353" x2="671" y2="367" stroke-opacity="0.14"/>
+            <line x1="686" y1="275" x2="671" y2="367" stroke-opacity="0.18"/>
+            <line x1="686" y1="275" x2="722" y2="192" stroke-opacity="0.18"/>
+            <line x1="1085" y1="179" x2="1124" y2="114" stroke-opacity="0.26"/>
+            <line x1="1085" y1="179" x2="1014" y2="198" stroke-opacity="0.22"/>
+            <line x1="1121" y1="378" x2="1150" y2="445" stroke-opacity="0.14"/>
+            <line x1="1121" y1="378" x2="1171" y2="329" stroke-opacity="0.18"/>
+            <line x1="959" y1="203" x2="952" y2="117" stroke-opacity="0.14"/>
+            <line x1="959" y1="203" x2="1009" y2="150" stroke-opacity="0.26"/>
+            <line x1="959" y1="203" x2="1014" y2="198" stroke-opacity="0.22"/>
+            <line x1="736" y1="47" x2="660" y2="98" stroke-opacity="0.26"/>
+            <line x1="952" y1="117" x2="1009" y2="150" stroke-opacity="0.18"/>
+            <line x1="1018" y1="581" x2="1071" y2="554" stroke-opacity="0.26"/>
+            <line x1="1018" y1="581" x2="1043" y2="511" stroke-opacity="0.18"/>
+            <line x1="1071" y1="554" x2="1043" y2="511" stroke-opacity="0.26"/>
+            <line x1="1115" y1="273" x2="1171" y2="329" stroke-opacity="0.18"/>
+            <line x1="893" y1="168" x2="877" y2="80" stroke-opacity="0.22"/>
+            <line x1="1139" y1="534" x2="1138" y2="584" stroke-opacity="0.18"/>
+            <line x1="1139" y1="534" x2="1182" y2="561" stroke-opacity="0.22"/>
+            <line x1="975" y1="317" x2="926" y2="271" stroke-opacity="0.18"/>
+            <line x1="1009" y1="150" x2="1060" y2="81" stroke-opacity="0.22"/>
+            <line x1="1009" y1="150" x2="1014" y2="198" stroke-opacity="0.14"/>
+            <line x1="722" y1="192" x2="793" y2="217" stroke-opacity="0.18"/>
+            <line x1="833" y1="271" x2="793" y2="217" stroke-opacity="0.18"/>
+            <line x1="1124" y1="114" x2="1060" y2="81" stroke-opacity="0.14"/>
+            <line x1="1138" y1="584" x2="1182" y2="561" stroke-opacity="0.18"/>
+        </g>
+        <!-- Lit traversal path: glow underlay, then crisp edges -->
+        <g stroke="#34d399" stroke-width="7" stroke-opacity="0.15" fill="none">
+            <line x1="654" y1="145" x2="833" y2="271"/>
+            <line x1="833" y1="271" x2="915" y2="399"/>
+            <line x1="915" y1="399" x2="1040" y2="320"/>
+            <line x1="1040" y1="320" x2="1150" y2="445"/>
+        </g>
+        <g stroke="#34d399" stroke-width="2" stroke-opacity="0.85" fill="none">
+            <line x1="654" y1="145" x2="833" y2="271"/>
+            <line x1="833" y1="271" x2="915" y2="399"/>
+            <line x1="915" y1="399" x2="1040" y2="320"/>
+            <line x1="1040" y1="320" x2="1150" y2="445"/>
+        </g>
+        <!-- Dormant nodes -->
+        <g fill="#065f46">
+            <circle cx="884" cy="324" r="3.5"/>
+            <circle cx="978" cy="485" r="2.7"/>
+            <circle cx="1080" cy="429" r="10.9"/>
+            <circle cx="991" cy="385" r="3.6"/>
+            <circle cx="799" cy="168" r="4.0"/>
+            <circle cx="1177" cy="262" r="6.6"/>
+            <circle cx="773" cy="87" r="10.3"/>
+            <circle cx="721" cy="353" r="4.0"/>
+            <circle cx="686" cy="275" r="4.4"/>
+            <circle cx="1121" cy="378" r="2.6"/>
+            <circle cx="736" cy="47" r="2.6"/>
+            <circle cx="952" cy="117" r="4.3"/>
+            <circle cx="1115" cy="273" r="9.7"/>
+            <circle cx="893" cy="168" r="3.7"/>
+            <circle cx="975" cy="317" r="7.0"/>
+            <circle cx="877" cy="80" r="8.1"/>
+            <circle cx="1009" cy="150" r="2.5"/>
+            <circle cx="722" cy="192" r="6.0"/>
+            <circle cx="926" cy="271" r="8.8"/>
+            <circle cx="1124" cy="114" r="5.5"/>
+            <circle cx="1138" cy="584" r="4.0"/>
+            <circle cx="660" cy="98" r="6.0"/>
+            <circle cx="1182" cy="561" r="4.4"/>
+            <circle cx="1043" cy="511" r="4.1"/>
+            <circle cx="1060" cy="81" r="5.2"/>
+            <circle cx="1014" cy="198" r="4.0"/>
+            <circle cx="793" cy="217" r="10.7"/>
+            <circle cx="927" cy="510" r="4.0"/>
+        </g>
+        <g stroke="#64748b" stroke-width="1.5" stroke-opacity="0.5" fill="none">
+            <circle cx="959" cy="203" r="5.1"/>
+            <circle cx="1018" cy="581" r="6.0"/>
+            <circle cx="1139" cy="534" r="5.6"/>
+        </g>
+        <!-- Secondary data-stream accents -->
+        <circle cx="671" cy="367" r="5.7" fill="#38bdf8"/>
+        <circle cx="671" cy="367" r="10.7" stroke="#38bdf8" stroke-opacity="0.3" stroke-width="1.5" fill="none"/>
+        <circle cx="1085" cy="179" r="6.9" fill="#38bdf8"/>
+        <circle cx="1085" cy="179" r="11.9" stroke="#38bdf8" stroke-opacity="0.3" stroke-width="1.5" fill="none"/>
+        <circle cx="1071" cy="554" r="6.8" fill="#818cf8"/>
+        <circle cx="1071" cy="554" r="11.8" stroke="#818cf8" stroke-opacity="0.3" stroke-width="1.5" fill="none"/>
+        <circle cx="1171" cy="329" r="6.1" fill="#818cf8"/>
+        <circle cx="1171" cy="329" r="11.1" stroke="#818cf8" stroke-opacity="0.3" stroke-width="1.5" fill="none"/>
+        <!-- Traversal path nodes -->
+        <circle cx="654" cy="145" r="21" fill="url(#nodeGlow)"/>
+        <circle cx="654" cy="145" r="8.0" fill="#34d399"/>
+        <circle cx="654" cy="145" r="14.0" stroke="#34d399" stroke-opacity="0.35" stroke-width="1.5" fill="none"/>
+        <circle cx="833" cy="271" r="23" fill="url(#nodeGlow)"/>
+        <circle cx="833" cy="271" r="9.0" fill="#34d399"/>
+        <circle cx="833" cy="271" r="15.0" stroke="#34d399" stroke-opacity="0.35" stroke-width="1.5" fill="none"/>
+        <circle cx="915" cy="399" r="26" fill="url(#nodeGlow)"/>
+        <circle cx="915" cy="399" r="10.0" fill="#34d399"/>
+        <circle cx="915" cy="399" r="16.0" stroke="#34d399" stroke-opacity="0.35" stroke-width="1.5" fill="none"/>
+        <circle cx="1150" cy="445" r="31" fill="url(#nodeGlow)"/>
+        <circle cx="1150" cy="445" r="12.0" fill="#34d399"/>
+        <circle cx="1150" cy="445" r="18.0" stroke="#34d399" stroke-opacity="0.35" stroke-width="1.5" fill="none"/>
+        <!-- Hero node: the answer, double concentric rings -->
+        <circle cx="1040" cy="320" r="80" fill="url(#heroGlow)"/>
+        <circle cx="1040" cy="320" r="42" stroke="#34d399" stroke-opacity="0.2" stroke-width="1.5" fill="none"/>
+        <circle cx="1040" cy="320" r="31" stroke="#34d399" stroke-opacity="0.45" stroke-width="1.5" fill="none"/>
+        <circle cx="1040" cy="320" r="20" fill="#34d399"/>
+    </g>
+
+    <!-- Film grain over background and graph, under text -->
+    <rect width="100%" height="100%" fill="#000" filter="url(#noiseCoarse)" opacity="0.16"/>
+    <rect width="100%" height="100%" fill="#000" filter="url(#noiseFine)" opacity="0.08"/>
+
+    <g id="ogis_logo">
+        <rect x="60" y="50" width="400" height="120"
+              rx="12"
+              fill="rgba(255,255,255,0.06)"
+              stroke="rgba(255,255,255,0.15)"
+              stroke-width="1"/>
+        <text x="260" y="115"
+              font-family="sans-serif"
+              font-weight="bold"
+              font-size="18"
+              fill="rgba(255,255,255,0.5)"
+              text-anchor="middle">
+            Placeholder Logo (400x120)
+        </text>
+    </g>
+
+    <g id="ogis_image">
+        <rect x="940" y="50" width="200" height="200"
+              rx="12"
+              fill="rgba(255,255,255,0.06)"
+              stroke="rgba(255,255,255,0.15)"
+              stroke-width="1"/>
+        <text x="1040" y="155"
+              font-family="sans-serif"
+              font-weight="bold"
+              font-size="14"
+              fill="rgba(255,255,255,0.5)"
+              text-anchor="middle">
+            Image (200x200)
+        </text>
+    </g>
+
+    <!-- Content area -->
+    <g transform="translate(60, 0)">
+        <text id="ogis_subtitle" x="0" y="400"
+              font-family="sans-serif"
+              font-size="24"
+              font-weight="600"
+              fill="#6ee7b7">
+            A relationship layer for existing data.
+        </text>
+
+        <text x="0" y="480"
+              font-family="sans-serif"
+              font-size="60"
+              font-weight="bold"
+              fill="#fafafa">
+            <tspan id="ogis_title" x="0" dy="0">Postgres for the Agent Era</tspan>
+        </text>
+
+        <text x="0" y="542"
+              font-family="sans-serif"
+              font-size="25"
+              fill="#a1a1aa">
+            <tspan id="ogis_description" x="0" dy="0">Structured records, connected relationships, semantic meaning.</tspan>
+        </text>
+    </g>
+</svg>

@@ -83,6 +83,25 @@ templates:
     waveform_mid: '#9ca3af'
     waveform_light: '#d1d5db'
     text: '#ffffff'
+- name: evokoa
+  file: templates/evokoa.svg
+  max_widths:
+    title: 800
+    description: 720
+    subtitle: 700
+  colors:
+    background: '#0a0a0c'
+    background_end: '#121215'
+    grid_line: '#27272a'
+    accent: '#34d399'
+    accent_deep: '#059669'
+    accent_dim: '#065f46'
+    edge_dim: '#64748b'
+    node_indigo: '#818cf8'
+    node_sky: '#38bdf8'
+    title_text: '#fafafa'
+    subtitle_text: '#6ee7b7'
+    description_text: '#a1a1aa'
 - name: reddit
   file: templates/reddit.svg
   colors:
