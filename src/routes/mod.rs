@@ -1,8 +1,13 @@
+pub mod compressed;
 pub mod docs;
 pub mod health;
 pub mod index;
+pub mod render;
 pub mod templates;
 pub mod timing;
+
+#[cfg(test)]
+mod c_e2e;
 
 use crate::AppState;
 use crate::auth::hmac_auth_middleware;
@@ -27,6 +32,11 @@ pub fn create_router(state: AppState) -> Router {
             state.clone(),
             hmac_auth_middleware, // Apply HMAC middleware to routes above
         ))
+        .route("/c/{blob}", get(compressed::generate_compressed))
+        .route(
+            "/c/{blob}/{sig}",
+            get(compressed::generate_compressed_signed),
+        )
         .route_layer(middleware::from_fn(metrics_middleware))
         .route("/health", get(health::health_check))
         .route("/templates", get(templates::list_templates))

@@ -167,6 +167,117 @@
         }
       }
     },
+    "/c/{blob}": {
+      "get": {
+        "tags": [
+          "image"
+        ],
+        "operationId": "generate_compressed",
+        "parameters": [
+          {
+            "name": "blob",
+            "in": "path",
+            "description": "Base64url-encoded compressed parameter blob, produced by an ogis SDK",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generated image. Content-Type and dimensions depend on the encoded format/scale: image/png at 1200x630 by default, or image/jpeg / image/webp when the blob specifies.",
+            "content": {
+              "image/png": {}
+            }
+          },
+          "400": {
+            "description": "Invalid compressed URL - malformed blob or unsupported version"
+          },
+          "401": {
+            "description": "Authentication required - missing or invalid signature"
+          },
+          "403": {
+            "description": "Forbidden - SSRF blocked (private IP)"
+          },
+          "422": {
+            "description": "Unprocessable - invalid image URL, unsupported format, or image too large"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "502": {
+            "description": "Bad gateway - upstream image fetch failed"
+          },
+          "503": {
+            "description": "Service unavailable - server overloaded"
+          },
+          "504": {
+            "description": "Gateway timeout - image fetch timed out"
+          }
+        }
+      }
+    },
+    "/c/{blob}/{sig}": {
+      "get": {
+        "tags": [
+          "image"
+        ],
+        "operationId": "generate_compressed_signed",
+        "parameters": [
+          {
+            "name": "blob",
+            "in": "path",
+            "description": "Base64url-encoded compressed parameter blob, produced by an ogis SDK",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sig",
+            "in": "path",
+            "description": "base64url-nopad of the leading 6 bytes of HMAC-SHA256 over [version byte ++ uncompressed body] (8 characters)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generated image. Content-Type and dimensions depend on the encoded format/scale: image/png at 1200x630 by default, or image/jpeg / image/webp when the blob specifies.",
+            "content": {
+              "image/png": {}
+            }
+          },
+          "400": {
+            "description": "Invalid compressed URL - malformed blob or unsupported version"
+          },
+          "401": {
+            "description": "Authentication required - missing or invalid signature"
+          },
+          "403": {
+            "description": "Forbidden - SSRF blocked (private IP)"
+          },
+          "422": {
+            "description": "Unprocessable - invalid image URL, unsupported format, or image too large"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "502": {
+            "description": "Bad gateway - upstream image fetch failed"
+          },
+          "503": {
+            "description": "Service unavailable - server overloaded"
+          },
+          "504": {
+            "description": "Gateway timeout - image fetch timed out"
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -237,6 +348,7 @@
           "VALIDATION_INVALID_SCALE",
           "VALIDATION_INVALID_QUALITY",
           "AUTH_INVALID_SIGNATURE_FORMAT",
+          "INVALID_COMPRESSED_URL",
           "AUTH_MISSING_SIGNATURE",
           "AUTH_INVALID_SIGNATURE",
           "SSRF_PRIVATE_IP_BLOCKED",

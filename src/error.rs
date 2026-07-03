@@ -20,6 +20,7 @@ pub enum ErrorCode {
     ValidationInvalidScale,
     ValidationInvalidQuality,
     AuthInvalidSignatureFormat,
+    InvalidCompressedUrl,
 
     // Auth errors (401)
     AuthMissingSignature,
@@ -390,6 +391,30 @@ impl From<GeneratorError> for ApiError {
     }
 }
 
+impl From<crate::wire::WireError> for ApiError {
+    fn from(e: crate::wire::WireError) -> Self {
+        use crate::wire::WireError;
+        match e {
+            // Reuse the query route's constructor (401 + field "signature") so the
+            // JSON contract matches for the same AUTH_MISSING_SIGNATURE condition.
+            WireError::MissingSignature => ApiError::auth_missing_signature(),
+            // Present-but-invalid signature: 401 (not the query route's 403) per spec §8,
+            // but keep the `signature` field for contract consistency.
+            WireError::InvalidSignature => ApiError::new(
+                StatusCode::UNAUTHORIZED,
+                ErrorCode::AuthInvalidSignature,
+                "Invalid signature",
+            )
+            .with_field("signature"),
+            other => ApiError::new(
+                StatusCode::BAD_REQUEST,
+                ErrorCode::InvalidCompressedUrl,
+                other.to_string(),
+            ),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -477,6 +502,18 @@ mod tests {
         assert_eq!(err.status_code(), StatusCode::BAD_REQUEST);
         assert!(matches!(err.code, ErrorCode::AuthInvalidSignatureFormat));
         assert_eq!(err.field, Some("signature".to_string()));
+    }
+
+    #[test]
+    fn wire_missing_vs_invalid_signature_both_401_distinct_codes() {
+        // /c/ deliberately returns 401 for BOTH (spec §8), but with distinct codes
+        // so a tampered sig isn't mislabeled "missing" (unlike the query route's 403).
+        let missing = ApiError::from(crate::wire::WireError::MissingSignature);
+        assert_eq!(missing.status_code(), StatusCode::UNAUTHORIZED);
+        assert!(matches!(missing.code, ErrorCode::AuthMissingSignature));
+        let invalid = ApiError::from(crate::wire::WireError::InvalidSignature);
+        assert_eq!(invalid.status_code(), StatusCode::UNAUTHORIZED);
+        assert!(matches!(invalid.code, ErrorCode::AuthInvalidSignature));
     }
 
     #[test]

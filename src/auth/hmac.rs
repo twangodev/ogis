@@ -82,6 +82,11 @@ impl HmacValidator {
         serializer.finish()
     }
 
+    /// Raw secret bytes (used by the /c/ blob verifier).
+    pub fn secret(&self) -> &[u8] {
+        &self.secret
+    }
+
     /// Generate signature for testing/client examples
     #[cfg(test)]
     pub fn sign(&self, query_string: &str) -> String {

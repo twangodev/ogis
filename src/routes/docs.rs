@@ -4,6 +4,8 @@ use utoipa::OpenApi;
 #[openapi(
     paths(
         crate::routes::index::generate,
+        crate::routes::compressed::generate_compressed,
+        crate::routes::compressed::generate_compressed_signed,
         crate::routes::health::health_check,
         crate::routes::templates::list_templates
     ),
