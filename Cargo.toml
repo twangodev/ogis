@@ -37,7 +37,7 @@ tracing = "0.1.44"
 tracing-opentelemetry = "0.32.1"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 url = "2.5"
-usvg = "0.45.1"
+usvg = "0.47.0"
 utoipa = "5.4.0"
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 webp = "0.3.1"
